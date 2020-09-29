@@ -1,0 +1,11 @@
+# Spring配置
+spring:
+  profiles:
+    active: dev
+
+# PageHelper分页插件
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: false #true自动加分页的配置
+  params: count=countSql

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+
+
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+    <description>Spring DataSource configuration</description>
+
+    <!-- 框架 数据库  数据源1 开始-->
+
+    <!-- xrobot datasource -->
+    <bean id="XRobotDs" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver_class_name}"/>
+        <property name="jdbcUrl" value="${jdbc.XRobot.url}"/>
+        <property name="username" value="${jdbc.XRobot.user}"/>
+        <property name="password" value="${jdbc.XRobot.password}"/>
+        <property name="maximumPoolSize" value="${jdbc.XRobot.max_pool_size}"/>
+    </bean>
+
+    <!-- transaction manager -->
+    <bean id="XRobotTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="XRobotDs"/>
+    </bean>
+    <tx:annotation-driven transaction-manager="XRobotTransactionManager"/>
+
+    <!-- mybatis factory -->
+    <bean id="XRobotSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="XRobotDs"/>
+        <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath*:mybatis/monitor/*Mapper.xml"/>
+    </bean>
+    <!-- scan mappers under the mapper dir -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="XRobotSqlSessionFactory"/>
+        <property name="basePackage" value="com.fairyland.xrobot.modular.monitor.mapper"/>
+    </bean>
+
+
+    <bean id="XRobotSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg ref="XRobotSqlSessionFactory"></constructor-arg>
+    </bean>
+
+    <!-- 框架 数据库  数据源1 结束-->
+
+
+    <!-- 框架 数据库  数据源2 开始-->
+
+    <!-- system datasource -->
+    <bean id="systemDs" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver_class_name}"/>
+        <property name="jdbcUrl" value="${jdbc.XRobot.url}"/>
+        <property name="username" value="${jdbc.XRobot.user}"/>
+        <property name="password" value="${jdbc.XRobot.password}"/>
+        <property name="maximumPoolSize" value="${jdbc.XRobot.max_pool_size}"/>
+    </bean>
+
+    <!-- transaction manager -->
+    <bean id="systemTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="systemDs"/>
+    </bean>
+    <tx:annotation-driven transaction-manager="systemTransactionManager"/>
+
+    <!-- mybatis factory -->
+    <bean id="systemSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="systemDs"/>
+        <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath*:mybatis/system/*Mapper.xml"/>
+    </bean>
+    <!-- scan mappers under the mapper dir -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="systemSqlSessionFactory"/>
+        <property name="basePackage" value="com.fairyland.xrobot.modular.system.mapper"/>
+    </bean>
+
+    <bean id="systemSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg ref="systemSqlSessionFactory"></constructor-arg>
+    </bean>
+
+    <!-- 框架 数据库  数据源2 结束-->
+
+
+    <!-- 业务 数据库  数据源3 开始-->
+
+    <bean id="phoenixDs" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver_class_name}"/>
+        <property name="jdbcUrl" value="${jdbc.XRobot.url}"/>
+        <property name="username" value="${jdbc.XRobot.user}"/>
+        <property name="password" value="${jdbc.XRobot.password}"/>
+        <property name="maximumPoolSize" value="${jdbc.XRobot.max_pool_size}"/>
+    </bean>
+
+    <!-- transaction manager -->
+    <bean id="phoenixTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="phoenixDs"/>
+    </bean>
+    <tx:annotation-driven transaction-manager="phoenixTransactionManager"/>
+
+    <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+        <property name="transactionManager" ref="phoenixTransactionManager"/>
+    </bean>
+
+    <!-- mybatis factory -->
+    <bean id="phoenixSqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="phoenixDs"/>
+        <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath*:mybatis/xrobot/*Mapper.xml"/>
+    </bean>
+    <!-- scan mappers under the mapper dir -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="phoenixSqlSessionFactory"/>
+        <property name="basePackage" value="com.fairyland.xrobot.modular.xrobot.dao.mapper"/>
+    </bean>
+
+    <bean id="phoenixSqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg ref="phoenixSqlSessionFactory"></constructor-arg>
+    </bean>
+    <!-- 业务 数据库  数据源3 结束-->
+
+
+
+
+
+</beans>
