@@ -15,7 +15,7 @@
     <context:property-placeholder ignore-resource-not-found="true" ignore-unresolvable="false" file-encoding="UTF-8"
                                   location="classpath*:properties/ds.properties,
                                             classpath*:properties/XRobot.properties,
-                                            file:/data/config/srobot/prod.properties"
+                                            file:/data/config/xrobot/prod.properties"
                                   system-properties-mode="ENVIRONMENT"/>
 
     <!--Notice spring uses cglib instead of JDK to implement the proxy method AOP can intercept to Controller  -->

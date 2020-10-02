@@ -332,4 +332,77 @@
       deviceID = #{deviceid,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+
+  <select id="deviceGroupMembersList" parameterType="com.fairyland.xrobot.modular.xrobot.domain.req.DeviceGroupMembersListReq" resultType="com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp">
+
+      SELECT
+          a.id,
+          c.groupID AS "groupid",
+          c.groupname AS "groupname",
+          b.deviceSN AS "devicesn",
+          b.phone AS "phone",
+          b.account AS "account",
+          b.login AS "login",
+          b.account1 AS "account1",
+          b.login1 AS "login1",
+          b.state AS "state"
+      FROM
+          c_devicegroupmembers a
+      JOIN c_device b ON a.deviceID = b.deviceID
+      JOIN c_devicegroup c ON c.groupID = a.groupID
+      where b.del_flag = '0'
+        <if test="groupid != null and groupid != ''">
+          and a.groupID = #{groupid}
+        </if>
+        <if test="groupname != null and groupname != ''">
+          and c.groupname like CONCAT('%',#{groupname},'%')
+        </if>
+      order by a.groupID,a.create_date desc
+
+  </select>
+
+
+  <select id="saveDeviceGroupMembersInit" parameterType="java.lang.String" resultType="com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp">
+
+
+      SELECT
+          a.deviceID AS "deviceid",
+          b.groupID AS "groupid",
+          a.deviceSN as "devicesn",
+          a.phone as "phone"
+      FROM
+          c_device a
+      LEFT JOIN c_devicegroupmembers b ON a.deviceID = b.deviceID
+      AND b.groupID = #{groupid}
+      WHERE
+          a.del_flag = '0'
+      ORDER BY
+          a.create_date DESC
+  </select>
+
+  <insert id="batchInsertData" parameterType="java.util.Map">
+    insert into c_devicegroupmembers (
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        del_flag,
+         groupID,
+         deviceID
+      )values
+    <foreach collection="list" item="item" separator=",">
+      (
+        #{userName},
+        #{nowDate},
+        #{userName},
+        #{nowDate},
+        '0',
+        #{groupid},
+        #{item}
+    )
+    </foreach>
+
+  </insert>
+
 </mapper>

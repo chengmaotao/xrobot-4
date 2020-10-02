@@ -3,6 +3,11 @@ package com.fairyland.xrobot.modular.xrobot.dao.mapper;
 import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroupMembers;
 import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroupMembersExample;
 import java.util.List;
+import java.util.Map;
+
+import com.fairyland.xrobot.modular.xrobot.domain.req.DeviceGroupMembersListReq;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
 import org.apache.ibatis.annotations.Param;
 
 public interface DeviceGroupMembersMapper {
@@ -93,4 +98,10 @@ public interface DeviceGroupMembersMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(DeviceGroupMembers record);
+
+    List<DeviceGroupMembersListResp> deviceGroupMembersList(DeviceGroupMembersListReq paramReq);
+
+    List<DeviceGroupMembersInitResp> saveDeviceGroupMembersInit(String groupid);
+
+    void batchInsertData(Map<String, Object> params);
 }

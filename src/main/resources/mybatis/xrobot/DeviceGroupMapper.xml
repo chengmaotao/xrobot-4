@@ -332,4 +332,26 @@
       groupname = #{groupname,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="deviceGroupList" parameterType="com.fairyland.xrobot.modular.xrobot.domain.req.DeviceGroupListReq" resultMap="BaseResultMap">
+
+      SELECT
+          id,
+          create_by,
+          create_date,
+          update_by,
+          update_date,
+          remarks,
+          del_flag,
+          groupID,
+          groupname
+      FROM
+          c_devicegroup
+      where del_flag = '0'
+      <if test="groupname != null and groupname != ''">
+        and groupname like CONCAT('%',#{groupname},'%')
+      </if>
+      order by create_date desc
+  </select>
+
 </mapper>

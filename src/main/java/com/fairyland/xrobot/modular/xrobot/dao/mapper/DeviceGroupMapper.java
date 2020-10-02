@@ -3,6 +3,8 @@ package com.fairyland.xrobot.modular.xrobot.dao.mapper;
 import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroup;
 import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroupExample;
 import java.util.List;
+
+import com.fairyland.xrobot.modular.xrobot.domain.req.DeviceGroupListReq;
 import org.apache.ibatis.annotations.Param;
 
 public interface DeviceGroupMapper {
@@ -93,4 +95,6 @@ public interface DeviceGroupMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(DeviceGroup record);
+
+    List<DeviceGroup> deviceGroupList(DeviceGroupListReq paramReq);
 }

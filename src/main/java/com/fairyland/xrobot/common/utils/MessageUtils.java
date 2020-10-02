@@ -43,26 +43,6 @@ public class MessageUtils {
                 break;
             }
 
-            case ErrorCode.ERROR_CODE_7: {
-                status = "api000007";
-                break;
-            }
-
-            case ErrorCode.ERROR_CODE_8: {
-                status = "api000008";
-                break;
-            }
-
-            case ErrorCode.ERROR_CODE_9: {
-                status = "api000009";
-                break;
-            }
-
-            case ErrorCode.ERROR_CODE_10: {
-                status = "api000010";
-                break;
-            }
-
             case ErrorCode.SYS_FAIL: {
                 status = "response.failure.sysfail";
                 break;

@@ -3,6 +3,8 @@ package com.fairyland.xrobot.modular.xrobot.dao.mapper;
 import com.fairyland.xrobot.modular.xrobot.domain.Device;
 import com.fairyland.xrobot.modular.xrobot.domain.DeviceExample;
 import java.util.List;
+
+import com.fairyland.xrobot.modular.xrobot.domain.req.DeviceListReq;
 import org.apache.ibatis.annotations.Param;
 
 public interface DeviceMapper {
@@ -93,4 +95,6 @@ public interface DeviceMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(Device record);
+
+    List<Device> deviceList(DeviceListReq paramReq);
 }

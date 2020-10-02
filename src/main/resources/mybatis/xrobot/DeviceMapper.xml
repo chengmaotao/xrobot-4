@@ -474,4 +474,47 @@
       state = #{state,jdbcType=TINYINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="deviceList" parameterType="com.fairyland.xrobot.modular.xrobot.domain.req.DeviceListReq" resultMap="BaseResultMap">
+      SELECT
+          id,
+          create_by,
+          create_date,
+          update_by,
+          update_date,
+          remarks,
+          del_flag,
+          deviceID,
+          deviceSN,
+          token,
+          phone,
+          account,
+          PASSWORD as "password",
+          login,
+          account1,
+          password1,
+          login1,
+          state
+      FROM
+          c_device
+      where
+          del_flag = '0'
+          <if test="devicesn != null and devicesn != ''">
+            and deviceSN = #{devicesn}
+          </if>
+          <if test="phone != null and phone != ''">
+            and phone = #{phone}
+          </if>
+          <if test="account != null and account != ''">
+            and account = #{account}
+          </if>
+          <if test="account1 != null and account1 != ''">
+            and account1 = #{account1}
+          </if>
+          <if test="state != null">
+            and state = #{state}
+          </if>
+          order by create_date desc
+  </select>
+
 </mapper>

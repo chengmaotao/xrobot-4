@@ -17,6 +17,10 @@ import java.util.UUID;
 public class Utility {
 
 
+    public static Date getNowDate() {
+        return new Date();
+    }
+
     // 获取系统当前时间(时间戳)
     public static int getCurrentTimeStamp() {
         return (int) (System.currentTimeMillis() / 1000);
@@ -27,6 +31,16 @@ public class Utility {
     public static String fmtYmdHms(int timestamp) {
         long ts = ((long) timestamp) * 1000;
         return FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss").format(ts);
+    }
+
+
+    public static String fmtDate(Date date) {
+        if (date == null) {
+            return "";
+        }
+
+        return FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss").format(date);
+
     }
 
 

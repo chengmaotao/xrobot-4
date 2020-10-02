@@ -18,9 +18,5 @@ public class ErrorCode {
 
     public static final int ERROR_CODE_5 = 5;
 
-    public static final int ERROR_CODE_7 = 7;
-    public static final int ERROR_CODE_8 = 8;
-    public static final int ERROR_CODE_9 = 9;
 
-    public static final int ERROR_CODE_10 = 10;
 }

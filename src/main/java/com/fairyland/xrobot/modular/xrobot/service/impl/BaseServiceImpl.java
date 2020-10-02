@@ -8,9 +8,12 @@ import com.fairyland.xrobot.framework.security.service.TokenService;
 import com.fairyland.xrobot.modular.system.domain.SysUser;
 import com.fairyland.xrobot.modular.xrobot.exception.XRobotException;
 import com.fairyland.xrobot.modular.xrobot.service.BaseService;
+import com.fairyland.xrobot.modular.xrobot.utils.base62.NumberUtil;
+import com.fairyland.xrobot.modular.xrobot.utils.base62.SnowflakeIdWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,6 +26,12 @@ import org.springframework.stereotype.Service;
 public class BaseServiceImpl implements BaseService {
 
     private Logger logger = LoggerFactory.getLogger(BaseServiceImpl.class);
+
+    @Value("${workerId}")
+    private long workerId;
+
+    @Value("${datacenterId}")
+    private long datacenterId;
 
     @Autowired
     private TokenService tokenService;
@@ -39,5 +48,25 @@ public class BaseServiceImpl implements BaseService {
         }
 
         return user;
+    }
+
+
+    public String getSerializeVal() {
+
+        try {
+            SnowflakeIdWorker idWorker = SnowflakeIdWorker.getInstance();
+            idWorker.setWorker(workerId, datacenterId);
+
+            long id = idWorker.nextId();
+
+            String serialize = NumberUtil.encode58(id, 0);
+
+            return serialize;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            logger.error("生成唯一标识 错误1{}", ex);
+            throw new XRobotException(ErrorCode.SYS_FAIL);
+        }
+
     }
 }
