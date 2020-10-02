@@ -1,5 +1,6 @@
 package com.fairyland.xrobot.modular.xrobot.utils;
 
+import com.fairyland.xrobot.common.utils.SecurityUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 
@@ -86,16 +87,10 @@ public class Utility {
 
 
     public static void main(String[] args) {
-        // System.out.println(isDocumentaryTimeout(checkTradeTimeFormat("2020-05-28 10:14"), 30, new Date()));
 
+        String pwd = "admin";
 
-/*        Date date = getyyyyMMddHHmmss("2020-05-31 00:00:00");
-
-        System.out.println(date);
-
-        System.out.println(date.getTime());
-
-        System.out.println(date.getTime() / 1000);*/
+        System.out.println(SecurityUtils.encryptPassword(pwd));
 
 
     }

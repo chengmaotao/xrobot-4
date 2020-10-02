@@ -21,7 +21,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 public class XRobotApplication {
     public static void main(String[] args) {
         SpringApplication.run(XRobotApplication.class, args);
-        log.info("。。。。。。【shenzen后台管理服务启动成功】。。。。。。");
+        log.info("。。。。。。【后台管理服务启动成功】。。。。。。");
     }
 
     @Bean
