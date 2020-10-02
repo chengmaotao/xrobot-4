@@ -5,6 +5,7 @@ import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroup;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.PageResult;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
 
 import java.util.List;
 
@@ -38,4 +39,6 @@ public interface XrobotService {
     List<DeviceGroupMembersInitResp> saveDeviceGroupMembersInit(DeviceGroupMembersInitReq paramReq);
 
     void saveDeviceGroupMembers(DeviceGroupMembersReq paramReq);
+
+    QRCodeResp getQRCodeJsonById(DelDeviceReq paramReq);
 }

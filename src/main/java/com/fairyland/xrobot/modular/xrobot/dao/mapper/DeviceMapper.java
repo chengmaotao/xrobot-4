@@ -5,6 +5,7 @@ import com.fairyland.xrobot.modular.xrobot.domain.DeviceExample;
 import java.util.List;
 
 import com.fairyland.xrobot.modular.xrobot.domain.req.DeviceListReq;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
 import org.apache.ibatis.annotations.Param;
 
 public interface DeviceMapper {
@@ -97,4 +98,6 @@ public interface DeviceMapper {
     int updateByPrimaryKey(Device record);
 
     List<Device> deviceList(DeviceListReq paramReq);
+
+    QRCodeResp getQRCodeJsonById(Long id);
 }

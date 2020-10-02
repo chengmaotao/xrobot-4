@@ -12,6 +12,7 @@ import com.fairyland.xrobot.modular.xrobot.domain.req.DeviceGroupMembersReq;
 import com.fairyland.xrobot.modular.xrobot.domain.req.DeviceListReq;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -222,5 +223,10 @@ public class XrobotDaoImpl implements XrobotDao {
 
         deviceGroupMembersMapper.batchInsertData(params);
 
+    }
+
+    @Override
+    public QRCodeResp getQRCodeJsonById(Long id) {
+        return deviceMapper.getQRCodeJsonById(id);
     }
 }

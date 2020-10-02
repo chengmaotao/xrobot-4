@@ -517,4 +517,19 @@
           order by create_date desc
   </select>
 
+
+  <select id="getQRCodeJsonById" parameterType="java.lang.Long" resultType="com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp">
+      SELECT
+          phone,
+          account,
+          PASSWORD AS "password",
+          account1,
+          password1
+      FROM
+          c_device
+      WHERE
+         id = #{id}
+
+  </select>
+
 </mapper>

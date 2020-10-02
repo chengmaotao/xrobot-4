@@ -8,6 +8,7 @@ import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroup;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.PageResult;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
 import com.fairyland.xrobot.modular.xrobot.exception.BusinessException;
 import com.fairyland.xrobot.modular.xrobot.exception.XRobotException;
 import com.fairyland.xrobot.modular.xrobot.service.XrobotService;
@@ -511,6 +512,36 @@ public class XrobotController {
         } catch (BusinessException ex) {
             logger.warn("BusinessException={}", ex);
             webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
+
+    /**
+     * @Description: 根据唯一标识 生成json 字符串
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/2 15:59
+     */
+    @RequestMapping(value = "/getQRCodeJsonById")
+    @PreAuthorize("@ss.hasPermi('device:list')")
+    public AjaxResult getQRCodeJsonById(@RequestBody DelDeviceReq paramReq) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            QRCodeResp resp = xrobotService.getQRCodeJsonById(paramReq);
+
+            webResponse = AjaxResult.success(resp);
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
         } catch (Exception ex) {
             logger.error("Exception={}", ex);
             webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));

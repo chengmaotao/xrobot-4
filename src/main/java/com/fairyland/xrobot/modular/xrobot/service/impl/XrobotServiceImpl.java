@@ -14,6 +14,7 @@ import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.PageResult;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
 import com.fairyland.xrobot.modular.xrobot.exception.BusinessException;
 import com.fairyland.xrobot.modular.xrobot.exception.XRobotException;
 import com.fairyland.xrobot.modular.xrobot.service.XrobotService;
@@ -348,5 +349,14 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         xrobotDao.saveDeviceGroupMembers(paramReq);
 
 
+    }
+
+    @Override
+    public QRCodeResp getQRCodeJsonById(DelDeviceReq paramReq) {
+        logger.info("getDeviceInfoById paramReq = {}", paramReq);
+
+        paramReq.validate();
+
+        return xrobotDao.getQRCodeJsonById(paramReq.getId());
     }
 }
