@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.fairyland.xrobot.modular.xrobot.autoxit.server.core.Options;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.Options;
 
 public class Session implements Serializable {
 	// private final static Logger log = LoggerFactory.getLogger(Session.class);

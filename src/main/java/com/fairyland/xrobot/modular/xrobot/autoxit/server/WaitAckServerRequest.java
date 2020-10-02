@@ -3,8 +3,8 @@ package com.fairyland.xrobot.modular.xrobot.autoxit.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fairyland.xrobot.modular.xrobot.autoxit.server.core.Message;
-import com.fairyland.xrobot.modular.xrobot.autoxit.server.core.WaitAckRequest;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.Message;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.WaitAckRequest;
 
 public class WaitAckServerRequest implements WaitAckRequest{
 	private final static Logger log = LoggerFactory.getLogger(WaitAckServerRequest.class);

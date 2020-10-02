@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fairyland.xrobot.modular.xrobot.autoxit.server.core.Options;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.Options;
 
 import io.netty.channel.Channel;
 

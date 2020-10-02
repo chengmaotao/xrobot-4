@@ -1,7 +1,7 @@
 package com.fairyland.xrobot.modular.xrobot.autoxit.server;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fairyland.xrobot.modular.xrobot.autoxit.server.core.*;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.*;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
