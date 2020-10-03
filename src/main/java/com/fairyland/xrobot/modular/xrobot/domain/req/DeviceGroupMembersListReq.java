@@ -14,6 +14,16 @@ public class DeviceGroupMembersListReq extends PageRequest implements Serializab
 
     private String groupname; // 分组名称
 
+    private String currentUser;
+
+    public String getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(String currentUser) {
+        this.currentUser = currentUser;
+    }
+
     public String getGroupid() {
         return groupid;
     }

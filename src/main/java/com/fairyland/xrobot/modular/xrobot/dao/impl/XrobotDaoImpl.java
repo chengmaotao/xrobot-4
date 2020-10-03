@@ -7,10 +7,7 @@ import com.fairyland.xrobot.modular.xrobot.dao.mapper.DeviceGroupMapper;
 import com.fairyland.xrobot.modular.xrobot.dao.mapper.DeviceGroupMembersMapper;
 import com.fairyland.xrobot.modular.xrobot.dao.mapper.DeviceMapper;
 import com.fairyland.xrobot.modular.xrobot.domain.*;
-import com.fairyland.xrobot.modular.xrobot.domain.req.DeviceGroupListReq;
-import com.fairyland.xrobot.modular.xrobot.domain.req.DeviceGroupMembersListReq;
-import com.fairyland.xrobot.modular.xrobot.domain.req.DeviceGroupMembersReq;
-import com.fairyland.xrobot.modular.xrobot.domain.req.DeviceListReq;
+import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
@@ -63,15 +60,17 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public int updateDevice(Device record) {
-        return deviceMapper.updateByPrimaryKey(record);
+    public int updateDevice(Device record, DeviceExample example) {
+
+
+        return deviceMapper.updateByExample(record, example);
     }
 
     @Override
-    public List<Device> getDeviceListByDeviceSN(String devicesn) {
+    public List<Device> getDeviceListByDeviceSN(String devicesn, String userName) {
 
         DeviceExample example = new DeviceExample();
-        example.createCriteria().andDevicesnEqualTo(devicesn).andDelFlagEqualTo(XRobotCode.DEL_0);
+        example.createCriteria().andDevicesnEqualTo(devicesn).andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(userName);
 
         List<Device> list = deviceMapper.selectByExample(example);
 
@@ -79,20 +78,15 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public List<Device> getDeviceListByPhone(String phone) {
+    public List<Device> getDeviceListByPhone(String phone, String userName) {
         DeviceExample example = new DeviceExample();
-        example.createCriteria().andPhoneEqualTo(phone).andDelFlagEqualTo(XRobotCode.DEL_0);
+        example.createCriteria().andPhoneEqualTo(phone).andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(userName);
 
         List<Device> list = deviceMapper.selectByExample(example);
 
         return list;
     }
 
-    @Override
-    public void delDevice(Device record) {
-
-        deviceMapper.updateByPrimaryKeySelective(record);
-    }
 
     @Override
     public void resetDeviceState(DeviceExample example, Device record) {
@@ -100,8 +94,18 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public Device getDeviceInfoById(Long id) {
-        return deviceMapper.selectByPrimaryKey(id);
+    public Device getDeviceInfoById(Long id, String userName) {
+
+        DeviceExample example = new DeviceExample();
+        example.createCriteria().andIdEqualTo(id).andCreateByEqualTo(userName).andDelFlagEqualTo(XRobotCode.DEL_0);
+
+        List<Device> list = deviceMapper.selectByExample(example);
+
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        return list.get(0);
+
     }
 
     @Override
@@ -120,15 +124,24 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public DeviceGroup getDeviceGroupInfoById(Long id) {
-        return deviceGroupMapper.selectByPrimaryKey(id);
+    public DeviceGroup getDeviceGroupInfoById(Long id, String userName) {
+
+        DeviceGroupExample example = new DeviceGroupExample();
+        example.createCriteria().andIdEqualTo(id).andCreateByEqualTo(userName).andDelFlagEqualTo(XRobotCode.DEL_0);
+
+        List<DeviceGroup> list = deviceGroupMapper.selectByExample(example);
+
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        return list.get(0);
     }
 
     @Override
-    public List<DeviceGroup> getDeviceGroupListByName(String groupname) {
+    public List<DeviceGroup> getDeviceGroupListByName(String groupname, String userName) {
 
         DeviceGroupExample example = new DeviceGroupExample();
-        example.createCriteria().andGroupnameEqualTo(groupname).andDelFlagEqualTo(XRobotCode.DEL_0);
+        example.createCriteria().andGroupnameEqualTo(groupname).andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(userName);
 
         return deviceGroupMapper.selectByExample(example);
     }
@@ -139,20 +152,22 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public int updateDeviceGroup(DeviceGroup record) {
-        return deviceGroupMapper.updateByPrimaryKeySelective(record);
+    public int updateDeviceGroup(DeviceGroup record, DeviceGroupExample example) {
+
+        return deviceGroupMapper.updateByExampleSelective(record, example);
     }
 
     @Override
-    public void delDeviceGroup(DeviceGroup record) {
-        deviceGroupMapper.updateByPrimaryKeySelective(record);
+    public void delDeviceGroup(DeviceGroup record, DeviceGroupExample example) {
+
+        deviceGroupMapper.updateByExampleSelective(record, example);
     }
 
     @Override
-    public List<Device> deviceAllList() {
+    public List<Device> deviceAllList(String userName) {
 
         DeviceExample example = new DeviceExample();
-        example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0);
+        example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(userName);
         example.setOrderByClause(" create_date desc");
         List<Device> list = deviceMapper.selectByExample(example);
 
@@ -163,9 +178,9 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public List<DeviceGroup> deviceGroupAllList() {
+    public List<DeviceGroup> deviceGroupAllList(String userName) {
         DeviceGroupExample example = new DeviceGroupExample();
-        example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0);
+        example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(userName);
         example.setOrderByClause(" create_date desc");
         List<DeviceGroup> list = deviceGroupMapper.selectByExample(example);
 
@@ -191,13 +206,18 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public void delDeviceGroupMembers(Long id) {
-        deviceGroupMembersMapper.deleteByPrimaryKey(id);
+    public void delDeviceGroupMembers(Long id,String userName) {
+
+        DeviceGroupMembersExample example = new DeviceGroupMembersExample();
+        example.createCriteria().andIdEqualTo(id).andCreateByEqualTo(userName);
+
+        deviceGroupMembersMapper.deleteByExample(example);
     }
 
     @Override
-    public List<DeviceGroupMembersInitResp> saveDeviceGroupMembersInit(String groupid) {
-        return deviceGroupMembersMapper.saveDeviceGroupMembersInit(groupid);
+    public List<DeviceGroupMembersInitResp> saveDeviceGroupMembersInit(DeviceGroupMembersInitReq paramReq) {
+
+        return deviceGroupMembersMapper.saveDeviceGroupMembersInit(paramReq);
     }
 
     @Override
@@ -205,7 +225,7 @@ public class XrobotDaoImpl implements XrobotDao {
     public void saveDeviceGroupMembers(DeviceGroupMembersReq paramReq) {
 
         DeviceGroupMembersExample delexample = new DeviceGroupMembersExample();
-        delexample.createCriteria().andGroupidEqualTo(paramReq.getGroupid());
+        delexample.createCriteria().andGroupidEqualTo(paramReq.getGroupid()).andCreateByEqualTo(paramReq.getUserName());
 
         deviceGroupMembersMapper.deleteByExample(delexample);
 
@@ -227,8 +247,9 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public QRCodeResp getQRCodeJsonById(Long id) {
-        return deviceMapper.getQRCodeJsonById(id);
+    public QRCodeResp getQRCodeJsonById(DelDeviceReq paramReq) {
+
+        return deviceMapper.getQRCodeJsonById(paramReq);
     }
 
     @Override

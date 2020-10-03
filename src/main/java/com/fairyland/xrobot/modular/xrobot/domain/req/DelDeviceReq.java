@@ -17,6 +17,16 @@ public class DelDeviceReq {
 
     private Long id; //
 
+    private String currentUser;
+
+    public String getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(String currentUser) {
+        this.currentUser = currentUser;
+    }
+
     public void validate() {
 
         if (id == null) {

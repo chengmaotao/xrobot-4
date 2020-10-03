@@ -1,5 +1,6 @@
 package com.fairyland.xrobot.modular.xrobot.autoxit.server;
 
+import io.netty.channel.ChannelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@ChannelHandler.Sharable
 public class ServerLinkerHandlerAdapter extends ChannelInboundHandlerAdapter {
 	private final static Logger log = LoggerFactory.getLogger(ServerLinkerHandlerAdapter.class);
 

@@ -5,6 +5,7 @@ import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroupMembersExample;
 import java.util.List;
 import java.util.Map;
 
+import com.fairyland.xrobot.modular.xrobot.domain.req.DeviceGroupMembersInitReq;
 import com.fairyland.xrobot.modular.xrobot.domain.req.DeviceGroupMembersListReq;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
@@ -101,7 +102,7 @@ public interface DeviceGroupMembersMapper {
 
     List<DeviceGroupMembersListResp> deviceGroupMembersList(DeviceGroupMembersListReq paramReq);
 
-    List<DeviceGroupMembersInitResp> saveDeviceGroupMembersInit(String groupid);
+    List<DeviceGroupMembersInitResp> saveDeviceGroupMembersInit(DeviceGroupMembersInitReq paramReq);
 
     void batchInsertData(Map<String, Object> params);
 }

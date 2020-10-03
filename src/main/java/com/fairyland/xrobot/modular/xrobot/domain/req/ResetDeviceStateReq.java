@@ -34,6 +34,16 @@ public class ResetDeviceStateReq {
 
     private Integer login1; // 登录方式(0:账号密码 1:手机号短信验证码)
 
+    private String currentUser;
+
+    public String getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(String currentUser) {
+        this.currentUser = currentUser;
+    }
+
     public void validate() {
 
         if (id == null) {

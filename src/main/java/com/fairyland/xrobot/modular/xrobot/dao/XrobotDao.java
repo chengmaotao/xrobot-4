@@ -4,10 +4,8 @@ import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClinetLoginReq;
 import com.fairyland.xrobot.modular.xrobot.domain.Device;
 import com.fairyland.xrobot.modular.xrobot.domain.DeviceExample;
 import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroup;
-import com.fairyland.xrobot.modular.xrobot.domain.req.DeviceGroupListReq;
-import com.fairyland.xrobot.modular.xrobot.domain.req.DeviceGroupMembersListReq;
-import com.fairyland.xrobot.modular.xrobot.domain.req.DeviceGroupMembersReq;
-import com.fairyland.xrobot.modular.xrobot.domain.req.DeviceListReq;
+import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroupExample;
+import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
@@ -20,43 +18,41 @@ public interface XrobotDao {
 
     int insertDevice(Device record);
 
-    int updateDevice(Device record);
+    int updateDevice(Device record,DeviceExample example);
 
-    List<Device> getDeviceListByDeviceSN(String devicesn);
+    List<Device> getDeviceListByDeviceSN(String devicesn,String userName);
 
-    List<Device> getDeviceListByPhone(String phone);
-
-    void delDevice(Device record);
+    List<Device> getDeviceListByPhone(String phone,String userName);
 
     void resetDeviceState(DeviceExample example, Device record);
 
-    Device getDeviceInfoById(Long id);
+    Device getDeviceInfoById(Long id,String userName);
 
     List<DeviceGroup> deviceGroupList(DeviceGroupListReq paramReq);
 
-    DeviceGroup getDeviceGroupInfoById(Long id);
+    DeviceGroup getDeviceGroupInfoById(Long id,String userName);
 
-    List<DeviceGroup> getDeviceGroupListByName(String groupname);
+    List<DeviceGroup> getDeviceGroupListByName(String groupname,String userName);
 
     int insertDeviceGroup(DeviceGroup record);
 
-    int updateDeviceGroup(DeviceGroup record);
+    int updateDeviceGroup(DeviceGroup record,DeviceGroupExample example);
 
-    void delDeviceGroup(DeviceGroup record);
+    void delDeviceGroup(DeviceGroup record, DeviceGroupExample example);
 
-    List<Device> deviceAllList();
+    List<Device> deviceAllList(String userName);
 
-    List<DeviceGroup> deviceGroupAllList();
+    List<DeviceGroup> deviceGroupAllList(String userName);
 
     List<DeviceGroupMembersListResp> deviceGroupMembersList(DeviceGroupMembersListReq paramReq);
 
-    void delDeviceGroupMembers(Long id);
+    void delDeviceGroupMembers(Long id,String userName);
 
-    List<DeviceGroupMembersInitResp> saveDeviceGroupMembersInit(String groupid);
+    List<DeviceGroupMembersInitResp> saveDeviceGroupMembersInit(DeviceGroupMembersInitReq paramReq);
 
     void saveDeviceGroupMembers(DeviceGroupMembersReq paramReq);
 
-    QRCodeResp getQRCodeJsonById(Long id);
+    QRCodeResp getQRCodeJsonById(DelDeviceReq paramReq);
 
     Device checkClinetLogin(ClinetLoginReq paramReq);
 }

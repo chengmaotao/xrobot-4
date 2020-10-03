@@ -499,6 +499,7 @@
           c_device
       where
           del_flag = '0'
+          and create_by = #{currentUser}
           <if test="devicesn != null and devicesn != ''">
             and deviceSN = #{devicesn}
           </if>
@@ -518,7 +519,7 @@
   </select>
 
 
-  <select id="getQRCodeJsonById" parameterType="java.lang.Long" resultType="com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp">
+  <select id="getQRCodeJsonById" parameterType="com.fairyland.xrobot.modular.xrobot.domain.req.DelDeviceReq" resultType="com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp">
       SELECT
           token,
           phone,
@@ -531,6 +532,8 @@
           c_device
       WHERE
          id = #{id}
+        and create_by = #{currentUser}
+        and del_flag = '0'
 
   </select>
 

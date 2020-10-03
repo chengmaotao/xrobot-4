@@ -248,13 +248,6 @@ public class LinkerServer {
 
                     ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("5", "请求必填参数不能为空").toJSONString());
                     responseMessage(ctx, buffer);
-
-                    try {
-                        ctx.channel().close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
                     return;
                 }
 

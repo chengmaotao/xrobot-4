@@ -18,6 +18,16 @@ public class DeviceGroupMembersInitReq {
 
     private String groupid;  // 分组id
 
+    private String currentUser;
+
+    public String getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(String currentUser) {
+        this.currentUser = currentUser;
+    }
+
     public void validate() {
 
         if (StringUtils.isEmpty(groupid)) {

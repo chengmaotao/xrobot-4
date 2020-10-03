@@ -10,6 +10,7 @@ import com.fairyland.xrobot.modular.xrobot.dao.XrobotDao;
 import com.fairyland.xrobot.modular.xrobot.domain.Device;
 import com.fairyland.xrobot.modular.xrobot.domain.DeviceExample;
 import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroup;
+import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroupExample;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
@@ -50,6 +51,8 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
     public PageResult deviceList(DeviceListReq paramReq) {
         logger.info("deviceList req = {}", paramReq);
 
+        paramReq.setCurrentUser(getCurrentUser().getUserName());
+
         List<Device> list = xrobotDao.deviceList(paramReq);
 
         PageInfo<Device> pageInfo = new PageInfo<>(list);
@@ -86,14 +89,14 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
 
             // 判断 终端设备应用编号 是否已经存在
-            lists = xrobotDao.getDeviceListByDeviceSN(paramReq.getDevicesn());
+            lists = xrobotDao.getDeviceListByDeviceSN(paramReq.getDevicesn(), user.getUserName());
             if (lists != null && lists.size() > 0) {
                 logger.warn("SaveDeviceReq req = {},终端设备应用编号 已经存在,不能重复添加", paramReq);
                 throw new BusinessException("终端设备应用编号: " + paramReq.getDevicesn() + " 已经存在，不能重复添加。");
             }
 
             // 判断 手机号 是否已经存在
-            lists = xrobotDao.getDeviceListByPhone(paramReq.getPhone());
+            lists = xrobotDao.getDeviceListByPhone(paramReq.getPhone(), user.getUserName());
             if (lists != null && lists.size() > 0) {
                 logger.warn("SaveDeviceReq req = {},终端设备手机号 已经存在,不能重复添加", paramReq);
                 throw new BusinessException("终端设备手机号码: " + paramReq.getPhone() + " 已经存在，不能重复添加。");
@@ -108,28 +111,29 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         } else {
             // 修改
 
-            Device oldInfo = xrobotDao.getDeviceInfoById(paramReq.getId());
-            if (!StringUtils.equals(oldInfo.getDevicesn(), paramReq.getDevicesn())) {
-                lists = xrobotDao.getDeviceListByDeviceSN(paramReq.getDevicesn());
+            Device oldInfo = xrobotDao.getDeviceInfoById(paramReq.getId(), user.getUserName());
+            if (oldInfo != null && !StringUtils.equals(oldInfo.getDevicesn(), paramReq.getDevicesn())) {
+                lists = xrobotDao.getDeviceListByDeviceSN(paramReq.getDevicesn(), user.getUserName());
                 if (lists != null && lists.size() > 0) {
                     logger.warn("SaveDeviceReq2 req = {},终端设备应用编号 已经存在,不能重复添加", paramReq);
                     throw new BusinessException("终端设备应用编号: " + paramReq.getDevicesn() + " 已经存在，不能重复添加。");
                 }
             }
 
-            if (!StringUtils.equals(oldInfo.getPhone(), paramReq.getPhone())) {
+            if (oldInfo != null && !StringUtils.equals(oldInfo.getPhone(), paramReq.getPhone())) {
                 // 判断 手机号 是否已经存在
-                lists = xrobotDao.getDeviceListByPhone(paramReq.getPhone());
+                lists = xrobotDao.getDeviceListByPhone(paramReq.getPhone(), user.getUserName());
                 if (lists != null && lists.size() > 0) {
                     logger.warn("SaveDeviceReq2 req = {},终端设备手机号 已经存在,不能重复添加", paramReq);
                     throw new BusinessException("终端设备手机号码: " + paramReq.getPhone() + " 已经存在，不能重复添加。");
                 }
             }
 
-
-            record.setId(paramReq.getId());
             record.preUpdate(user);
-            num = xrobotDao.updateDevice(record);
+
+            DeviceExample example = new DeviceExample();
+            example.createCriteria().andIdEqualTo(paramReq.getId()).andCreateByEqualTo(user.getUserName());
+            num = xrobotDao.updateDevice(record,example);
 
         }
 
@@ -158,12 +162,14 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         SysUser user = getCurrentUser();
 
+        DeviceExample example = new DeviceExample();
+        example.createCriteria().andIdEqualTo(paramReq.getId()).andCreateByEqualTo(user.getUserName());
+
         Device record = new Device();
-        record.setId(paramReq.getId());
         record.setDelFlag(XRobotCode.DEL_1);
         record.preUpdate(user);
 
-        xrobotDao.delDevice(record);
+        xrobotDao.updateDevice(record,example);
     }
 
     @Override
@@ -176,7 +182,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
 
         DeviceExample example = new DeviceExample();
-        example.createCriteria().andIdEqualTo(paramReq.getId()).andDeviceidEqualTo(paramReq.getDeviceid()).andPhoneEqualTo(paramReq.getPhone());
+        example.createCriteria().andIdEqualTo(paramReq.getId()).andDeviceidEqualTo(paramReq.getDeviceid()).andPhoneEqualTo(paramReq.getPhone()).andCreateByEqualTo(user.getUserName());
 
 
         Device record = new Device();
@@ -199,13 +205,14 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         paramReq.validate();
 
-        return xrobotDao.getDeviceInfoById(paramReq.getId());
+        return xrobotDao.getDeviceInfoById(paramReq.getId(), getCurrentUser().getUserName());
     }
 
     @Override
     public PageResult deviceGroupList(DeviceGroupListReq paramReq) {
         logger.info("deviceGroupList req = {}", paramReq);
 
+        paramReq.setCurrentUser(getCurrentUser().getUserName());
         List<DeviceGroup> list = xrobotDao.deviceGroupList(paramReq);
 
         PageInfo<DeviceGroup> pageInfo = new PageInfo<>(list);
@@ -220,7 +227,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         paramReq.validate();
 
-        return xrobotDao.getDeviceGroupInfoById(paramReq.getId());
+        return xrobotDao.getDeviceGroupInfoById(paramReq.getId(),getCurrentUser().getUserName());
     }
 
     @Override
@@ -240,7 +247,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         if (paramReq.getId() == null) {
 
             // 判断 分组名称 是否已经存在
-            lists = xrobotDao.getDeviceGroupListByName(paramReq.getGroupname());
+            lists = xrobotDao.getDeviceGroupListByName(paramReq.getGroupname(),user.getUserName());
             if (lists != null && lists.size() > 0) {
                 logger.warn("SaveDeviceReq req = {},终端设备分组名称 已经存在,不能重复添加", paramReq);
                 throw new BusinessException("终端设备分组名称: " + paramReq.getGroupname() + " 已经存在，不能重复添加。");
@@ -254,18 +261,21 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         } else {
             // 修改
 
-            DeviceGroup oldInfo = xrobotDao.getDeviceGroupInfoById(paramReq.getId());
-            if (!StringUtils.equals(oldInfo.getGroupname(), paramReq.getGroupname())) {
-                lists = xrobotDao.getDeviceGroupListByName(paramReq.getGroupname());
+            DeviceGroup oldInfo = xrobotDao.getDeviceGroupInfoById(paramReq.getId(),user.getUserName());
+            if (oldInfo != null && !StringUtils.equals(oldInfo.getGroupname(), paramReq.getGroupname())) {
+                lists = xrobotDao.getDeviceGroupListByName(paramReq.getGroupname(),user.getUserName());
                 if (lists != null && lists.size() > 0) {
                     logger.warn("SaveDeviceReq2 req = {},终端设备分组名称 已经存在,不能重复添加", paramReq);
                     throw new BusinessException("终端设备分组名称: " + paramReq.getGroupname() + " 已经存在，不能重复添加。");
                 }
             }
 
-            record.setId(paramReq.getId());
             record.preUpdate(user);
-            num = xrobotDao.updateDeviceGroup(record);
+
+            DeviceGroupExample example = new DeviceGroupExample();
+            example.createCriteria().andIdEqualTo(paramReq.getId()).andCreateByEqualTo(user.getUserName());
+
+            num = xrobotDao.updateDeviceGroup(record,example);
 
         }
 
@@ -283,25 +293,30 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         SysUser user = getCurrentUser();
 
+        DeviceGroupExample example = new DeviceGroupExample();
+        example.createCriteria().andIdEqualTo(paramReq.getId()).andCreateByEqualTo(user.getUserName());
+
         DeviceGroup record = new DeviceGroup();
-        record.setId(paramReq.getId());
         record.setDelFlag(XRobotCode.DEL_1);
         record.preUpdate(user);
 
-        xrobotDao.delDeviceGroup(record);
+        xrobotDao.updateDeviceGroup(record,example);
     }
 
     @Override
     public List<Device> deviceAllList() {
 
-        List<Device> list = xrobotDao.deviceAllList();
+        SysUser user = getCurrentUser();
 
+        List<Device> list = xrobotDao.deviceAllList(user.getUserName());
         return list;
     }
 
     @Override
     public List<DeviceGroup> deviceGroupAllList() {
-        List<DeviceGroup> list = xrobotDao.deviceGroupAllList();
+
+
+        List<DeviceGroup> list = xrobotDao.deviceGroupAllList(getCurrentUser().getUserName());
 
         return list;
     }
@@ -311,6 +326,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         logger.info("deviceGroupMembersList req = {}", paramReq);
 
+        paramReq.setCurrentUser(getCurrentUser().getUserName());
         List<DeviceGroupMembersListResp> list = xrobotDao.deviceGroupMembersList(paramReq);
 
         PageInfo<DeviceGroupMembersListResp> pageInfo = new PageInfo<>(list);
@@ -325,7 +341,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         paramReq.validate();
 
-        xrobotDao.delDeviceGroupMembers(paramReq.getId());
+        xrobotDao.delDeviceGroupMembers(paramReq.getId(),getCurrentUser().getUserName());
     }
 
     @Override
@@ -334,7 +350,8 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         paramReq.validate();
 
-        return xrobotDao.saveDeviceGroupMembersInit(paramReq.getGroupid());
+        paramReq.setCurrentUser(getCurrentUser().getUserName());
+        return xrobotDao.saveDeviceGroupMembersInit(paramReq);
 
     }
 
@@ -357,6 +374,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         paramReq.validate();
 
-        return xrobotDao.getQRCodeJsonById(paramReq.getId());
+        paramReq.setCurrentUser(getCurrentUser().getUserName());
+        return xrobotDao.getQRCodeJsonById(paramReq);
     }
 }

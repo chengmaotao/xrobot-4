@@ -20,6 +20,15 @@ public class DeviceListReq extends PageRequest implements Serializable {
 
     private Integer state; // 0:未连接 1:正常（连接并登录成功）98:账号禁用 99:账号1禁用 100:账号全部禁用 127:暂停使用
 
+    private String currentUser;
+
+    public String getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(String currentUser) {
+        this.currentUser = currentUser;
+    }
 
     public String getDevicesn() {
         return devicesn;
