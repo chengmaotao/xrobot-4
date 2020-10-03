@@ -9,8 +9,16 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ServerLinkerChannelInitializer extends ChannelInitializer<SocketChannel> {
+
+
+	@Autowired
+	private ServerLinkerHandlerAdapter serverLinkerHandlerAdapter;
+
 	@Override
 	protected void initChannel(SocketChannel ch) throws Exception {
 		ChannelPipeline pipeline = ch.pipeline();
@@ -22,6 +30,6 @@ public class ServerLinkerChannelInitializer extends ChannelInitializer<SocketCha
 				TimeUnit.SECONDS));//// 读写超时
 		
 		pipeline.addLast(new CustomByteToMessageDecoder());
-		pipeline.addLast(new ServerLinkerHandlerAdapter());
+		pipeline.addLast(serverLinkerHandlerAdapter);
 	}
 }

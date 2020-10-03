@@ -44,6 +44,9 @@ public class LinkerServer {
     @Autowired
     private AutoxitService autoxitService;
 
+    @Autowired
+    private ServerLinkerChannelInitializer serverLinkerChannelInitializer;
+
     public void start() {
         EventLoopGroup parentGroup = new NioEventLoopGroup();
         EventLoopGroup childGroup = new NioEventLoopGroup();
@@ -52,7 +55,7 @@ public class LinkerServer {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
 
             serverBootstrap.group(parentGroup, childGroup).channel(NioServerSocketChannel.class)
-                    .handler(new LoggingHandler(LogLevel.INFO)).childHandler(new ServerLinkerChannelInitializer());
+                    .handler(new LoggingHandler(LogLevel.INFO)).childHandler(serverLinkerChannelInitializer);
 
             serverBootstrap.option(ChannelOption.SO_BACKLOG, Options.SO_BACKLOG);
             serverBootstrap.childOption(ChannelOption.TCP_NODELAY, true);
