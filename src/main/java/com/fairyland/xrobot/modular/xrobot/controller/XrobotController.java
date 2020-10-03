@@ -1,5 +1,6 @@
 package com.fairyland.xrobot.modular.xrobot.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.fairyland.xrobot.common.constant.ErrorCode;
 import com.fairyland.xrobot.common.utils.MessageUtils;
 import com.fairyland.xrobot.framework.web.domain.AjaxResult;
@@ -12,16 +13,20 @@ import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
 import com.fairyland.xrobot.modular.xrobot.exception.BusinessException;
 import com.fairyland.xrobot.modular.xrobot.exception.XRobotException;
 import com.fairyland.xrobot.modular.xrobot.service.XrobotService;
+import com.fairyland.xrobot.modular.xrobot.utils.QrCodeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: fairyland->XrobotController
@@ -41,6 +46,12 @@ public class XrobotController {
     @Autowired
     private XrobotService xrobotService;
 
+
+    @Value("${qrcodew}")
+    private int qrcodew;
+
+    @Value("${qrcodeh}")
+    private int qrcodeh;
 
     /**
      * @Description: 终端设备列表 （带分页的）
@@ -521,7 +532,6 @@ public class XrobotController {
     }
 
 
-
     /**
      * @Description: 根据唯一标识 生成json 字符串
      * @Param:
@@ -538,7 +548,16 @@ public class XrobotController {
 
             QRCodeResp resp = xrobotService.getQRCodeJsonById(paramReq);
 
-            webResponse = AjaxResult.success(resp);
+            String contents = JSON.toJSONString(resp);//关键
+
+            String qrcodestr = QrCodeUtils.creatRrCode(contents, qrcodew, qrcodeh);
+
+            Map<String, Object> realData = new HashMap<>();
+            realData.put("jsonData", resp);
+            realData.put("qrcode", qrcodestr);
+
+            webResponse = AjaxResult.success(realData);
+
         } catch (XRobotException ex) {
             logger.warn("XRobotException={}", ex);
             webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
