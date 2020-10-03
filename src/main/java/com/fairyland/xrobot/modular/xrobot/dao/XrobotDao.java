@@ -1,5 +1,6 @@
 package com.fairyland.xrobot.modular.xrobot.dao;
 
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClinetLoginReq;
 import com.fairyland.xrobot.modular.xrobot.domain.Device;
 import com.fairyland.xrobot.modular.xrobot.domain.DeviceExample;
 import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroup;
@@ -56,4 +57,6 @@ public interface XrobotDao {
     void saveDeviceGroupMembers(DeviceGroupMembersReq paramReq);
 
     QRCodeResp getQRCodeJsonById(Long id);
+
+    Device checkClinetLogin(ClinetLoginReq paramReq);
 }

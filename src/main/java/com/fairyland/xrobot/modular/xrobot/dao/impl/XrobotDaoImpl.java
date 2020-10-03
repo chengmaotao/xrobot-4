@@ -1,6 +1,7 @@
 package com.fairyland.xrobot.modular.xrobot.dao.impl;
 
 import com.fairyland.xrobot.common.constant.XRobotCode;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClinetLoginReq;
 import com.fairyland.xrobot.modular.xrobot.dao.XrobotDao;
 import com.fairyland.xrobot.modular.xrobot.dao.mapper.DeviceGroupMapper;
 import com.fairyland.xrobot.modular.xrobot.dao.mapper.DeviceGroupMembersMapper;
@@ -210,16 +211,16 @@ public class XrobotDaoImpl implements XrobotDao {
 
         List<String> deviceids = paramReq.getDeviceids();
 
-        if(deviceids == null || deviceids.isEmpty()){
+        if (deviceids == null || deviceids.isEmpty()) {
             return;
         }
 
-        Map<String,Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
 
-        params.put("groupid",paramReq.getGroupid());
-        params.put("list",deviceids);
-        params.put("nowDate",new Date());
-        params.put("userName",paramReq.getUserName());
+        params.put("groupid", paramReq.getGroupid());
+        params.put("list", deviceids);
+        params.put("nowDate", new Date());
+        params.put("userName", paramReq.getUserName());
 
         deviceGroupMembersMapper.batchInsertData(params);
 
@@ -228,5 +229,19 @@ public class XrobotDaoImpl implements XrobotDao {
     @Override
     public QRCodeResp getQRCodeJsonById(Long id) {
         return deviceMapper.getQRCodeJsonById(id);
+    }
+
+    @Override
+    public Device checkClinetLogin(ClinetLoginReq paramReq) {
+
+        DeviceExample example = new DeviceExample();
+        example.createCriteria().andDevicesnEqualTo(paramReq.getId()).andTokenEqualTo(paramReq.getToken()).andAccountEqualTo(paramReq.getAccount()).andAccount1EqualTo(paramReq.getAccount1()).andPhoneEqualTo(paramReq.getPhone()).andDelFlagEqualTo("0");
+
+        List<Device> list = deviceMapper.selectByExample(example);
+
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        return list.get(0);
     }
 }

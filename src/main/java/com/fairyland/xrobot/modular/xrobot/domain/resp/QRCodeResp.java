@@ -8,14 +8,17 @@ package com.fairyland.xrobot.modular.xrobot.domain.resp;
  **/
 public class QRCodeResp {
 
+    private String token; // 客户端登录token
+
     private String phone; // 终端设备手机号码
 
     private String account; // 目标APP账号(facebook)
     private String password;
 
-
     private String account1; // 目标APP1账号(wsup)
     private String password1;
+
+    private String devicesn; // 终端设备应用编号
 
 
     public String getPhone() {
@@ -58,14 +61,33 @@ public class QRCodeResp {
         this.password1 = password1;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getDevicesn() {
+        return devicesn;
+    }
+
+    public void setDevicesn(String devicesn) {
+        this.devicesn = devicesn;
+    }
+
+
     @Override
     public String toString() {
         return "QRCodeResp{" +
-                "phone='" + phone + '\'' +
+                "token='" + token + '\'' +
+                ", phone='" + phone + '\'' +
                 ", account='" + account + '\'' +
                 ", password='" + password + '\'' +
                 ", account1='" + account1 + '\'' +
                 ", password1='" + password1 + '\'' +
+                ", devicesn='" + devicesn + '\'' +
                 '}';
     }
 }
