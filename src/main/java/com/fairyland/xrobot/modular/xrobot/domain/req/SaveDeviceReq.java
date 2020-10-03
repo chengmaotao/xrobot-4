@@ -34,6 +34,10 @@ public class SaveDeviceReq {
 
     private Integer login1; // 登录方式(0:账号密码 1:手机号短信验证码)
 
+    private String token; // 客户端登录token
+
+    private String remarks; // 备注
+
     private String currentUser;
 
     public String getCurrentUser() {
@@ -46,8 +50,13 @@ public class SaveDeviceReq {
 
     public void validate() {
 
-        if (StringUtils.isEmpty(devicesn) || devicesn.length() > 16) {
-            logger.warn("SaveDeviceReq 终端设备应用编号 devicesn = {} 不正确 超出长度限制16", devicesn);
+        if (StringUtils.isEmpty(token) || token.length() > 32) {
+            logger.warn("SaveDeviceReq 终端设备应用 token = {} 不正确 超出长度限制32", token);
+            throw new XRobotException(ErrorCode.ERROR_CODE_5);
+        }
+
+        if (StringUtils.isEmpty(devicesn) || devicesn.length() > 32) {
+            logger.warn("SaveDeviceReq 终端设备应用编号 devicesn = {} 不正确 超出长度限制32", devicesn);
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
 
@@ -87,8 +96,28 @@ public class SaveDeviceReq {
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
 
+        if (StringUtils.isNotEmpty(remarks) && remarks.length() > 255) {
+            logger.warn("SaveDeviceReq 终端设备应用 备注 remarks = {} 不正确 超出长度限制255", remarks);
+            throw new XRobotException(ErrorCode.ERROR_CODE_5);
+        }
+
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
 
     public Logger getLogger() {
         return logger;
@@ -170,7 +199,6 @@ public class SaveDeviceReq {
         this.login1 = login1;
     }
 
-
     @Override
     public String toString() {
         return "SaveDeviceReq{" +
@@ -183,6 +211,9 @@ public class SaveDeviceReq {
                 ", account1='" + account1 + '\'' +
                 ", password1='" + password1 + '\'' +
                 ", login1=" + login1 +
+                ", token='" + token + '\'' +
+                ", remarks='" + remarks + '\'' +
+                ", currentUser='" + currentUser + '\'' +
                 '}';
     }
 }

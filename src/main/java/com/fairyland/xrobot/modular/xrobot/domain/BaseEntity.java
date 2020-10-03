@@ -3,6 +3,7 @@ package com.fairyland.xrobot.modular.xrobot.domain;
 import com.fairyland.xrobot.common.constant.XRobotCode;
 import com.fairyland.xrobot.modular.system.domain.SysUser;
 import com.fairyland.xrobot.modular.xrobot.utils.Utility;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
@@ -36,6 +37,7 @@ public class BaseEntity {
      *
      * @mbggenerated
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createDate;
 
     /**
@@ -52,6 +54,7 @@ public class BaseEntity {
      *
      * @mbggenerated
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateDate;
 
     /**

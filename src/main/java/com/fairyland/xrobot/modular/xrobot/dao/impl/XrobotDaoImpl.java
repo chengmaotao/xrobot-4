@@ -63,7 +63,7 @@ public class XrobotDaoImpl implements XrobotDao {
     public int updateDevice(Device record, DeviceExample example) {
 
 
-        return deviceMapper.updateByExample(record, example);
+        return deviceMapper.updateByExampleSelective(record, example);
     }
 
     @Override
@@ -90,7 +90,8 @@ public class XrobotDaoImpl implements XrobotDao {
 
     @Override
     public void resetDeviceState(DeviceExample example, Device record) {
-        deviceMapper.updateByExample(record, example);
+
+        deviceMapper.updateByExampleSelective(record, example);
     }
 
     @Override

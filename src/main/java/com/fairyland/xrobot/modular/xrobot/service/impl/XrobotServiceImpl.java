@@ -81,7 +81,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         record.setAccount1(paramReq.getAccount1());
         record.setPassword1(paramReq.getPassword1());
         record.setLogin1(paramReq.getLogin1());
-
+        record.setRemarks(paramReq.getRemarks());
         List<Device> lists = null;
         int num = 0;
 
@@ -104,6 +104,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
             // 新增
             record.setState(0);
+            record.setToken(paramReq.getToken());
             record.setDeviceid(getSerializeVal());
             record.preInsert(user);
             num = xrobotDao.insertDevice(record);
@@ -240,7 +241,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         DeviceGroup record = new DeviceGroup();
         record.setGroupname(paramReq.getGroupname());
-
+        record.setRemarks(paramReq.getRemarks());
         List<DeviceGroup> lists = null;
         int num = 0;
 

@@ -21,13 +21,28 @@ public class SaveDeviceGroupReq {
 
     private String groupname; // 分组名称
 
+    private String remarks; // 备注
+
     public void validate() {
 
         if (StringUtils.isEmpty(groupname) || groupname.length() > 64) {
-            logger.warn("SaveDeviceReq 终端设备应用编号 groupname = {} 不正确 超出长度限制64", groupname);
+            logger.warn("SaveDeviceReq 终端设备应用分组 groupname = {} 不正确 超出长度限制64", groupname);
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
 
+        if (StringUtils.isNotEmpty(remarks) && remarks.length() > 255) {
+            logger.warn("SaveDeviceReq 终端设备应用分组 备注 remarks = {} 不正确 超出长度限制255", remarks);
+            throw new XRobotException(ErrorCode.ERROR_CODE_5);
+        }
+
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 
     public Long getId() {
