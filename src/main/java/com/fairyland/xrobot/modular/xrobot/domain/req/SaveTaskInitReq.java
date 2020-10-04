@@ -1,22 +1,19 @@
 package com.fairyland.xrobot.modular.xrobot.domain.req;
 
-import com.fairyland.xrobot.common.constant.ErrorCode;
-import com.fairyland.xrobot.common.utils.StringUtils;
-import com.fairyland.xrobot.modular.xrobot.exception.XRobotException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @program: fairyland->DelDeviceReq
+ * @program: fairyland->SaveTaskInitReq
  * @description: TODO
  * @author: ctc
- * @create: 2020-10-02 15:03
+ * @create: 2020-10-04 22:29
  **/
-public class DelTaskReq {
+public class SaveTaskInitReq {
 
-    private Logger logger = LoggerFactory.getLogger(DelTaskReq.class);
+    private Logger logger = LoggerFactory.getLogger(SaveTaskInitReq.class);
 
-    private String taskid; //
+    private String taskid;
 
     private String currentUser;
 
@@ -28,13 +25,6 @@ public class DelTaskReq {
         this.currentUser = currentUser;
     }
 
-    public void validate() {
-
-        if (StringUtils.isEmpty(taskid)) {
-            logger.warn("DelTaskReq 任务表 taskid = null 不正确");
-            throw new XRobotException(ErrorCode.ERROR_CODE_5);
-        }
-    }
 
     public String getTaskid() {
         return taskid;
@@ -46,7 +36,7 @@ public class DelTaskReq {
 
     @Override
     public String toString() {
-        return "DelTaskReq{" +
+        return "SaveTaskInitReq{" +
                 "taskid='" + taskid + '\'' +
                 ", currentUser='" + currentUser + '\'' +
                 '}';

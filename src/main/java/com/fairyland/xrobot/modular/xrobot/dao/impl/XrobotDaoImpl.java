@@ -9,6 +9,7 @@ import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.SaveTaskInitResp;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -47,6 +48,9 @@ public class XrobotDaoImpl implements XrobotDao {
 
     @Autowired
     private TasksMapper tasksMapper;
+
+    @Autowired
+    private TaskDevicesMapper taskDevicesMapper;
 
     @Override
     public List<Device> deviceList(DeviceListReq paramReq) {
@@ -320,9 +324,9 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public TasksWithBLOBs getTaskInfoById(Long id, String userName) {
+    public TasksWithBLOBs getTaskInfoById(String taskId, String userName) {
         TasksExample example = new TasksExample();
-        example.createCriteria().andIdEqualTo(id).andCreateByEqualTo(userName).andDelFlagEqualTo(XRobotCode.DEL_0);
+        example.createCriteria().andTaskidEqualTo(taskId).andCreateByEqualTo(userName).andDelFlagEqualTo(XRobotCode.DEL_0);
 
         List<TasksWithBLOBs> list = tasksMapper.selectByExampleWithBLOBs(example);
 
@@ -341,5 +345,59 @@ public class XrobotDaoImpl implements XrobotDao {
     @Override
     public int updateTasks(TasksWithBLOBs record) {
         return tasksMapper.updateByPrimaryKeyWithBLOBs(record);
+    }
+
+    @Override
+    public void insertTasksDevices(Map<String, Object> dbParams) {
+        taskDevicesMapper.insertTasksDevices(dbParams);
+    }
+
+    @Override
+    public void delTasksDevicesByTaskId(String taskid, String userName) {
+
+        TaskDevicesExample example = new TaskDevicesExample();
+        example.createCriteria().andCreateByEqualTo(userName).andTaskidEqualTo(taskid);
+
+        taskDevicesMapper.deleteByExample(example);
+    }
+
+    @Override
+    public void exeTask(Tasks record) {
+        tasksMapper.exeTask(record);
+    }
+
+    @Override
+    public List<TaskDevices> taskDevicesList(TaskDevicesListReq paramReq) {
+        int pageNum = paramReq.getPageNum();
+        int pageSize = paramReq.getPageSize();
+        PageHelper.startPage(pageNum, pageSize);
+
+
+        TaskDevicesExample example = new TaskDevicesExample();
+        example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(paramReq.getCurrentUser()).andTaskidEqualTo(paramReq.getTaskid());
+        List<TaskDevices> list = taskDevicesMapper.selectByExample(example);
+
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<DeviceGroupMembersListResp> deviceGroupMembersAllList(DeviceGroupMembersListReq paramReq) {
+
+        List<DeviceGroupMembersListResp> list = deviceGroupMembersMapper.deviceGroupMembersList(paramReq);
+
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<SaveTaskInitResp> saveTaskInit(SaveTaskInitReq paramReq) {
+       return tasksMapper.saveTaskInit(paramReq);
     }
 }

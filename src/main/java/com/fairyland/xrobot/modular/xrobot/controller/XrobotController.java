@@ -7,6 +7,7 @@ import com.fairyland.xrobot.framework.web.domain.AjaxResult;
 import com.fairyland.xrobot.modular.xrobot.domain.*;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.PageResult;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
 import com.fairyland.xrobot.modular.xrobot.exception.BusinessException;
@@ -92,7 +93,7 @@ public class XrobotController {
 
 
     /**
-     * @Description: 终端设备列表 （不分页的） 暂时未用到
+     * @Description: 终端设备列表 （不分页的）
      * @Param:
      * @return:
      * @Author: ctc
@@ -443,6 +444,38 @@ public class XrobotController {
 
 
     /**
+     * @Description: 终端设备分组成员 列表不分页
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/2 16:11
+     */
+    @RequestMapping(value = "/deviceGroupMembersAllList")
+    @PreAuthorize("@ss.hasPermi('deviceGroupMembers:list')")
+    public AjaxResult deviceGroupMembersAllList(@RequestBody DeviceGroupMembersListReq paramReq) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            List<DeviceGroupMembersListResp> resp = xrobotService.deviceGroupMembersAllList(paramReq);
+
+            webResponse = AjaxResult.success(resp);
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
+    /**
      * @Description: 移除 终端设备分组成员
      * @Param:
      * @return:
@@ -709,21 +742,55 @@ public class XrobotController {
     }
 
 
+
+    /** 
+    * @Description:  任务执行终端列表(带分页)
+    * @Param:  
+    * @return:  
+    * @Author: ctc
+    * @Date: 2020/10/4 22:16
+    */
+    @RequestMapping(value = "/taskDevicesList")
+    @PreAuthorize("@ss.hasPermi('taskDevices:list')")
+    public AjaxResult taskDevicesList(@RequestBody TaskDevicesListReq paramReq) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            PageResult resp = xrobotService.taskDevicesList(paramReq);
+
+            webResponse = AjaxResult.success(resp);
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
+
     /**
-     * @Description: 根据唯一标识 获得 任务详情
+     * @Description: 保存 任务表信息 初始化
      * @Param:
      * @return:
      * @Author: ctc
      * @Date: 2020/10/2 15:59
      */
-    @RequestMapping(value = "/getTaskInfoById")
-    @PreAuthorize("@ss.hasPermi('task:list')")
-    public AjaxResult getTaskInfoById(@RequestBody DelTaskReq paramReq) {
+    @RequestMapping(value = "/saveTaskInit")
+    @PreAuthorize("@ss.hasPermi('task:edit')")
+    public AjaxResult saveTaskInit(@RequestBody SaveTaskInitReq paramReq) {
 
         AjaxResult webResponse = null;
         try {
 
-            TasksWithBLOBs resp = xrobotService.getTaskInfoById(paramReq);
+           Map<String,Object>  resp = xrobotService.saveTaskInit(paramReq);
 
             webResponse = AjaxResult.success(resp);
         } catch (XRobotException ex) {
@@ -800,6 +867,42 @@ public class XrobotController {
 
         return webResponse;
     }
+
+
+    /**
+     * @Description: 执行或重新执行 任务
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/2 15:03
+     */
+    @RequestMapping(value = "/exeTask")
+    @PreAuthorize("@ss.hasPermi('task:exe')")
+    public AjaxResult exeTask(@RequestBody ExeTaskReq paramReq) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            xrobotService.exeTask(paramReq);
+
+            webResponse = AjaxResult.success();
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(998, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
+    // ============任务结果========================
+
 
 
 }

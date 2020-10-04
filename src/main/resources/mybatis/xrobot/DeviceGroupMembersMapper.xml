@@ -364,6 +364,7 @@
   </select>
 
 
+
   <select id="saveDeviceGroupMembersInit" parameterType="com.fairyland.xrobot.modular.xrobot.domain.req.DeviceGroupMembersInitReq" resultType="com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp">
 
 

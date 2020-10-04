@@ -9,10 +9,7 @@ import com.fairyland.xrobot.modular.xrobot.autoxit.server.LinkerServer;
 import com.fairyland.xrobot.modular.xrobot.dao.XrobotDao;
 import com.fairyland.xrobot.modular.xrobot.domain.*;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.PageResult;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.*;
 import com.fairyland.xrobot.modular.xrobot.exception.BusinessException;
 import com.fairyland.xrobot.modular.xrobot.exception.XRobotException;
 import com.fairyland.xrobot.modular.xrobot.service.XrobotService;
@@ -30,8 +27,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @program: fairyland->XrobotServiceImpl
@@ -452,15 +448,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
     }
 
     @Override
-    public TasksWithBLOBs getTaskInfoById(DelTaskReq paramReq) {
-        logger.info("getTaskInfoById paramReq = {}", paramReq);
-
-        paramReq.validate();
-
-        return xrobotDao.getTaskInfoById(paramReq.getId(), getCurrentUser().getUserName());
-    }
-
-    @Override
+    @Transactional(rollbackFor = Exception.class, value = "phoenixTransactionManager")
     public void saveTask(SaveTaskReq paramReq, HttpServletRequest request) {
         logger.info("saveTask paramReq = {}", paramReq);
 
@@ -515,19 +503,10 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                 break;
             }
         }
-        // 创建群组发帖任务
-        if (StringUtils.equals(paramReq.getTaskclass(), "100003")) {
-
-            if (StringUtils.isEmpty(newFilePath)) {
-                logger.warn("saveTask 任务表 封面链接图片  cover = {} 不正确", newFilePath);
-                throw new XRobotException(ErrorCode.ERROR_CODE_5);
-            }
-        }
 
         SysUser user = getCurrentUser();
 
         TasksWithBLOBs record = new TasksWithBLOBs();
-        record.setTaskid(getSerializeVal());
         record.setTaskclass(paramReq.getTaskclass());
         record.setKeywords(paramReq.getKeywords());
         record.setContent(paramReq.getContent());
@@ -539,32 +518,62 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         int num = 0;
         // 新增
-        if (paramReq.getId() == null) {
-            record.setBatch(1);
-            record.setState(0); // 0:新创建
+        if (StringUtils.isEmpty(paramReq.getTaskid())) {
 
+            // 创建群组发帖任务
+            if (StringUtils.equals(paramReq.getTaskclass(), "100003")) {
+
+                if (StringUtils.isEmpty(newFilePath)) {
+                    logger.warn("saveTask 任务表 封面链接图片  cover = {} 不正确", newFilePath);
+                    throw new XRobotException(ErrorCode.ERROR_CODE_5);
+                }
+            }
+
+            record.setBatch(0);
+            record.setState(0); // 0:新创建
+            record.setTaskid(getSerializeVal());
             record.preInsert(user);
 
             num = xrobotDao.insertTasks(record);
 
+            Map<String, Object> dbParams = new HashMap<>();
+            dbParams.put("nowDate", new Date());
+            dbParams.put("username", user.getUserName());
+            dbParams.put("taskID", record.getTaskid());
+            dbParams.put("list", paramReq.getDeviceidList());
+
+            // 任务执行终端表
+            xrobotDao.insertTasksDevices(dbParams);
+
         } else {
 
-            TasksWithBLOBs oldInfo = xrobotDao.getTaskInfoById(paramReq.getId(), user.getUserName());
+            TasksWithBLOBs oldInfo = xrobotDao.getTaskInfoById(paramReq.getTaskid(), user.getUserName());
 
             if (oldInfo == null) {
-                logger.warn("saveTask 任务不存在  id = {}，username={}", paramReq.getId(), user.getUserName());
+                logger.warn("saveTask 任务不存在  id = {}，username={}", paramReq.getTaskid(), user.getUserName());
                 throw new XRobotException(ErrorCode.SYS_FAIL);
             }
 
             if (oldInfo.getState() == 1) {
-                logger.warn("saveTask 任务表 执行中的任务不允许修改  id = {}", paramReq.getId());
+                logger.warn("saveTask 任务表 执行中的任务不允许修改  id = {}", paramReq.getTaskid());
                 throw new BusinessException("任务正在执行中，暂不允许修改");
             }
 
             record.preUpdate(user);
-
-
+            record.setId(oldInfo.getId());
             num = xrobotDao.updateTasks(record);
+
+
+            xrobotDao.delTasksDevicesByTaskId(oldInfo.getTaskid(), user.getUserName());
+
+
+            Map<String, Object> dbParams = new HashMap<>();
+            dbParams.put("nowDate", new Date());
+            dbParams.put("username", user.getUserName());
+            dbParams.put("taskID", oldInfo.getTaskid());
+            dbParams.put("list", paramReq.getDeviceidList());
+            // 任务执行终端表
+            xrobotDao.insertTasksDevices(dbParams);
 
         }
 
@@ -585,28 +594,116 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         SysUser user = getCurrentUser();
 
 
-        TasksWithBLOBs oldInfo = xrobotDao.getTaskInfoById(paramReq.getId(), user.getUserName());
+        TasksWithBLOBs oldInfo = xrobotDao.getTaskInfoById(paramReq.getTaskid(), user.getUserName());
 
         if (oldInfo == null) {
-            logger.warn("delTask 任务不存在  id = {}，username={}", paramReq.getId(), user.getUserName());
+            logger.warn("delTask 任务不存在  id = {}，username={}", paramReq.getTaskid(), user.getUserName());
             throw new XRobotException(ErrorCode.SYS_FAIL);
         }
 
         if (oldInfo.getState() == 1) {
-            logger.warn("delTask 任务表 执行中的任务不允许修改  id = {}", paramReq.getId());
+            logger.warn("delTask 任务表 执行中的任务不允许修改  id = {}", paramReq.getTaskid());
             throw new BusinessException("任务正在执行中，暂不允许删除");
         }
 
 
-        TasksExample example = new TasksExample();
-        example.createCriteria().andIdEqualTo(paramReq.getId()).andCreateByEqualTo(user.getUserName());
-
         TasksWithBLOBs record = new TasksWithBLOBs();
         record.setDelFlag(XRobotCode.DEL_1);
         record.preUpdate(user);
-        record.setId(paramReq.getId());
+        record.setId(oldInfo.getId());
 
         xrobotDao.updateTasks(record);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, value = "phoenixTransactionManager")
+    public void exeTask(ExeTaskReq paramReq) {
+        logger.info("exeTask paramReq = {}", paramReq);
+
+        paramReq.validate();
+
+        SysUser user = getCurrentUser();
+
+
+        TasksWithBLOBs oldInfo = xrobotDao.getTaskInfoById(paramReq.getTaskid(), user.getUserName());
+
+        if (oldInfo == null) {
+            logger.warn("exeTask 任务不存在  id = {}，username={}", paramReq.getTaskid(), user.getUserName());
+            throw new XRobotException(ErrorCode.SYS_FAIL);
+        }
+
+        if (oldInfo.getState() == 1) {
+            logger.warn("exeTask 任务表 任务已经在执行中了  id = {}", paramReq.getTaskid());
+            throw new BusinessException("任务已经在执行中了");
+        }
+
+
+        // 修改任务表为 1:执行中
+        Tasks record = new Tasks();
+        record.preUpdate(user);
+        record.setId(oldInfo.getId());
+        record.setCreateBy(user.getUserName());
+        xrobotDao.exeTask(record);
+
+
+        // TODO SERVER_TASKNOTIFY_COMMAND 修改 任务执行终端表 为 执行中
+    }
+
+    @Override
+    public PageResult taskDevicesList(TaskDevicesListReq paramReq) {
+        logger.info("taskDevicesList paramReq = {}", paramReq);
+        paramReq.setCurrentUser(getCurrentUser().getUserName());
+
+        List<TaskDevices> list = xrobotDao.taskDevicesList(paramReq);
+
+        PageInfo<TaskDevices> pageInfo = new PageInfo<>(list);
+        PageResult pageResult = PageUtils.getPageResult(pageInfo);
+
+        return pageResult;
+    }
+
+    @Override
+    public Map<String, Object> saveTaskInit(SaveTaskInitReq paramReq) {
+        logger.info("saveTaskInit paramReq = {}", paramReq);
+
+
+        Map<String, Object> resp = new HashMap<>();
+        if (StringUtils.isEmpty(paramReq.getTaskid())) {
+
+            // 所有的设备列表
+            List<Device> devices = deviceAllList();
+            resp.put("devices", resp);
+            // 所有的分组信息
+            List<DeviceGroup> deviceGroups = deviceGroupAllList();
+            resp.put("deviceGroups", deviceGroups);
+        } else {
+
+            paramReq.setCurrentUser(getCurrentUser().getUserName());
+
+            List<SaveTaskInitResp> list = xrobotDao.saveTaskInit(paramReq);
+
+            TasksWithBLOBs taskInfo = xrobotDao.getTaskInfoById(paramReq.getTaskid(), getCurrentUser().getUserName());
+
+            resp.put("taskInfo", taskInfo);
+            resp.put("initRespList", list);
+
+        }
+
+        return resp;
+
+    }
+
+    @Override
+    public List<DeviceGroupMembersListResp> deviceGroupMembersAllList(DeviceGroupMembersListReq paramReq) {
+
+
+        logger.info("deviceGroupMembersAllList req = {}", paramReq);
+
+        paramReq.setCurrentUser(getCurrentUser().getUserName());
+        List<DeviceGroupMembersListResp> list = xrobotDao.deviceGroupMembersAllList(paramReq);
+
+        return list;
+
     }
 
 

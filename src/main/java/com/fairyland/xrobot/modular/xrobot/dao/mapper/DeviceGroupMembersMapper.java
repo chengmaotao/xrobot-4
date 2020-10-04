@@ -105,4 +105,6 @@ public interface DeviceGroupMembersMapper {
     List<DeviceGroupMembersInitResp> saveDeviceGroupMembersInit(DeviceGroupMembersInitReq paramReq);
 
     void batchInsertData(Map<String, Object> params);
+
+    List<DeviceGroupMembersListResp> deviceGroupMembersAllList(String userName);
 }

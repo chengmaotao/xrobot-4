@@ -5,7 +5,9 @@ import com.fairyland.xrobot.modular.xrobot.domain.TasksExample;
 import com.fairyland.xrobot.modular.xrobot.domain.TasksWithBLOBs;
 import java.util.List;
 
+import com.fairyland.xrobot.modular.xrobot.domain.req.SaveTaskInitReq;
 import com.fairyland.xrobot.modular.xrobot.domain.req.TaskListReq;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.SaveTaskInitResp;
 import org.apache.ibatis.annotations.Param;
 
 public interface TasksMapper {
@@ -122,4 +124,8 @@ public interface TasksMapper {
     int updateByPrimaryKey(Tasks record);
 
     List<TasksWithBLOBs> taskList(TaskListReq paramReq);
+
+    void exeTask(Tasks record);
+
+    List<SaveTaskInitResp> saveTaskInit(SaveTaskInitReq paramReq);
 }

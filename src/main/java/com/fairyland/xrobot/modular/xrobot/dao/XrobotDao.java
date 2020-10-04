@@ -6,8 +6,10 @@ import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.SaveTaskInitResp;
 
 import java.util.List;
+import java.util.Map;
 
 public interface XrobotDao {
 
@@ -61,9 +63,21 @@ public interface XrobotDao {
 
     List<TasksWithBLOBs> taskList(TaskListReq paramReq);
 
-    TasksWithBLOBs getTaskInfoById(Long id, String userName);
+    TasksWithBLOBs getTaskInfoById(String taskId, String userName);
 
     int insertTasks(TasksWithBLOBs record);
 
     int updateTasks(TasksWithBLOBs record);
+
+    void insertTasksDevices(Map<String, Object> dbParams);
+
+    void delTasksDevicesByTaskId(String taskid, String userName);
+
+    void exeTask(Tasks record);
+
+    List<TaskDevices> taskDevicesList(TaskDevicesListReq paramReq);
+
+    List<DeviceGroupMembersListResp> deviceGroupMembersAllList(DeviceGroupMembersListReq paramReq);
+
+    List<SaveTaskInitResp> saveTaskInit(SaveTaskInitReq paramReq);
 }

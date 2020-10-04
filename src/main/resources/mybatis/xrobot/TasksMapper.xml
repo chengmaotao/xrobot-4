@@ -532,4 +532,30 @@
 
   </select>
 
+
+  <update id="exeTask" parameterType="com.fairyland.xrobot.modular.xrobot.domain.Tasks">
+    update c_tasks
+      set update_by = #{updateBy},
+      update_date = #{updateDate},
+      batch = batch + 1,
+      state = 1
+    where create_by = #{createBy}
+      and (state = 0 or state = 2)
+  </update>
+
+
+  <select id="saveTaskInit" parameterType="com.fairyland.xrobot.modular.xrobot.domain.req.SaveTaskInitReq" resultMap="com.fairyland.xrobot.modular.xrobot.domain.resp.SaveTaskInitResp">
+
+          SELECT
+              a.deviceID AS "deviceid",
+              a.phone AS "phone",
+              b.deviceID AS "tdeviceid"
+          FROM
+              c_device a
+          LEFT JOIN c_taskdevices b ON a.deviceID = b.deviceID
+          LEFT JOIN c_tasks c ON c.taskID = b.taskID AND c.taskID = #{taskid}
+          WHERE
+              a.create_by = #{currentUser}
+  </select>
+
 </mapper>

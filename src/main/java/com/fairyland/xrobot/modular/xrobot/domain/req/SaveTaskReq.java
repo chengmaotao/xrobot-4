@@ -6,6 +6,9 @@ import com.fairyland.xrobot.modular.xrobot.exception.XRobotException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @program: fairyland->SaveTaskReq
  * @description: TODO
@@ -16,7 +19,7 @@ public class SaveTaskReq {
 
     private Logger logger = LoggerFactory.getLogger(SaveTaskReq.class);
 
-    private Long id; // 为空时新增 不为空是修改
+    private String taskid; // 为空时新增 不为空是修改
 
     /*    100001	搜索加群消息任务
     100002	首页链接消息任务
@@ -30,6 +33,11 @@ public class SaveTaskReq {
     private String content; // 消息、帖子、评论内容
 
     private String remarks; // 备注
+
+
+    private String deviceids;  // 终端设备记录唯一ID 集合  逗号隔开
+
+    private List<String> deviceidList;  // 终端设备记录唯一ID 集合
 
     public void validate() {
 
@@ -62,15 +70,41 @@ public class SaveTaskReq {
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
 
+        if (StringUtils.isEmpty(deviceids)) {
+            logger.warn("SaveDeviceReq  deviceids = {} 不正确", deviceids);
+            throw new XRobotException(ErrorCode.ERROR_CODE_5);
+        }
+
+        String[] split = deviceids.split(",");
+
+        List<String> tempDeviceidList = Arrays.asList(split);
+        setDeviceidList(tempDeviceidList);
+
     }
 
 
-    public Long getId() {
-        return id;
+    public String getDeviceids() {
+        return deviceids;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setDeviceids(String deviceids) {
+        this.deviceids = deviceids;
+    }
+
+    public List<String> getDeviceidList() {
+        return deviceidList;
+    }
+
+    public void setDeviceidList(List<String> deviceidList) {
+        this.deviceidList = deviceidList;
+    }
+
+    public String getTaskid() {
+        return taskid;
+    }
+
+    public void setTaskid(String taskid) {
+        this.taskid = taskid;
     }
 
     public String getTaskclass() {
@@ -105,14 +139,16 @@ public class SaveTaskReq {
         this.remarks = remarks;
     }
 
+
     @Override
     public String toString() {
         return "SaveTaskReq{" +
-                "id=" + id +
+                "taskid=" + taskid +
                 ", taskclass='" + taskclass + '\'' +
                 ", keywords='" + keywords + '\'' +
                 ", content='" + content + '\'' +
                 ", remarks='" + remarks + '\'' +
+                ", deviceids='" + deviceids + '\'' +
                 '}';
     }
 }

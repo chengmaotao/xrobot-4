@@ -219,95 +219,46 @@ public class LinkerServer {
      */
     public void clientLogin(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
         // 这些需要从数据库取出验证，一致才可以，数据库记录一下日志
-        if (command == MessagePacket.CLIENT_LOGIN_COMMAND) {
+        MessagePacket messagePacket = new MessagePacket();
+        try {
 
-            MessagePacket messagePacket = new MessagePacket();
-            try {
+            ClinetLoginReq businessParam = JSON.parseObject(bodyString, ClinetLoginReq.class);
 
-                ClinetLoginReq businessParam = JSON.parseObject(bodyString, ClinetLoginReq.class);
+            log.info("clientLogin ClinetLoginReq businessParam = {}", businessParam);
 
-                log.info("clientLogin ClinetLoginReq businessParam = {}", businessParam);
-
-                String id = businessParam.getId();  // deviceID
-                String token = businessParam.getToken();
-                String phone = businessParam.getPhone();
-                String account = businessParam.getAccount();
-                //String password = (String) jsonObject.get("password1");
-                String account1 = businessParam.getAccount1();
-                //String password1 = (String) jsonObject.get("password1");
-                String client = businessParam.getClient();
-                String status = businessParam.getStatus();
-                //String message = (String) jsonObject.get("message");
+            String id = businessParam.getId();  // deviceID
+            String token = businessParam.getToken();
+            String phone = businessParam.getPhone();
+            String account = businessParam.getAccount();
+            //String password = (String) jsonObject.get("password1");
+            String account1 = businessParam.getAccount1();
+            //String password1 = (String) jsonObject.get("password1");
+            String client = businessParam.getClient();
+            String status = businessParam.getStatus();
+            //String message = (String) jsonObject.get("message");
 
 
-                if (StringUtils.isEmpty(id)
-                        || StringUtils.isEmpty(token)
-                        || StringUtils.isEmpty(phone)
-                        || StringUtils.isEmpty(account)
-                        || StringUtils.isEmpty(account1)) {
+            if (StringUtils.isEmpty(id)
+                    || StringUtils.isEmpty(token)
+                    || StringUtils.isEmpty(phone)
+                    || StringUtils.isEmpty(account)
+                    || StringUtils.isEmpty(account1)) {
 
-                    ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("5", "请求必填参数不能为空").toJSONString());
-                    responseMessage(ctx, buffer);
-                    return;
-                }
-
-                // 查询数据做验证，验证id,token,phone,account,account1
-                Device device = autoxitService.checkClinetLogin(businessParam);
-
-                if (device == null) {
-
-                    log.warn("clientLogin 来自IP:{} req=:{} 终端连接被拒绝【认证失败】！", ctx.channel().remoteAddress(), businessParam);
-
-                    ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("2", "终端连接被拒绝【认证失败】！").toJSONString());
-                    responseMessage(ctx, buffer);
-
-                    try {
-                        ctx.channel().close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return;
-                }
-
-                // 账号被 暂停使用
-                if (device.getState() == 127) {
-
-                    log.warn("clientLogin 来自IP:{} req=:{} 终端连接被拒绝【认证失败】！,账号状态：暂停使用", ctx.channel().remoteAddress(), businessParam);
-
-                    ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("3", "终端连接被拒绝，账号被禁用【认证失败】！").toJSONString());
-                    responseMessage(ctx, buffer);
-
-                    try {
-                        ctx.channel().close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return;
-                }
-
-                Session session = new Session(id, token, phone, account, account1, status, ctx.channel());
-                if (authSession(session, ctx.channel(), client)) {
-                    log.info("客户端登录成功！");
-                    JSONObject response = getSuccessResponse("1", "客户端登录成功");
-                    ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response.toJSONString());
-                    responseMessage(ctx, buffer);
-                    log.info("登录成功,终端数：{} 连接数：{}", sessionManager.getSessionCount(), sessionManager.getSessionCount());
-                } else {
-                    log.warn("clientLogin 来自IP:{} req:{} 终端连接被拒绝，已存在相同ID的终端连接认证", ctx.channel().remoteAddress(), businessParam);
-                    ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("4", "终端连接被拒绝，已存在相同ID的终端连接认证！").toJSONString());
-                    responseMessage(ctx, buffer);
-                    try {
-                        ctx.channel().close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return;
-                }
-            } catch (Exception ex) {
-                log.error("clientLogin 未知错误：");
-                ex.printStackTrace();
-                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("99", "信息获取失败，请重试").toJSONString());
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("5", "请求必填参数不能为空").toJSONString());
                 responseMessage(ctx, buffer);
+                return;
+            }
+
+            // 查询数据做验证，验证id,token,phone,account,account1
+            Device device = autoxitService.checkClinetLogin(businessParam);
+
+            if (device == null) {
+
+                log.warn("clientLogin 来自IP:{} req=:{} 终端连接被拒绝【认证失败】！", ctx.channel().remoteAddress(), businessParam);
+
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("2", "终端连接被拒绝【认证失败】！").toJSONString());
+                responseMessage(ctx, buffer);
+
                 try {
                     ctx.channel().close();
                 } catch (Exception e) {
@@ -316,7 +267,53 @@ public class LinkerServer {
                 return;
             }
 
+            // 账号被 暂停使用
+            if (device.getState() == 127) {
+
+                log.warn("clientLogin 来自IP:{} req=:{} 终端连接被拒绝【认证失败】！,账号状态：暂停使用", ctx.channel().remoteAddress(), businessParam);
+
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("3", "终端连接被拒绝，账号被禁用【认证失败】！").toJSONString());
+                responseMessage(ctx, buffer);
+
+                try {
+                    ctx.channel().close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+
+            Session session = new Session(id, token, phone, account, account1, status, ctx.channel());
+            if (authSession(session, ctx.channel(), client)) {
+                log.info("客户端登录成功！");
+                JSONObject response = getSuccessResponse("1", "客户端登录成功");
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response.toJSONString());
+                responseMessage(ctx, buffer);
+                log.info("登录成功,终端数：{} 连接数：{}", sessionManager.getSessionCount(), sessionManager.getSessionCount());
+            } else {
+                log.warn("clientLogin 来自IP:{} req:{} 终端连接被拒绝，已存在相同ID的终端连接认证", ctx.channel().remoteAddress(), businessParam);
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("4", "终端连接被拒绝，已存在相同ID的终端连接认证！").toJSONString());
+                responseMessage(ctx, buffer);
+                try {
+                    ctx.channel().close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+        } catch (Exception ex) {
+            log.error("clientLogin 未知错误：");
+            ex.printStackTrace();
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("99", "信息获取失败，请重试").toJSONString());
+            responseMessage(ctx, buffer);
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
         }
+
     }
 
     /**

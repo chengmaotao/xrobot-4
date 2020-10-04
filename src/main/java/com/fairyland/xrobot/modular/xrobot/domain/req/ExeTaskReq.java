@@ -7,33 +7,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @program: fairyland->DelDeviceReq
+ * @program: fairyland->ExeTaskReq
  * @description: TODO
  * @author: ctc
- * @create: 2020-10-02 15:03
+ * @create: 2020-10-04 19:47
  **/
-public class DelTaskReq {
+public class ExeTaskReq {
 
-    private Logger logger = LoggerFactory.getLogger(DelTaskReq.class);
+    private Logger logger = LoggerFactory.getLogger(ExeTaskReq.class);
 
-    private String taskid; //
+    private String taskid; // 任务唯一标识
 
-    private String currentUser;
 
-    public String getCurrentUser() {
-        return currentUser;
-    }
-
-    public void setCurrentUser(String currentUser) {
-        this.currentUser = currentUser;
-    }
+    private String userName;
 
     public void validate() {
 
         if (StringUtils.isEmpty(taskid)) {
-            logger.warn("DelTaskReq 任务表 taskid = null 不正确");
+            logger.warn("ExeTaskReq 任务唯一标识 taskid = {} 不正确", taskid);
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
+
     }
 
     public String getTaskid() {
@@ -44,11 +38,20 @@ public class DelTaskReq {
         this.taskid = taskid;
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+
     @Override
     public String toString() {
-        return "DelTaskReq{" +
+        return "ExeTaskReq{" +
                 "taskid='" + taskid + '\'' +
-                ", currentUser='" + currentUser + '\'' +
+                ", userName='" + userName + '\'' +
                 '}';
     }
 }
