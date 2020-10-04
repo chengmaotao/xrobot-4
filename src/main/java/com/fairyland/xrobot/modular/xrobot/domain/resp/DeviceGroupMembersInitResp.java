@@ -8,13 +8,13 @@ package com.fairyland.xrobot.modular.xrobot.domain.resp;
  **/
 public class DeviceGroupMembersInitResp {
 
-    private String deviceid;  // 终端设备记录唯一ID （为空时 说明还未添加到该分组里。）
+    private String deviceid;  // 终端设备记录唯一ID
 
     private String devicesn; // 终端设备应用编号
 
     private String phone; // 终端设备手机号码
 
-    private String groupid;   // 分组唯一ID
+    private String groupid;   // 分组唯一ID  （为空时 说明还未添加到该分组里。）
 
 
     public String getDevicesn() {

@@ -228,7 +228,7 @@ public class LinkerServer {
 
                 log.info("clientLogin ClinetLoginReq businessParam = {}", businessParam);
 
-                String id = businessParam.getId();  // deviceSN
+                String id = businessParam.getId();  // deviceID
                 String token = businessParam.getToken();
                 String phone = businessParam.getPhone();
                 String account = businessParam.getAccount();

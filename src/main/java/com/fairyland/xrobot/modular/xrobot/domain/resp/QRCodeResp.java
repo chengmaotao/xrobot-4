@@ -20,6 +20,35 @@ public class QRCodeResp {
 
     private String devicesn; // 终端设备应用编号
 
+    private String deviceid;
+
+    private Integer login;
+
+    private Integer login1;
+
+    public String getDeviceid() {
+        return deviceid;
+    }
+
+    public void setDeviceid(String deviceid) {
+        this.deviceid = deviceid;
+    }
+
+    public Integer getLogin() {
+        return login;
+    }
+
+    public void setLogin(Integer login) {
+        this.login = login;
+    }
+
+    public Integer getLogin1() {
+        return login1;
+    }
+
+    public void setLogin1(Integer login1) {
+        this.login1 = login1;
+    }
 
     public String getPhone() {
         return phone;
@@ -88,6 +117,9 @@ public class QRCodeResp {
                 ", account1='" + account1 + '\'' +
                 ", password1='" + password1 + '\'' +
                 ", devicesn='" + devicesn + '\'' +
+                ", deviceid='" + deviceid + '\'' +
+                ", login=" + login +
+                ", login1=" + login1 +
                 '}';
     }
 }

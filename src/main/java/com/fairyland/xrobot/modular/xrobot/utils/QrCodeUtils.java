@@ -67,12 +67,12 @@ public class QrCodeUtils {
     }
 
     public static void main(String[] args) {
-        //String binary = QrCodeUtils.creatRrCode("你好啊", 200,200);
-        //System.out.println(binary);
 
-        String s = JSON.toJSONString(null);
+        String contern = "{\"msg\":\"操作成功\",\"code\":200,\"data\":{\"token\":\"asdfghjklqwertyuiopzxcvbnmqwerty\",\"phone\":\"15664008013\",\"account\":\"asdfghjklqwertyuiopzxcvbnmqwerty\",\"password\":\"asdfghjklqwertyuiopzxcvbnmqwerty\",\"account1\":\"asdfghjklqwertyuiopzxcvbnmqwerty\",\"password1\":\"asdfghjklqwertyuiopzxcvbnmqwerty\",\"devicesn\":\"asdfghjklqwertyuiopzxcvbnmqwerty\"}}";
 
-        System.out.println(s);
+        String binary = QrCodeUtils.creatRrCode(contern, 400,400);
+        System.out.println(binary);
+
     }
 
 }

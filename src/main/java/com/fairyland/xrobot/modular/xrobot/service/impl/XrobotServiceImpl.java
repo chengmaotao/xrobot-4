@@ -7,10 +7,7 @@ import com.fairyland.xrobot.common.utils.StringUtils;
 import com.fairyland.xrobot.modular.system.domain.SysUser;
 import com.fairyland.xrobot.modular.xrobot.autoxit.server.LinkerServer;
 import com.fairyland.xrobot.modular.xrobot.dao.XrobotDao;
-import com.fairyland.xrobot.modular.xrobot.domain.Device;
-import com.fairyland.xrobot.modular.xrobot.domain.DeviceExample;
-import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroup;
-import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroupExample;
+import com.fairyland.xrobot.modular.xrobot.domain.*;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
@@ -378,5 +375,27 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         paramReq.setCurrentUser(getCurrentUser().getUserName());
         return xrobotDao.getQRCodeJsonById(paramReq);
 
+    }
+
+    @Override
+    public List<Dict> dictList() {
+        return xrobotDao.dictList();
+    }
+
+    @Override
+    public void saveDict(SaveDictReq paramReq) {
+
+        logger.info("saveDict paramReq = {}", paramReq);
+
+        paramReq.validate();
+
+        Dict record = new Dict();
+        record.setId(paramReq.getId());
+        record.setMaxAddGroupValue(paramReq.getMaxAddGroupValue());
+        record.setMaxSearchKeyValue(paramReq.getMaxSearchKeyValue());
+        record.setMaxTaskIntervalValue(paramReq.getMaxTaskIntervalValue());
+        record.setRemarks(paramReq.getRemarks());
+        record.preUpdate(getCurrentUser());
+        xrobotDao.saveDict(record);
     }
 }

@@ -2,6 +2,7 @@ package com.fairyland.xrobot.modular.xrobot.service;
 
 import com.fairyland.xrobot.modular.xrobot.domain.Device;
 import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroup;
+import com.fairyland.xrobot.modular.xrobot.domain.Dict;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.PageResult;
@@ -41,4 +42,8 @@ public interface XrobotService {
     void saveDeviceGroupMembers(DeviceGroupMembersReq paramReq);
 
     QRCodeResp getQRCodeJsonById(DelDeviceReq paramReq);
+
+    List<Dict> dictList();
+
+    void saveDict(SaveDictReq paramReq);
 }

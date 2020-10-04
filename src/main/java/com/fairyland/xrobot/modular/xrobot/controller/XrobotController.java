@@ -6,6 +6,7 @@ import com.fairyland.xrobot.common.utils.MessageUtils;
 import com.fairyland.xrobot.framework.web.domain.AjaxResult;
 import com.fairyland.xrobot.modular.xrobot.domain.Device;
 import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroup;
+import com.fairyland.xrobot.modular.xrobot.domain.Dict;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.PageResult;
@@ -569,5 +570,70 @@ public class XrobotController {
         return webResponse;
     }
 
+
+
+    // == 系统设置============================
+    /**
+     * @Description: 系统字典信息 列表（不分页）
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/2 16:11
+     */
+    @RequestMapping(value = "/dictList")
+    @PreAuthorize("@ss.hasPermi('dict:list')")
+    public AjaxResult dictList() {
+
+        AjaxResult webResponse = null;
+        try {
+
+            List<Dict> resp = xrobotService.dictList();
+
+            webResponse = AjaxResult.success(resp);
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
+    /**
+     * @Description: 修改 系统字典 信息
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/2 12:20
+     */
+    @RequestMapping(value = "/saveDict")
+    @PreAuthorize("@ss.hasPermi('dict:edit')")
+    public AjaxResult saveDict(@RequestBody SaveDictReq paramReq) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            xrobotService.saveDict(paramReq);
+
+            webResponse = AjaxResult.success();
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
 
 }

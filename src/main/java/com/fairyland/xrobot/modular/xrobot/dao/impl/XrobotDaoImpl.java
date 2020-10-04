@@ -6,6 +6,7 @@ import com.fairyland.xrobot.modular.xrobot.dao.XrobotDao;
 import com.fairyland.xrobot.modular.xrobot.dao.mapper.DeviceGroupMapper;
 import com.fairyland.xrobot.modular.xrobot.dao.mapper.DeviceGroupMembersMapper;
 import com.fairyland.xrobot.modular.xrobot.dao.mapper.DeviceMapper;
+import com.fairyland.xrobot.modular.xrobot.dao.mapper.DictMapper;
 import com.fairyland.xrobot.modular.xrobot.domain.*;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
@@ -38,6 +39,10 @@ public class XrobotDaoImpl implements XrobotDao {
 
     @Autowired
     private DeviceGroupMembersMapper deviceGroupMembersMapper;
+
+
+    @Autowired
+    private DictMapper dictMapper;
 
     @Override
     public List<Device> deviceList(DeviceListReq paramReq) {
@@ -207,7 +212,7 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public void delDeviceGroupMembers(Long id,String userName) {
+    public void delDeviceGroupMembers(Long id, String userName) {
 
         DeviceGroupMembersExample example = new DeviceGroupMembersExample();
         example.createCriteria().andIdEqualTo(id).andCreateByEqualTo(userName);
@@ -230,7 +235,7 @@ public class XrobotDaoImpl implements XrobotDao {
 
         deviceGroupMembersMapper.deleteByExample(delexample);
 
-        List<String> deviceids = paramReq.getDeviceids();
+        List<String> deviceids = paramReq.getDeviceidList();
 
         if (deviceids == null || deviceids.isEmpty()) {
             return;
@@ -257,7 +262,7 @@ public class XrobotDaoImpl implements XrobotDao {
     public Device checkClinetLogin(ClinetLoginReq paramReq) {
 
         DeviceExample example = new DeviceExample();
-        example.createCriteria().andDevicesnEqualTo(paramReq.getId()).andTokenEqualTo(paramReq.getToken()).andAccountEqualTo(paramReq.getAccount()).andAccount1EqualTo(paramReq.getAccount1()).andPhoneEqualTo(paramReq.getPhone()).andDelFlagEqualTo("0");
+        example.createCriteria().andDeviceidEqualTo(paramReq.getId()).andTokenEqualTo(paramReq.getToken()).andAccountEqualTo(paramReq.getAccount()).andAccount1EqualTo(paramReq.getAccount1()).andPhoneEqualTo(paramReq.getPhone()).andDelFlagEqualTo("0");
 
         List<Device> list = deviceMapper.selectByExample(example);
 
@@ -265,5 +270,23 @@ public class XrobotDaoImpl implements XrobotDao {
             return null;
         }
         return list.get(0);
+    }
+
+    @Override
+    public List<Dict> dictList() {
+        DictExample example = new DictExample();
+        example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0);
+        example.setOrderByClause(" create_date desc");
+        List<Dict> list = dictMapper.selectByExample(example);
+
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        return list;
+    }
+
+    @Override
+    public void saveDict(Dict record) {
+        dictMapper.updateByPrimaryKeySelective(record);
     }
 }

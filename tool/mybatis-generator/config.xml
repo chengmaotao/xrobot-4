@@ -38,9 +38,7 @@
 
 
 
-        <table tableName="c_device" domainObjectName="Device" />
-        <table tableName="c_deviceGroup" domainObjectName="DeviceGroup" />
-        <table tableName="c_deviceGroupMembers" domainObjectName="DeviceGroupMembers" />
+        <table tableName="c_dict" domainObjectName="Dict" />
 
 
 
