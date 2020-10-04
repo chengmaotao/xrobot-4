@@ -56,4 +56,14 @@ public interface XrobotDao {
     List<Dict> dictList();
 
     void saveDict(Dict record);
+
+    List<TaskDict> taskDictList();
+
+    List<TasksWithBLOBs> taskList(TaskListReq paramReq);
+
+    TasksWithBLOBs getTaskInfoById(Long id, String userName);
+
+    int insertTasks(TasksWithBLOBs record);
+
+    int updateTasks(TasksWithBLOBs record);
 }

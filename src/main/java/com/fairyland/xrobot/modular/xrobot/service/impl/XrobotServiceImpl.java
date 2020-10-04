@@ -16,13 +16,21 @@ import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
 import com.fairyland.xrobot.modular.xrobot.exception.BusinessException;
 import com.fairyland.xrobot.modular.xrobot.exception.XRobotException;
 import com.fairyland.xrobot.modular.xrobot.service.XrobotService;
+import com.fairyland.xrobot.modular.xrobot.utils.Utility;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -43,6 +51,18 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
     @Autowired
     private XrobotDao xrobotDao;
+
+
+    @Value("${picture_max_size}")
+    private int picture_max_size;
+
+    @Value("#{'${picture_suffix}'.split(',')}")
+    private List<String> picture_suffix;
+
+
+    @Value("${xrobot.file.uploa.path}")
+    private String baseUploadPath;
+
 
     @Override
     public PageResult deviceList(DeviceListReq paramReq) {
@@ -110,7 +130,13 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             // 修改
 
             Device oldInfo = xrobotDao.getDeviceInfoById(paramReq.getId(), user.getUserName());
-            if (oldInfo != null && !StringUtils.equals(oldInfo.getDevicesn(), paramReq.getDevicesn())) {
+
+            if (oldInfo == null) {
+                logger.warn("SaveDeviceReq2 req = {},终端设备应用 不存在", paramReq);
+                throw new XRobotException(ErrorCode.SYS_FAIL);
+            }
+
+            if (!StringUtils.equals(oldInfo.getDevicesn(), paramReq.getDevicesn())) {
                 lists = xrobotDao.getDeviceListByDeviceSN(paramReq.getDevicesn(), user.getUserName());
                 if (lists != null && lists.size() > 0) {
                     logger.warn("SaveDeviceReq2 req = {},终端设备应用编号 已经存在,不能重复添加", paramReq);
@@ -118,7 +144,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                 }
             }
 
-            if (oldInfo != null && !StringUtils.equals(oldInfo.getPhone(), paramReq.getPhone())) {
+            if (!StringUtils.equals(oldInfo.getPhone(), paramReq.getPhone())) {
                 // 判断 手机号 是否已经存在
                 lists = xrobotDao.getDeviceListByPhone(paramReq.getPhone(), user.getUserName());
                 if (lists != null && lists.size() > 0) {
@@ -260,7 +286,13 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             // 修改
 
             DeviceGroup oldInfo = xrobotDao.getDeviceGroupInfoById(paramReq.getId(), user.getUserName());
-            if (oldInfo != null && !StringUtils.equals(oldInfo.getGroupname(), paramReq.getGroupname())) {
+
+            if (oldInfo == null) {
+                logger.warn("SaveDeviceReq2 req = {},终端设备分组 不存在", paramReq);
+                throw new XRobotException(ErrorCode.SYS_FAIL);
+
+            }
+            if (!StringUtils.equals(oldInfo.getGroupname(), paramReq.getGroupname())) {
                 lists = xrobotDao.getDeviceGroupListByName(paramReq.getGroupname(), user.getUserName());
                 if (lists != null && lists.size() > 0) {
                     logger.warn("SaveDeviceReq2 req = {},终端设备分组名称 已经存在,不能重复添加", paramReq);
@@ -397,5 +429,199 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         record.setRemarks(paramReq.getRemarks());
         record.preUpdate(getCurrentUser());
         xrobotDao.saveDict(record);
+    }
+
+    @Override
+    public List<TaskDict> taskDictList() {
+
+
+        return xrobotDao.taskDictList();
+    }
+
+    @Override
+    public PageResult taskList(TaskListReq paramReq) {
+        logger.info("taskList paramReq = {}", paramReq);
+        paramReq.setCurrentUser(getCurrentUser().getUserName());
+
+        List<TasksWithBLOBs> list = xrobotDao.taskList(paramReq);
+
+        PageInfo<TasksWithBLOBs> pageInfo = new PageInfo<>(list);
+        PageResult pageResult = PageUtils.getPageResult(pageInfo);
+
+        return pageResult;
+    }
+
+    @Override
+    public TasksWithBLOBs getTaskInfoById(DelTaskReq paramReq) {
+        logger.info("getTaskInfoById paramReq = {}", paramReq);
+
+        paramReq.validate();
+
+        return xrobotDao.getTaskInfoById(paramReq.getId(), getCurrentUser().getUserName());
+    }
+
+    @Override
+    public void saveTask(SaveTaskReq paramReq, HttpServletRequest request) {
+        logger.info("saveTask paramReq = {}", paramReq);
+
+        paramReq.validate();
+
+        String newFilePath = null;
+
+        Iterator<String> files = ((MultipartHttpServletRequest) request).getFileNames();
+
+        while (files.hasNext()) {
+            String fName = files.next();
+            MultipartFile file = ((MultipartHttpServletRequest) request).getFile(fName);
+
+            if (file != null) {
+                // 文件名称
+                String originalFilename = file.getOriginalFilename();
+
+                // 源文件后缀
+                String fileSuffix = getFileSuffix(originalFilename);
+
+                // 校验 图片格式 是否支持
+                if (fileSuffix == null || !picture_suffix.contains(fileSuffix)) {
+                    logger.warn("saveTask  上传的文件格式不支持 = {}", originalFilename);
+                    throw new XRobotException(ErrorCode.ERROR_CODE_21);
+                }
+
+                long pictureMaxSize = picture_max_size * 1048576;
+
+                // 头像大小 超过最大值
+                if (file.getSize() > pictureMaxSize) {
+                    logger.warn("saveTask 上传的文件格式不支持{}", file.getSize());
+                    throw new XRobotException(ErrorCode.ERROR_CODE_20);
+                }
+
+
+                String filePath = baseUploadPath + Utility.get32UUID() + originalFilename;
+
+                File dest = new File(filePath);
+
+                if (!dest.getParentFile().exists()) {
+                    dest.getParentFile().mkdirs();
+                }
+
+                try {
+                    file.transferTo(dest);  // 文件上传到 服务器
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    logger.error("saveTask 文件上传失败: ex = {}", e);
+                }
+
+                newFilePath = filePath;
+                break;
+            }
+        }
+        // 创建群组发帖任务
+        if (StringUtils.equals(paramReq.getTaskclass(), "100003")) {
+
+            if (StringUtils.isEmpty(newFilePath)) {
+                logger.warn("saveTask 任务表 封面链接图片  cover = {} 不正确", newFilePath);
+                throw new XRobotException(ErrorCode.ERROR_CODE_5);
+            }
+        }
+
+        SysUser user = getCurrentUser();
+
+        TasksWithBLOBs record = new TasksWithBLOBs();
+        record.setTaskid(getSerializeVal());
+        record.setTaskclass(paramReq.getTaskclass());
+        record.setKeywords(paramReq.getKeywords());
+        record.setContent(paramReq.getContent());
+        record.setMd5(Utility.getMd5(paramReq.getContent()));
+
+        if (StringUtils.isNotEmpty(newFilePath)) {
+            record.setCover(newFilePath);
+        }
+
+        int num = 0;
+        // 新增
+        if (paramReq.getId() == null) {
+            record.setBatch(1);
+            record.setState(0); // 0:新创建
+
+            record.preInsert(user);
+
+            num = xrobotDao.insertTasks(record);
+
+        } else {
+
+            TasksWithBLOBs oldInfo = xrobotDao.getTaskInfoById(paramReq.getId(), user.getUserName());
+
+            if (oldInfo == null) {
+                logger.warn("saveTask 任务不存在  id = {}，username={}", paramReq.getId(), user.getUserName());
+                throw new XRobotException(ErrorCode.SYS_FAIL);
+            }
+
+            if (oldInfo.getState() == 1) {
+                logger.warn("saveTask 任务表 执行中的任务不允许修改  id = {}", paramReq.getId());
+                throw new BusinessException("任务正在执行中，暂不允许修改");
+            }
+
+            record.preUpdate(user);
+
+
+            num = xrobotDao.updateTasks(record);
+
+        }
+
+        if (num < 1) {
+            logger.warn("saveTask 任务表 影响行数num = {}", num);
+            throw new XRobotException(ErrorCode.SYS_FAIL);
+        }
+
+
+    }
+
+    @Override
+    public void delTask(DelTaskReq paramReq) {
+        logger.info("delTask paramReq = {}", paramReq);
+
+        paramReq.validate();
+
+        SysUser user = getCurrentUser();
+
+
+        TasksWithBLOBs oldInfo = xrobotDao.getTaskInfoById(paramReq.getId(), user.getUserName());
+
+        if (oldInfo == null) {
+            logger.warn("delTask 任务不存在  id = {}，username={}", paramReq.getId(), user.getUserName());
+            throw new XRobotException(ErrorCode.SYS_FAIL);
+        }
+
+        if (oldInfo.getState() == 1) {
+            logger.warn("delTask 任务表 执行中的任务不允许修改  id = {}", paramReq.getId());
+            throw new BusinessException("任务正在执行中，暂不允许删除");
+        }
+
+
+        TasksExample example = new TasksExample();
+        example.createCriteria().andIdEqualTo(paramReq.getId()).andCreateByEqualTo(user.getUserName());
+
+        TasksWithBLOBs record = new TasksWithBLOBs();
+        record.setDelFlag(XRobotCode.DEL_1);
+        record.preUpdate(user);
+        record.setId(paramReq.getId());
+
+        xrobotDao.updateTasks(record);
+    }
+
+
+    private String getFileSuffix(String originalFilename) {
+
+        if (StringUtils.isEmpty(originalFilename)) {
+            return null;
+        }
+
+        int pos = originalFilename.lastIndexOf(".");
+        if (pos == -1) {
+            return null;
+        }
+
+        String fileSuffix = originalFilename.substring(pos + 1);
+        return fileSuffix.toLowerCase();
     }
 }

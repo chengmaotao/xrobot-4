@@ -4,9 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.fairyland.xrobot.common.constant.ErrorCode;
 import com.fairyland.xrobot.common.utils.MessageUtils;
 import com.fairyland.xrobot.framework.web.domain.AjaxResult;
-import com.fairyland.xrobot.modular.xrobot.domain.Device;
-import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroup;
-import com.fairyland.xrobot.modular.xrobot.domain.Dict;
+import com.fairyland.xrobot.modular.xrobot.domain.*;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.PageResult;
@@ -25,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +52,12 @@ public class XrobotController {
 
     @Value("${qrcodeh}")
     private int qrcodeh;
+
+    @Value("${netty.host}")
+    private String host;
+
+    @Value("${netty.port}")
+    private int port;
 
     /**
      * @Description: 终端设备列表 （带分页的）
@@ -549,6 +554,9 @@ public class XrobotController {
 
             QRCodeResp resp = xrobotService.getQRCodeJsonById(paramReq);
 
+            resp.setHost(host);
+            resp.setPort(port);
+
             String contents = JSON.toJSONString(resp);//关键
 
             String qrcodestr = QrCodeUtils.creatRrCode(contents, qrcodew, qrcodeh);
@@ -571,8 +579,8 @@ public class XrobotController {
     }
 
 
-
     // == 系统设置============================
+
     /**
      * @Description: 系统字典信息 列表（不分页）
      * @Param:
@@ -635,5 +643,163 @@ public class XrobotController {
 
         return webResponse;
     }
+
+
+    /**
+     * @Description: 任务分类 列表（不分页）
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/2 16:11
+     */
+    @RequestMapping(value = "/taskDictList")
+    @PreAuthorize("@ss.hasPermi('taskDict:list')")
+    public AjaxResult taskDictList() {
+
+        AjaxResult webResponse = null;
+        try {
+
+            List<TaskDict> resp = xrobotService.taskDictList();
+
+            webResponse = AjaxResult.success(resp);
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
+    /**
+     * @Description: 任务列表(带分页)
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/4 17:21
+     */
+    @RequestMapping(value = "/taskList")
+    @PreAuthorize("@ss.hasPermi('task:list')")
+    public AjaxResult taskList(@RequestBody TaskListReq paramReq) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            PageResult resp = xrobotService.taskList(paramReq);
+
+            webResponse = AjaxResult.success(resp);
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
+    /**
+     * @Description: 根据唯一标识 获得 任务详情
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/2 15:59
+     */
+    @RequestMapping(value = "/getTaskInfoById")
+    @PreAuthorize("@ss.hasPermi('task:list')")
+    public AjaxResult getTaskInfoById(@RequestBody DelTaskReq paramReq) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            TasksWithBLOBs resp = xrobotService.getTaskInfoById(paramReq);
+
+            webResponse = AjaxResult.success(resp);
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
+    /**
+     * @Description: 保存 任务表信息
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/2 12:20
+     */
+    @RequestMapping(value = "/saveTask")
+    @PreAuthorize("@ss.hasPermi('task:edit')")
+    public AjaxResult saveTask(SaveTaskReq paramReq, HttpServletRequest request) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            xrobotService.saveTask(paramReq,request);
+
+            webResponse = AjaxResult.success();
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
+    /**
+     * @Description: 删除 任务表信息
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/2 15:03
+     */
+    @RequestMapping(value = "/delTask")
+    @PreAuthorize("@ss.hasPermi('task:del')")
+    public AjaxResult delTask(@RequestBody DelTaskReq paramReq) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            xrobotService.delTask(paramReq);
+
+            webResponse = AjaxResult.success();
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(998, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
 
 }

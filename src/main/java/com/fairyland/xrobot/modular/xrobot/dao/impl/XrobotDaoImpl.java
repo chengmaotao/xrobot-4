@@ -3,10 +3,7 @@ package com.fairyland.xrobot.modular.xrobot.dao.impl;
 import com.fairyland.xrobot.common.constant.XRobotCode;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClinetLoginReq;
 import com.fairyland.xrobot.modular.xrobot.dao.XrobotDao;
-import com.fairyland.xrobot.modular.xrobot.dao.mapper.DeviceGroupMapper;
-import com.fairyland.xrobot.modular.xrobot.dao.mapper.DeviceGroupMembersMapper;
-import com.fairyland.xrobot.modular.xrobot.dao.mapper.DeviceMapper;
-import com.fairyland.xrobot.modular.xrobot.dao.mapper.DictMapper;
+import com.fairyland.xrobot.modular.xrobot.dao.mapper.*;
 import com.fairyland.xrobot.modular.xrobot.domain.*;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
@@ -43,6 +40,13 @@ public class XrobotDaoImpl implements XrobotDao {
 
     @Autowired
     private DictMapper dictMapper;
+
+
+    @Autowired
+    private TaskDictMapper taskDictMapper;
+
+    @Autowired
+    private TasksMapper tasksMapper;
 
     @Override
     public List<Device> deviceList(DeviceListReq paramReq) {
@@ -288,5 +292,54 @@ public class XrobotDaoImpl implements XrobotDao {
     @Override
     public void saveDict(Dict record) {
         dictMapper.updateByPrimaryKeySelective(record);
+    }
+
+    @Override
+    public List<TaskDict> taskDictList() {
+
+        TaskDictExample example = new TaskDictExample();
+        example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0);
+        example.setOrderByClause(" create_date desc");
+
+        return taskDictMapper.selectByExample(example);
+    }
+
+    @Override
+    public List<TasksWithBLOBs> taskList(TaskListReq paramReq) {
+        int pageNum = paramReq.getPageNum();
+        int pageSize = paramReq.getPageSize();
+        PageHelper.startPage(pageNum, pageSize);
+
+        List<TasksWithBLOBs> list = tasksMapper.taskList(paramReq);
+
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+
+        return list;
+    }
+
+    @Override
+    public TasksWithBLOBs getTaskInfoById(Long id, String userName) {
+        TasksExample example = new TasksExample();
+        example.createCriteria().andIdEqualTo(id).andCreateByEqualTo(userName).andDelFlagEqualTo(XRobotCode.DEL_0);
+
+        List<TasksWithBLOBs> list = tasksMapper.selectByExampleWithBLOBs(example);
+
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        return list.get(0);
+
+    }
+
+    @Override
+    public int insertTasks(TasksWithBLOBs record) {
+        return tasksMapper.insertSelective(record);
+    }
+
+    @Override
+    public int updateTasks(TasksWithBLOBs record) {
+        return tasksMapper.updateByPrimaryKeyWithBLOBs(record);
     }
 }

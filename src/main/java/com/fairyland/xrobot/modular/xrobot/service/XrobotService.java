@@ -1,13 +1,12 @@
 package com.fairyland.xrobot.modular.xrobot.service;
 
-import com.fairyland.xrobot.modular.xrobot.domain.Device;
-import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroup;
-import com.fairyland.xrobot.modular.xrobot.domain.Dict;
+import com.fairyland.xrobot.modular.xrobot.domain.*;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.PageResult;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface XrobotService {
@@ -46,4 +45,14 @@ public interface XrobotService {
     List<Dict> dictList();
 
     void saveDict(SaveDictReq paramReq);
+
+    List<TaskDict> taskDictList();
+
+    PageResult taskList(TaskListReq paramReq);
+
+    TasksWithBLOBs getTaskInfoById(DelTaskReq paramReq);
+
+    void saveTask(SaveTaskReq paramReq, HttpServletRequest request);
+
+    void delTask(DelTaskReq paramReq);
 }

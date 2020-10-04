@@ -43,6 +43,17 @@ public class MessageUtils {
                 break;
             }
 
+            case ErrorCode.ERROR_CODE_20: {
+                status = "api000020";
+                break;
+            }
+            case ErrorCode.ERROR_CODE_21: {
+                status = "api000021";
+                break;
+            }
+
+
+
             case ErrorCode.SYS_FAIL: {
                 status = "response.failure.sysfail";
                 break;

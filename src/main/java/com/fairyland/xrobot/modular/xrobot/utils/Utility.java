@@ -1,9 +1,11 @@
 package com.fairyland.xrobot.modular.xrobot.utils;
 
 import com.fairyland.xrobot.common.utils.SecurityUtils;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 
+import java.security.MessageDigest;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.UUID;
@@ -100,11 +102,26 @@ public class Utility {
     }
 
 
+    public static String getMd5(String key) {
+        if (StringUtils.isEmpty(key)) {
+            return key;
+        }
+        try {
+            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            md5.reset();
+            md5.update(key.getBytes("UTF-8"));
+            return Hex.encodeHexString(md5.digest());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return key;
+    }
+
     public static void main(String[] args) {
 
-        String pwd = "admin";
+        System.out.println(getMd5("nihao"));
 
-        System.out.println(SecurityUtils.encryptPassword(pwd));
+        System.out.println(getMd5("ddddddddddddddddddd"));
 
 
     }

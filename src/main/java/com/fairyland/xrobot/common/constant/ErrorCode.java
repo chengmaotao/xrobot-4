@@ -18,5 +18,8 @@ public class ErrorCode {
 
     public static final int ERROR_CODE_5 = 5;
 
+    public static final int ERROR_CODE_20 = 20;
+    public static final int ERROR_CODE_21 = 21;
+
 
 }

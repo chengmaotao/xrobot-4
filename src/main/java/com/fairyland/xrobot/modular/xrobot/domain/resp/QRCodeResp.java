@@ -26,6 +26,10 @@ public class QRCodeResp {
 
     private Integer login1;
 
+    private String host;
+
+    private Integer port;
+
     public String getDeviceid() {
         return deviceid;
     }
@@ -107,6 +111,22 @@ public class QRCodeResp {
     }
 
 
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public Integer getPort() {
+        return port;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
     @Override
     public String toString() {
         return "QRCodeResp{" +
@@ -120,6 +140,8 @@ public class QRCodeResp {
                 ", deviceid='" + deviceid + '\'' +
                 ", login=" + login +
                 ", login1=" + login1 +
+                ", host='" + host + '\'' +
+                ", port=" + port +
                 '}';
     }
 }
