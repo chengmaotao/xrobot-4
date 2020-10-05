@@ -931,7 +931,92 @@ public class XrobotController {
     }
 
 
-    // ============任务结果========================
+    // ============操作设备========================
 
+    /**
+     * @Description: 启动客户端
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/2 15:59
+     */
+    @RequestMapping(value = "/serverStart")
+    @PreAuthorize("@ss.hasPermi('device:command')")
+    public AjaxResult serverStart(@RequestBody DelDeviceReq paramReq) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            xrobotService.serverStart(paramReq);
+
+            webResponse = AjaxResult.success();
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
+    /**
+     * @Description: 退出客户端
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/2 15:59
+     */
+    @RequestMapping(value = "/serverExit")
+    @PreAuthorize("@ss.hasPermi('device:command')")
+    public AjaxResult serverExit(@RequestBody DelDeviceReq paramReq) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            xrobotService.serverExit(paramReq);
+
+            webResponse = AjaxResult.success();
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
+    /**
+     * @Description: 暂停操作
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/2 15:59
+     */
+    @RequestMapping(value = "/serverQuiet")
+    @PreAuthorize("@ss.hasPermi('device:command')")
+    public AjaxResult serverQuiet(@RequestBody DelDeviceReq paramReq) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            xrobotService.serverQuiet(paramReq);
+
+            webResponse = AjaxResult.success();
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
 
 }

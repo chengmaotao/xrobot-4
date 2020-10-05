@@ -34,8 +34,6 @@ public class SaveDeviceReq {
 
     private Integer login1; // 登录方式(0:账号密码 1:手机号短信验证码)
 
-    private String token; // 客户端登录token
-
     private String remarks; // 备注
 
     private String currentUser;
@@ -50,11 +48,6 @@ public class SaveDeviceReq {
 
     public void validate() {
 
-        if (StringUtils.isEmpty(token) || token.length() > 32) {
-            logger.warn("SaveDeviceReq 终端设备应用 token = {} 不正确 超出长度限制32", token);
-            throw new XRobotException(ErrorCode.ERROR_CODE_5);
-        }
-
         if (StringUtils.isEmpty(devicesn) || devicesn.length() > 32) {
             logger.warn("SaveDeviceReq 终端设备应用编号 devicesn = {} 不正确 超出长度限制32", devicesn);
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
@@ -65,34 +58,34 @@ public class SaveDeviceReq {
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
 
-        if (StringUtils.isEmpty(account) || account.length() > 32) {
-            logger.warn("SaveDeviceReq 目标APP账号(facebook) account = {} 不正确 超出长度限制32", account);
-            throw new XRobotException(ErrorCode.ERROR_CODE_5);
-        }
-
-        if (StringUtils.isEmpty(password) || password.length() > 32) {
-            logger.warn("SaveDeviceReq 目标APP密码(facebook) password = {} 不正确 超出长度限制32", password);
-            throw new XRobotException(ErrorCode.ERROR_CODE_5);
-        }
-
         if (login == null || (login != 0 && login != 1)) {
             logger.warn("SaveDeviceReq facebook 登录方式(0:账号密码 1:手机号短信验证码) login = {} 不正确", login);
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
 
+        if (login == 0 && (StringUtils.isEmpty(account) || account.length() > 32)) {
+            logger.warn("SaveDeviceReq 目标APP账号(facebook) account = {} 不正确 超出长度限制32", account);
+            throw new XRobotException(ErrorCode.ERROR_CODE_5);
+        }
 
-        if (StringUtils.isEmpty(account1) || account1.length() > 32) {
+        if (login == 0 && (StringUtils.isEmpty(password) || password.length() > 32)) {
+            logger.warn("SaveDeviceReq 目标APP密码(facebook) password = {} 不正确 超出长度限制32", password);
+            throw new XRobotException(ErrorCode.ERROR_CODE_5);
+        }
+
+
+        if (login1 == null || (login1 != 0 && login1 != 1)) {
+            logger.warn("SaveDeviceReq wsup 登录方式(0:账号密码 1:手机号短信验证码) login1 = {} 不正确", login1);
+            throw new XRobotException(ErrorCode.ERROR_CODE_5);
+        }
+
+        if (login1 == 0 && (StringUtils.isEmpty(account1) || account1.length() > 32)) {
             logger.warn("SaveDeviceReq 目标APP1账号(wsup) account1 = {} 不正确 超出长度限制32", account1);
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
 
-        if (StringUtils.isEmpty(password1) || password1.length() > 32) {
+        if (login1 == 0 && (StringUtils.isEmpty(password1) || password1.length() > 32)) {
             logger.warn("SaveDeviceReq 目标APP密码(wsup) password1 = {} 不正确 超出长度限制32", password1);
-            throw new XRobotException(ErrorCode.ERROR_CODE_5);
-        }
-
-        if (login1 == null || (login1 != 0 && login1 != 1)) {
-            logger.warn("SaveDeviceReq wsup 登录方式(0:账号密码 1:手机号短信验证码) login1 = {} 不正确", login1);
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
 
@@ -101,14 +94,6 @@ public class SaveDeviceReq {
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
 
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public String getRemarks() {
@@ -211,7 +196,6 @@ public class SaveDeviceReq {
                 ", account1='" + account1 + '\'' +
                 ", password1='" + password1 + '\'' +
                 ", login1=" + login1 +
-                ", token='" + token + '\'' +
                 ", remarks='" + remarks + '\'' +
                 ", currentUser='" + currentUser + '\'' +
                 '}';

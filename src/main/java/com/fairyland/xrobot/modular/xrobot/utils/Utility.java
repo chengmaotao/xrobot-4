@@ -1,6 +1,5 @@
 package com.fairyland.xrobot.modular.xrobot.utils;
 
-import com.fairyland.xrobot.common.utils.SecurityUtils;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -8,6 +7,8 @@ import org.apache.commons.lang3.time.FastDateFormat;
 import java.security.MessageDigest;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -17,6 +18,23 @@ import java.util.UUID;
  * @create: 2020-05-24 10:54
  **/
 public class Utility {
+
+    public static Map<String, String> monitorClientAppStatus;
+
+    static {
+        monitorClientAppStatus = new HashMap<>();
+
+        monitorClientAppStatus.put("0", "未就绪");
+        monitorClientAppStatus.put("100", "正常");
+        monitorClientAppStatus.put("200", "客户端已暂停");
+        monitorClientAppStatus.put("300", "Facebook账号被禁用");
+        monitorClientAppStatus.put("3001", "WhatsApp账号被禁用");
+
+    }
+
+    public static String getMonitorClientAppStatus(String key) {
+        return monitorClientAppStatus.get(key);
+    }
 
 
     public static Date getNowDate() {

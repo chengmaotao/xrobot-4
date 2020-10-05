@@ -544,7 +544,7 @@
   </update>
 
 
-  <select id="saveTaskInit" parameterType="com.fairyland.xrobot.modular.xrobot.domain.req.SaveTaskInitReq" resultMap="com.fairyland.xrobot.modular.xrobot.domain.resp.SaveTaskInitResp">
+  <select id="saveTaskInit" parameterType="com.fairyland.xrobot.modular.xrobot.domain.req.SaveTaskInitReq" resultType="com.fairyland.xrobot.modular.xrobot.domain.resp.SaveTaskInitResp">
 
           SELECT
               a.deviceID AS "deviceid",

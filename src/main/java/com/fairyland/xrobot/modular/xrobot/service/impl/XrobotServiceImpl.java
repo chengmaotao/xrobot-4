@@ -117,7 +117,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
             // 新增
             record.setState(0);
-            record.setToken(paramReq.getToken());
+            record.setToken(Utility.get32UUID());
             record.setDeviceid(getSerializeVal());
             record.preInsert(user);
             num = xrobotDao.insertDevice(record);
@@ -182,7 +182,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         }
 
         if (robotServer.sessionIsActive(oldInfo.getDeviceid())) {
-            logger.warn("delDeviceReq req = {},终端设备应用编号 登录中的状态 不允许修改", paramReq);
+            logger.warn("delDeviceReq req = {},终端设备应用编号 连接的状态 不允许删除", paramReq);
             throw new BusinessException("该客户端是连接状态 不允许删除。若要删除 请先去断开连接 再执行删除操作");
         }
 
@@ -212,7 +212,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         }
 
         if (robotServer.sessionIsActive(oldInfo.getDeviceid())) {
-            logger.warn("resetDeviceState req = {},终端设备应用编号 登录中的状态 不允许修改", paramReq);
+            logger.warn("resetDeviceState req = {},终端设备应用编号 连接的状态 不允许重置操作", paramReq);
             throw new BusinessException("该客户端是连接状态 不允许重置。若要重置 请先去断开连接 再执行重置操作");
         }
 
@@ -672,17 +672,27 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             tempRecord.preUpdate(user);
             // 在线
             if (robotServer.sessionIsActive(taskDevices.getDeviceid())) {
-                // 有新任务通知
-                serverCommandReq = new ServerTaskNotifyCommandReq();
-                serverCommandReq.setDeviceid(taskDevices.getDeviceid());
-                serverCommandReq.setTaskid(oldInfo.getTaskid());
-                serverCommandReq.setTaskclass(oldInfo.getTaskclass());
-                serverCommandReq.setKeywords(oldInfo.getKeywords());
-                serverCommandReq.setContent(oldInfo.getContent());
-                robotServer.sendTaskNotifyCommand(taskDevices.getDeviceid(), serverCommandReq);
 
-                // 状态修改为 执行中 1
-                tempRecord.setState(1);
+                String seesionStatusCode = robotServer.getSeesionStatus(taskDevices.getDeviceid());
+                // 正常 发送新任务通知
+                if (StringUtils.equals("100", seesionStatusCode)) {
+
+                    // 有新任务通知
+                    serverCommandReq = new ServerTaskNotifyCommandReq();
+                    serverCommandReq.setDeviceid(taskDevices.getDeviceid());
+                    serverCommandReq.setTaskid(oldInfo.getTaskid());
+                    serverCommandReq.setTaskclass(oldInfo.getTaskclass());
+                    serverCommandReq.setKeywords(oldInfo.getKeywords());
+                    serverCommandReq.setContent(oldInfo.getContent());
+                    robotServer.sendTaskNotifyCommand(taskDevices.getDeviceid(), serverCommandReq);
+
+                    // 状态修改为 执行中 1
+                    tempRecord.setState(1);
+                } else {
+                    tempRecord.setState(99); // 设备未在线
+                    tempRecord.setRemarks(Utility.getMonitorClientAppStatus(seesionStatusCode));
+                }
+
             } else {
                 // 未在线
                 tempRecord.setState(99); // 设备未在线
@@ -762,9 +772,108 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         for (Device xclient : list) {
             xclient.setMonitorClientStatus(robotServer.sessionIsActive(xclient.getDeviceid()));
+
+            String seesionStatusCode = robotServer.getSeesionStatus(xclient.getDeviceid());
+            xclient.setMonitorClientAppStatusCode(seesionStatusCode);
+            xclient.setMonitorClientAppStatus(Utility.getMonitorClientAppStatus(seesionStatusCode));
         }
 
         return list;
+    }
+
+
+    @Override
+    public void serverStart(DelDeviceReq paramReq) {
+        logger.info("serverStart paramReq = {}", paramReq);
+
+        paramReq.validate();
+
+        Device deviceInfo = xrobotDao.getDeviceInfoById(paramReq.getId(), getCurrentUser().getUserName());
+
+        if (deviceInfo == null) {
+            logger.warn("serverStart req = {},终端设备应用 不存在", paramReq);
+            throw new XRobotException(ErrorCode.SYS_FAIL);
+        }
+
+        // 设备已经是连接状态
+        if (robotServer.sessionIsActive(deviceInfo.getDeviceid())) {
+
+            String seesionStatusCode = robotServer.getSeesionStatus(deviceInfo.getDeviceid());
+
+            // 客户端已暂停
+            if (StringUtils.equals(seesionStatusCode, "200")) {
+                // 启动客户端
+                robotServer.sendStartCommand(deviceInfo.getDeviceid());
+
+            } else if (StringUtils.equals(seesionStatusCode, "100")) {
+                // 正常
+                logger.warn("终端设备连接已经是正常状态，不需要执行启动命令");
+            } else {
+                logger.warn("serverStart req = {},终端设备 状态={}，不能启动", seesionStatusCode);
+                throw new BusinessException("终端设备 " + Utility.getMonitorClientAppStatus(seesionStatusCode) + ",不能启动");
+            }
+
+
+        } else {
+            logger.warn("serverStart req = {},终端设备未连接", paramReq);
+            throw new BusinessException("终端设备未连接！");
+        }
+    }
+
+    @Override
+    public void serverExit(DelDeviceReq paramReq) {
+        logger.info("serverExit paramReq = {}", paramReq);
+
+        paramReq.validate();
+
+        Device deviceInfo = xrobotDao.getDeviceInfoById(paramReq.getId(), getCurrentUser().getUserName());
+
+        if (deviceInfo == null) {
+            logger.warn("serverExit req = {},终端设备应用 不存在", paramReq);
+            throw new XRobotException(ErrorCode.SYS_FAIL);
+        }
+
+        // 设备是连接状态, 可以执行退出操作
+        if (robotServer.sessionIsActive(deviceInfo.getDeviceid())) {
+
+            // 退出客户端
+            robotServer.sendExitCommand(deviceInfo.getDeviceid());
+
+        } else {
+            logger.warn("serverExit req = {},终端设备未连接", paramReq, deviceInfo.getState());
+            throw new BusinessException("终端设备未连接！");
+        }
+    }
+
+    @Override
+    public void serverQuiet(DelDeviceReq paramReq) {
+        logger.info("serverQuiet paramReq = {}", paramReq);
+
+        paramReq.validate();
+
+        Device deviceInfo = xrobotDao.getDeviceInfoById(paramReq.getId(), getCurrentUser().getUserName());
+
+        if (deviceInfo == null) {
+            logger.warn("serverQuiet req = {},终端设备应用 不存在", paramReq);
+            throw new XRobotException(ErrorCode.SYS_FAIL);
+        }
+
+        // 设备是连接状态, 可以执行退出操作
+        if (robotServer.sessionIsActive(deviceInfo.getDeviceid())) {
+
+            String seesionStatusCode = robotServer.getSeesionStatus(deviceInfo.getDeviceid());
+
+            // 客户端已暂停
+            if (StringUtils.equals(seesionStatusCode, "200")) {
+                logger.warn("终端设备连接已经暂停状态，不需要执行暂停命令");
+            } else {
+                robotServer.sendQuietCommand(deviceInfo.getDeviceid());
+            }
+
+        } else {
+            logger.warn("serverQuiet req = {},终端设备未连接", paramReq, deviceInfo.getState());
+            throw new BusinessException("终端设备未连接！");
+        }
     }
 
 

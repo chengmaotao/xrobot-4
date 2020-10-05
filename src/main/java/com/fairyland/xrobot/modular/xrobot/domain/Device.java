@@ -334,7 +334,11 @@ public class Device extends BaseEntity {
     }
 
 
-    private boolean monitorClientStatus;  // 监控 客户端的状态
+    private boolean monitorClientStatus;  // 客户端连接是否正常   true 连接中，false 未连接
+
+    private String monitorClientAppStatus; // 监控 客户端app的状态
+
+    private String monitorClientAppStatusCode; // 监控 客户端app的状态
 
     public boolean isMonitorClientStatus() {
         return monitorClientStatus;
@@ -342,5 +346,21 @@ public class Device extends BaseEntity {
 
     public void setMonitorClientStatus(boolean monitorClientStatus) {
         this.monitorClientStatus = monitorClientStatus;
+    }
+
+    public String getMonitorClientAppStatus() {
+        return monitorClientAppStatus;
+    }
+
+    public void setMonitorClientAppStatus(String monitorClientAppStatus) {
+        this.monitorClientAppStatus = monitorClientAppStatus;
+    }
+
+    public String getMonitorClientAppStatusCode() {
+        return monitorClientAppStatusCode;
+    }
+
+    public void setMonitorClientAppStatusCode(String monitorClientAppStatusCode) {
+        this.monitorClientAppStatusCode = monitorClientAppStatusCode;
     }
 }

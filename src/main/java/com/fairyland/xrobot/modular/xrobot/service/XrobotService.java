@@ -65,4 +65,10 @@ public interface XrobotService {
     List<DeviceGroupMembersListResp> deviceGroupMembersAllList(DeviceGroupMembersListReq paramReq);
 
     List<Device> monitorDeviceList(DeviceListReq paramReq);
+
+    void serverStart(DelDeviceReq paramReq);
+
+    void serverExit(DelDeviceReq paramReq);
+
+    void serverQuiet(DelDeviceReq paramReq);
 }
