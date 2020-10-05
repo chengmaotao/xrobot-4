@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.*;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClinetLoginReq;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ServerTaskNotifyCommandReq;
 import com.fairyland.xrobot.modular.xrobot.domain.Device;
 import com.fairyland.xrobot.modular.xrobot.service.AutoxitService;
 import io.netty.bootstrap.ServerBootstrap;
@@ -540,6 +541,17 @@ public class LinkerServer {
         JSONObject json = new JSONObject();
         MessagePacket messagePacket = new MessagePacket();
         ByteBuf buffer = messagePacket.getReqPacket(MessagePacket.SERVER_EXIT_COMMAND, json.toJSONString());
+        Message message = messagePacket.getMessage();
+        WaitAckRequest waitAck = new WaitAckServerRequest(sessionId, message);
+        waitAckRequestCache.put(message.getSerial(), waitAck);
+        return sendMessage(sessionId, buffer);
+    }
+
+    public boolean sendTaskNotifyCommand(String sessionId, ServerTaskNotifyCommandReq serverCommandReq) {
+        String body = JSONObject.toJSONString(serverCommandReq);
+        log.info("sendTaskNotifyCommand 发送消息：{}", body);
+        MessagePacket messagePacket = new MessagePacket();
+        ByteBuf buffer = messagePacket.getReqPacket(MessagePacket.SERVER_TASKNOTIFY_COMMAND, body);
         Message message = messagePacket.getMessage();
         WaitAckRequest waitAck = new WaitAckServerRequest(sessionId, message);
         waitAckRequestCache.put(message.getSerial(), waitAck);

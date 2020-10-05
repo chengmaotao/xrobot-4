@@ -63,4 +63,6 @@ public interface XrobotService {
     Map<String, Object> saveTaskInit(SaveTaskInitReq paramReq);
 
     List<DeviceGroupMembersListResp> deviceGroupMembersAllList(DeviceGroupMembersListReq paramReq);
+
+    List<Device> monitorDeviceList(DeviceListReq paramReq);
 }

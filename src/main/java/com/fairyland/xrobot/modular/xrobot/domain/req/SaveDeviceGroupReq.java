@@ -18,7 +18,6 @@ public class SaveDeviceGroupReq {
 
     private Long id; // 为空时新增 不为空是修改
 
-
     private String groupname; // 分组名称
 
     private String remarks; // 备注

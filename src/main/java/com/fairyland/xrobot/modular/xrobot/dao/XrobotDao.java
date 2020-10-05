@@ -73,11 +73,15 @@ public interface XrobotDao {
 
     void delTasksDevicesByTaskId(String taskid, String userName);
 
-    void exeTask(Tasks record);
+    int exeTask(Tasks record);
 
     List<TaskDevices> taskDevicesList(TaskDevicesListReq paramReq);
 
     List<DeviceGroupMembersListResp> deviceGroupMembersAllList(DeviceGroupMembersListReq paramReq);
 
     List<SaveTaskInitResp> saveTaskInit(SaveTaskInitReq paramReq);
+
+    List<TaskDevices> taskDevicesAllList(String taskid, String userName);
+
+    void TaskDevices(TaskDevices tempRecord);
 }

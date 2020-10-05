@@ -75,7 +75,6 @@ public class XrobotDaoImpl implements XrobotDao {
     @Override
     public int updateDevice(Device record, DeviceExample example) {
 
-
         return deviceMapper.updateByExampleSelective(record, example);
     }
 
@@ -362,8 +361,8 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public void exeTask(Tasks record) {
-        tasksMapper.exeTask(record);
+    public int exeTask(Tasks record) {
+       return tasksMapper.exeTask(record);
     }
 
     @Override
@@ -398,6 +397,24 @@ public class XrobotDaoImpl implements XrobotDao {
 
     @Override
     public List<SaveTaskInitResp> saveTaskInit(SaveTaskInitReq paramReq) {
-       return tasksMapper.saveTaskInit(paramReq);
+        return tasksMapper.saveTaskInit(paramReq);
+    }
+
+    @Override
+    public List<TaskDevices> taskDevicesAllList(String taskid, String userName) {
+        TaskDevicesExample example = new TaskDevicesExample();
+        example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(userName).andTaskidEqualTo(taskid);
+        List<TaskDevices> list = taskDevicesMapper.selectByExample(example);
+
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+
+        return list;
+    }
+
+    @Override
+    public void TaskDevices(TaskDevices tempRecord) {
+        taskDevicesMapper.updateByPrimaryKeySelective(tempRecord);
     }
 }

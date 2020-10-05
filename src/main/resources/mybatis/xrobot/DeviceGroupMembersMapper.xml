@@ -375,8 +375,7 @@
           a.phone as "phone"
       FROM
           c_device a
-      LEFT JOIN c_devicegroupmembers b ON a.deviceID = b.deviceID
-      AND b.groupID = #{groupid}
+      LEFT JOIN c_devicegroupmembers b ON a.deviceID = b.deviceID AND b.groupID = #{groupid}
       WHERE
           a.del_flag = '0'
         and a.create_by = #{currentUser}

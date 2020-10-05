@@ -332,4 +332,15 @@ public class Device extends BaseEntity {
     public void setState(Integer state) {
         this.state = state;
     }
+
+
+    private boolean monitorClientStatus;  // 监控 客户端的状态
+
+    public boolean isMonitorClientStatus() {
+        return monitorClientStatus;
+    }
+
+    public void setMonitorClientStatus(boolean monitorClientStatus) {
+        this.monitorClientStatus = monitorClientStatus;
+    }
 }

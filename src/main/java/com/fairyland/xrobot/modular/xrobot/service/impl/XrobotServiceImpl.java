@@ -5,6 +5,7 @@ import com.fairyland.xrobot.common.constant.XRobotCode;
 import com.fairyland.xrobot.common.utils.PageUtils;
 import com.fairyland.xrobot.common.utils.StringUtils;
 import com.fairyland.xrobot.modular.system.domain.SysUser;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ServerTaskNotifyCommandReq;
 import com.fairyland.xrobot.modular.xrobot.autoxit.server.LinkerServer;
 import com.fairyland.xrobot.modular.xrobot.dao.XrobotDao;
 import com.fairyland.xrobot.modular.xrobot.domain.*;
@@ -82,7 +83,6 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         paramReq.validate();
 
-
         SysUser user = getCurrentUser();
 
         Device record = new Device();
@@ -95,11 +95,11 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         record.setPassword1(paramReq.getPassword1());
         record.setLogin1(paramReq.getLogin1());
         record.setRemarks(paramReq.getRemarks());
+
         List<Device> lists = null;
         int num = 0;
 
         if (paramReq.getId() == null) {
-
 
             // 判断 终端设备应用编号 是否已经存在
             lists = xrobotDao.getDeviceListByDeviceSN(paramReq.getDevicesn(), user.getUserName());
@@ -124,12 +124,17 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         } else {
             // 修改
-
             Device oldInfo = xrobotDao.getDeviceInfoById(paramReq.getId(), user.getUserName());
 
             if (oldInfo == null) {
                 logger.warn("SaveDeviceReq2 req = {},终端设备应用 不存在", paramReq);
                 throw new XRobotException(ErrorCode.SYS_FAIL);
+            }
+
+            // 连接中的设备 不允许修改
+            if (robotServer.sessionIsActive(oldInfo.getDeviceid())) {
+                logger.warn("SaveDeviceReq2 req = {},终端设备应用编号 登录中的状态 不允许修改", paramReq);
+                throw new BusinessException("该客户端是连接状态 不允许修改。若要修改 请先去断开连接 再执行修改操作");
             }
 
             if (!StringUtils.equals(oldInfo.getDevicesn(), paramReq.getDevicesn())) {
@@ -150,7 +155,6 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             }
 
             record.preUpdate(user);
-
             DeviceExample example = new DeviceExample();
             example.createCriteria().andIdEqualTo(paramReq.getId()).andCreateByEqualTo(user.getUserName());
             num = xrobotDao.updateDevice(record, example);
@@ -161,7 +165,6 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             logger.warn("SaveDeviceReq 保存终端设备 影响行数num = {}", num);
             throw new XRobotException(ErrorCode.SYS_FAIL);
         }
-
     }
 
 
@@ -170,17 +173,18 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         logger.info("delDeviceReq paramReq = {}", paramReq);
 
         paramReq.validate();
-
-
-        // TODO CTC 连接状态 不允许删除
-/*        boolean isActive = robotServer.sessionIsActive(paramReq.getClientId());
-
-        if (isActive) {
-            logger.warn("客户端={} 连接状态 不允许删除", paramReq.getClientId());
-            throw new BusinessException("该客户端是连接状态 不允许删除。若要删除 请先去断开连接 再执行删除操作");
-        }*/
-
         SysUser user = getCurrentUser();
+        Device oldInfo = xrobotDao.getDeviceInfoById(paramReq.getId(), user.getUserName());
+
+        if (oldInfo == null) {
+            logger.warn("delDeviceReq req = {},终端设备应用 不存在", paramReq);
+            throw new XRobotException(ErrorCode.SYS_FAIL);
+        }
+
+        if (robotServer.sessionIsActive(oldInfo.getDeviceid())) {
+            logger.warn("delDeviceReq req = {},终端设备应用编号 登录中的状态 不允许修改", paramReq);
+            throw new BusinessException("该客户端是连接状态 不允许删除。若要删除 请先去断开连接 再执行删除操作");
+        }
 
         DeviceExample example = new DeviceExample();
         example.createCriteria().andIdEqualTo(paramReq.getId()).andCreateByEqualTo(user.getUserName());
@@ -200,12 +204,24 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         SysUser user = getCurrentUser();
 
+        Device oldInfo = xrobotDao.getDeviceInfoById(paramReq.getId(), user.getUserName());
+
+        if (oldInfo == null) {
+            logger.warn("resetDeviceState req = {},终端设备应用 不存在", paramReq);
+            throw new XRobotException(ErrorCode.SYS_FAIL);
+        }
+
+        if (robotServer.sessionIsActive(oldInfo.getDeviceid())) {
+            logger.warn("resetDeviceState req = {},终端设备应用编号 登录中的状态 不允许修改", paramReq);
+            throw new BusinessException("该客户端是连接状态 不允许重置。若要重置 请先去断开连接 再执行重置操作");
+        }
 
         DeviceExample example = new DeviceExample();
-        example.createCriteria().andIdEqualTo(paramReq.getId()).andDeviceidEqualTo(paramReq.getDeviceid()).andPhoneEqualTo(paramReq.getPhone()).andCreateByEqualTo(user.getUserName());
+        example.createCriteria().andIdEqualTo(paramReq.getId()).andDeviceidEqualTo(paramReq.getDeviceid()).andCreateByEqualTo(user.getUserName());
 
 
         Device record = new Device();
+        record.setPhone(paramReq.getPhone());
         record.setAccount(paramReq.getAccount());
         record.setPassword(paramReq.getPassword());
         record.setLogin(paramReq.getLogin());
@@ -214,7 +230,6 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         record.setLogin1(paramReq.getLogin1());
         record.setState(0);
         record.preUpdate(user);
-
         xrobotDao.resetDeviceState(example, record);
 
     }
@@ -297,7 +312,6 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             }
 
             record.preUpdate(user);
-
             DeviceGroupExample example = new DeviceGroupExample();
             example.createCriteria().andIdEqualTo(paramReq.getId()).andCreateByEqualTo(user.getUserName());
 
@@ -334,17 +348,14 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         SysUser user = getCurrentUser();
 
-        List<Device> list = xrobotDao.deviceAllList(user.getUserName());
-        return list;
+        return xrobotDao.deviceAllList(user.getUserName());
+
     }
 
     @Override
     public List<DeviceGroup> deviceGroupAllList() {
 
-
-        List<DeviceGroup> list = xrobotDao.deviceGroupAllList(getCurrentUser().getUserName());
-
-        return list;
+        return xrobotDao.deviceGroupAllList(getCurrentUser().getUserName());
     }
 
     @Override
@@ -500,8 +511,8 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                 }
 
                 newFilePath = filePath;
-                break;
             }
+            break;
         }
 
         SysUser user = getCurrentUser();
@@ -550,12 +561,12 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             TasksWithBLOBs oldInfo = xrobotDao.getTaskInfoById(paramReq.getTaskid(), user.getUserName());
 
             if (oldInfo == null) {
-                logger.warn("saveTask 任务不存在  id = {}，username={}", paramReq.getTaskid(), user.getUserName());
+                logger.warn("saveTask 任务不存在  taskId = {}，username={}", paramReq.getTaskid(), user.getUserName());
                 throw new XRobotException(ErrorCode.SYS_FAIL);
             }
 
             if (oldInfo.getState() == 1) {
-                logger.warn("saveTask 任务表 执行中的任务不允许修改  id = {}", paramReq.getTaskid());
+                logger.warn("saveTask 任务表 执行中的任务不允许修改  taskId = {}", paramReq.getTaskid());
                 throw new BusinessException("任务正在执行中，暂不允许修改");
             }
 
@@ -563,10 +574,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             record.setId(oldInfo.getId());
             num = xrobotDao.updateTasks(record);
 
-
             xrobotDao.delTasksDevicesByTaskId(oldInfo.getTaskid(), user.getUserName());
-
-
             Map<String, Object> dbParams = new HashMap<>();
             dbParams.put("nowDate", new Date());
             dbParams.put("username", user.getUserName());
@@ -581,8 +589,6 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             logger.warn("saveTask 任务表 影响行数num = {}", num);
             throw new XRobotException(ErrorCode.SYS_FAIL);
         }
-
-
     }
 
     @Override
@@ -643,10 +649,50 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         record.preUpdate(user);
         record.setId(oldInfo.getId());
         record.setCreateBy(user.getUserName());
-        xrobotDao.exeTask(record);
+        int num = xrobotDao.exeTask(record);
+
+        if (num < 1) {
+            logger.warn("exeTask 任务表 影响行数num = {}", num);
+            throw new XRobotException(ErrorCode.SYS_FAIL);
+        }
+
+        // SERVER_TASKNOTIFY_COMMAND 修改 任务执行终端表 为 执行中
+
+        List<TaskDevices> list = xrobotDao.taskDevicesAllList(paramReq.getTaskid(), user.getUserName());
+        if (list == null || list.isEmpty()) {
+            logger.warn("exeTask 该任务下没有对应的taskId={} 执行任务的终端", paramReq.getTaskid());
+            throw new BusinessException("该任务下没有对应的 执行任务的终端");
+        }
+
+        TaskDevices tempRecord = null;
+        ServerTaskNotifyCommandReq serverCommandReq = null;
+        for (TaskDevices taskDevices : list) {
+            tempRecord = new TaskDevices();
+            tempRecord.setId(taskDevices.getId());
+            tempRecord.preUpdate(user);
+            // 在线
+            if (robotServer.sessionIsActive(taskDevices.getDeviceid())) {
+                // 有新任务通知
+                serverCommandReq = new ServerTaskNotifyCommandReq();
+                serverCommandReq.setDeviceid(taskDevices.getDeviceid());
+                serverCommandReq.setTaskid(oldInfo.getTaskid());
+                serverCommandReq.setTaskclass(oldInfo.getTaskclass());
+                serverCommandReq.setKeywords(oldInfo.getKeywords());
+                serverCommandReq.setContent(oldInfo.getContent());
+                robotServer.sendTaskNotifyCommand(taskDevices.getDeviceid(), serverCommandReq);
+
+                // 状态修改为 执行中 1
+                tempRecord.setState(1);
+            } else {
+                // 未在线
+                tempRecord.setState(99); // 设备未在线
+                tempRecord.setRemarks("执行任务时，设备未在线");
+            }
+
+            xrobotDao.TaskDevices(tempRecord);
+        }
 
 
-        // TODO SERVER_TASKNOTIFY_COMMAND 修改 任务执行终端表 为 执行中
     }
 
     @Override
@@ -672,7 +718,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
             // 所有的设备列表
             List<Device> devices = deviceAllList();
-            resp.put("devices", resp);
+            resp.put("devices", devices);
             // 所有的分组信息
             List<DeviceGroup> deviceGroups = deviceGroupAllList();
             resp.put("deviceGroups", deviceGroups);
@@ -696,14 +742,29 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
     @Override
     public List<DeviceGroupMembersListResp> deviceGroupMembersAllList(DeviceGroupMembersListReq paramReq) {
 
-
         logger.info("deviceGroupMembersAllList req = {}", paramReq);
 
         paramReq.setCurrentUser(getCurrentUser().getUserName());
-        List<DeviceGroupMembersListResp> list = xrobotDao.deviceGroupMembersAllList(paramReq);
+        return xrobotDao.deviceGroupMembersAllList(paramReq);
+    }
+
+    @Override
+    public List<Device> monitorDeviceList(DeviceListReq paramReq) {
+        logger.info("monitorDeviceList req = {}", paramReq);
+
+        paramReq.setCurrentUser(getCurrentUser().getUserName());
+
+        List<Device> list = xrobotDao.deviceList(paramReq);
+
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+
+        for (Device xclient : list) {
+            xclient.setMonitorClientStatus(robotServer.sessionIsActive(xclient.getDeviceid()));
+        }
 
         return list;
-
     }
 
 

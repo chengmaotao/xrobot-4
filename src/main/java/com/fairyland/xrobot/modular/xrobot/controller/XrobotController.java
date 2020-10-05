@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.fairyland.xrobot.common.constant.ErrorCode;
 import com.fairyland.xrobot.common.utils.MessageUtils;
 import com.fairyland.xrobot.framework.web.domain.AjaxResult;
-import com.fairyland.xrobot.modular.xrobot.domain.*;
+import com.fairyland.xrobot.modular.xrobot.domain.Device;
+import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroup;
+import com.fairyland.xrobot.modular.xrobot.domain.Dict;
+import com.fairyland.xrobot.modular.xrobot.domain.TaskDict;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
@@ -125,6 +128,35 @@ public class XrobotController {
 
 
     /**
+     * @Description: 终端设备监控中心（不分页）
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/5/26 16:07
+     */
+    @RequestMapping(value = "/monitorDeviceList")
+    @PreAuthorize("@ss.hasPermi('device:monitor')")
+    public AjaxResult monitorDeviceList(@RequestBody DeviceListReq paramReq) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            List<Device> list = xrobotService.monitorDeviceList(paramReq);
+
+            webResponse = AjaxResult.success(list);
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
+    /**
      * @Description: 根据唯一标识 获得 终端设备信息
      * @Param:
      * @return:
@@ -186,7 +218,7 @@ public class XrobotController {
 
 
     /**
-     * @Description: 重置设备状态(回复为可用 未连接 状态)
+     * @Description: 重置设备状态(恢复为可用 未连接 状态)
      * @Param:
      * @return:
      * @Author: ctc
@@ -742,14 +774,13 @@ public class XrobotController {
     }
 
 
-
-    /** 
-    * @Description:  任务执行终端列表(带分页)
-    * @Param:  
-    * @return:  
-    * @Author: ctc
-    * @Date: 2020/10/4 22:16
-    */
+    /**
+     * @Description: 任务执行终端列表(带分页)
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/4 22:16
+     */
     @RequestMapping(value = "/taskDevicesList")
     @PreAuthorize("@ss.hasPermi('taskDevices:list')")
     public AjaxResult taskDevicesList(@RequestBody TaskDevicesListReq paramReq) {
@@ -775,7 +806,6 @@ public class XrobotController {
     }
 
 
-
     /**
      * @Description: 保存 任务表信息 初始化
      * @Param:
@@ -790,7 +820,7 @@ public class XrobotController {
         AjaxResult webResponse = null;
         try {
 
-           Map<String,Object>  resp = xrobotService.saveTaskInit(paramReq);
+            Map<String, Object> resp = xrobotService.saveTaskInit(paramReq);
 
             webResponse = AjaxResult.success(resp);
         } catch (XRobotException ex) {
@@ -819,7 +849,7 @@ public class XrobotController {
         AjaxResult webResponse = null;
         try {
 
-            xrobotService.saveTask(paramReq,request);
+            xrobotService.saveTask(paramReq, request);
 
             webResponse = AjaxResult.success();
         } catch (XRobotException ex) {
@@ -902,7 +932,6 @@ public class XrobotController {
 
 
     // ============任务结果========================
-
 
 
 }

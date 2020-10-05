@@ -125,7 +125,7 @@ public interface TasksMapper {
 
     List<TasksWithBLOBs> taskList(TaskListReq paramReq);
 
-    void exeTask(Tasks record);
+    int exeTask(Tasks record);
 
     List<SaveTaskInitResp> saveTaskInit(SaveTaskInitReq paramReq);
 }
