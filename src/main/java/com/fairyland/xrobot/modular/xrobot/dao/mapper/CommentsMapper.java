@@ -3,6 +3,8 @@ package com.fairyland.xrobot.modular.xrobot.dao.mapper;
 import com.fairyland.xrobot.modular.xrobot.domain.Comments;
 import com.fairyland.xrobot.modular.xrobot.domain.CommentsExample;
 import java.util.List;
+
+import com.fairyland.xrobot.modular.xrobot.domain.req.ExeResultReq;
 import org.apache.ibatis.annotations.Param;
 
 public interface CommentsMapper {
@@ -117,4 +119,6 @@ public interface CommentsMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(Comments record);
+
+    List<Comments> commentsList(ExeResultReq paramReq);
 }

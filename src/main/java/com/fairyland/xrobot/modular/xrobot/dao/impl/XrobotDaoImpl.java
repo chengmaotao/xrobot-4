@@ -52,6 +52,21 @@ public class XrobotDaoImpl implements XrobotDao {
     @Autowired
     private TaskDevicesMapper taskDevicesMapper;
 
+    @Autowired
+    private PushJoinGroupsMapper pushJoinGroupsMapper;
+
+    @Autowired
+    private PushMessagesMapper pushMessagesMapper;
+
+    @Autowired
+    private CommentJoinGroupsMapper commentJoinGroupsMapper;
+
+    @Autowired
+    private CommentsMapper commentsMapper;
+
+    @Autowired
+    private CreateGroupsMapper createGroupsMapper;
+
     @Override
     public List<Device> deviceList(DeviceListReq paramReq) {
         int pageNum = paramReq.getPageNum();
@@ -362,7 +377,7 @@ public class XrobotDaoImpl implements XrobotDao {
 
     @Override
     public int exeTask(Tasks record) {
-       return tasksMapper.exeTask(record);
+        return tasksMapper.exeTask(record);
     }
 
     @Override
@@ -416,5 +431,85 @@ public class XrobotDaoImpl implements XrobotDao {
     @Override
     public void TaskDevices(TaskDevices tempRecord) {
         taskDevicesMapper.updateByPrimaryKeySelective(tempRecord);
+    }
+
+    @Override
+    public List<PushJoinGroups> pushJoinGroupsList(ExeResultReq paramReq) {
+        int pageNum = paramReq.getPageNum();
+        int pageSize = paramReq.getPageSize();
+        PageHelper.startPage(pageNum, pageSize);
+
+
+        List<PushJoinGroups> list = pushJoinGroupsMapper.pushJoinGroupsList(paramReq);
+
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<PushMessages> pushMessagesList(ExeResultReq paramReq) {
+        int pageNum = paramReq.getPageNum();
+        int pageSize = paramReq.getPageSize();
+        PageHelper.startPage(pageNum, pageSize);
+
+
+        List<PushMessages> list = pushMessagesMapper.pushMessagesList(paramReq);
+
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<CommentJoinGroups> commentJoinGroupsList(ExeResultReq paramReq) {
+        int pageNum = paramReq.getPageNum();
+        int pageSize = paramReq.getPageSize();
+        PageHelper.startPage(pageNum, pageSize);
+
+
+        List<CommentJoinGroups> list = commentJoinGroupsMapper.commentJoinGroupsList(paramReq);
+
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<Comments> commentsList(ExeResultReq paramReq) {
+        int pageNum = paramReq.getPageNum();
+        int pageSize = paramReq.getPageSize();
+        PageHelper.startPage(pageNum, pageSize);
+
+
+        List<Comments> list = commentsMapper.commentsList(paramReq);
+
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<CreateGroups> createGroupsList(ExeResultReq paramReq) {
+        int pageNum = paramReq.getPageNum();
+        int pageSize = paramReq.getPageSize();
+        PageHelper.startPage(pageNum, pageSize);
+
+
+        List<CreateGroups> list = createGroupsMapper.createGroupsList(paramReq);
+
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+
+        return list;
     }
 }

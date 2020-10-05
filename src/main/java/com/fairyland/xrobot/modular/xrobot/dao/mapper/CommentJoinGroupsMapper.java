@@ -3,6 +3,8 @@ package com.fairyland.xrobot.modular.xrobot.dao.mapper;
 import com.fairyland.xrobot.modular.xrobot.domain.CommentJoinGroups;
 import com.fairyland.xrobot.modular.xrobot.domain.CommentJoinGroupsExample;
 import java.util.List;
+
+import com.fairyland.xrobot.modular.xrobot.domain.req.ExeResultReq;
 import org.apache.ibatis.annotations.Param;
 
 public interface CommentJoinGroupsMapper {
@@ -93,4 +95,6 @@ public interface CommentJoinGroupsMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(CommentJoinGroups record);
+
+    List<CommentJoinGroups> commentJoinGroupsList(ExeResultReq paramReq);
 }

@@ -36,6 +36,8 @@ public class SaveDeviceReq {
 
     private String remarks; // 备注
 
+    private boolean isResetState;
+
     private String currentUser;
 
     public String getCurrentUser() {
@@ -94,6 +96,14 @@ public class SaveDeviceReq {
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
 
+    }
+
+    public boolean isResetState() {
+        return isResetState;
+    }
+
+    public void setResetState(boolean resetState) {
+        isResetState = resetState;
     }
 
     public String getRemarks() {
@@ -197,6 +207,7 @@ public class SaveDeviceReq {
                 ", password1='" + password1 + '\'' +
                 ", login1=" + login1 +
                 ", remarks='" + remarks + '\'' +
+                ", isResetState=" + isResetState +
                 ", currentUser='" + currentUser + '\'' +
                 '}';
     }

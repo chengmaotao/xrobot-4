@@ -154,6 +154,11 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                 }
             }
 
+            // true 重置
+            if (paramReq.isResetState()) {
+                record.setState(0);
+            }
+
             record.preUpdate(user);
             DeviceExample example = new DeviceExample();
             example.createCriteria().andIdEqualTo(paramReq.getId()).andCreateByEqualTo(user.getUserName());
@@ -771,11 +776,17 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         }
 
         for (Device xclient : list) {
-            xclient.setMonitorClientStatus(robotServer.sessionIsActive(xclient.getDeviceid()));
 
-            String seesionStatusCode = robotServer.getSeesionStatus(xclient.getDeviceid());
-            xclient.setMonitorClientAppStatusCode(seesionStatusCode);
-            xclient.setMonitorClientAppStatus(Utility.getMonitorClientAppStatus(seesionStatusCode));
+            boolean isActive = robotServer.sessionIsActive(xclient.getDeviceid());
+            xclient.setMonitorClientStatus(isActive);
+            if (isActive) {
+                String seesionStatusCode = robotServer.getSeesionStatus(xclient.getDeviceid());
+                xclient.setMonitorClientAppStatusCode(seesionStatusCode);
+                xclient.setMonitorClientAppStatus(Utility.getMonitorClientAppStatus(seesionStatusCode));
+            } else {
+                xclient.setMonitorClientAppStatusCode("未知");
+                xclient.setMonitorClientAppStatus("未知状态");
+            }
         }
 
         return list;
@@ -874,6 +885,61 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             logger.warn("serverQuiet req = {},终端设备未连接", paramReq, deviceInfo.getState());
             throw new BusinessException("终端设备未连接！");
         }
+    }
+
+    @Override
+    public PageResult taskResultList(ExeResultReq paramReq) {
+        logger.info("taskResultList paramReq = {}", paramReq);
+
+        paramReq.validate();
+
+        // 1发消息加群结果表;2发消息执行结果表;3评论加群结果表;4评论执行结果表;5创建群组发帖任务执行结果表
+        if (paramReq.getCode() == 1) {
+            // 发消息加群结果表(FB)-pushJoinGroups
+            List<PushJoinGroups> list = xrobotDao.pushJoinGroupsList(paramReq);
+
+            PageInfo<PushJoinGroups> pageInfo = new PageInfo<>(list);
+            PageResult pageResult = PageUtils.getPageResult(pageInfo);
+            return pageResult;
+        } else if (paramReq.getCode() == 2) {
+
+            // 发消息执行结果表-pushMessages
+            List<PushMessages> list = xrobotDao.pushMessagesList(paramReq);
+
+            PageInfo<PushMessages> pageInfo = new PageInfo<>(list);
+            PageResult pageResult = PageUtils.getPageResult(pageInfo);
+            return pageResult;
+
+        } else if (paramReq.getCode() == 3) {
+            // 评论加群结果表(FB)-commentJoinGroups
+            List<CommentJoinGroups> list = xrobotDao.commentJoinGroupsList(paramReq);
+
+            PageInfo<CommentJoinGroups> pageInfo = new PageInfo<>(list);
+            PageResult pageResult = PageUtils.getPageResult(pageInfo);
+            return pageResult;
+
+        } else if (paramReq.getCode() == 4) {
+            // 评论执行结果表-comments
+            List<Comments> list = xrobotDao.commentsList(paramReq);
+
+            PageInfo<Comments> pageInfo = new PageInfo<>(list);
+            PageResult pageResult = PageUtils.getPageResult(pageInfo);
+            return pageResult;
+
+        } else if (paramReq.getCode() == 5) {
+            // 创建群组发帖任务执行结果表-createGroups
+            List<CreateGroups> list = xrobotDao.createGroupsList(paramReq);
+
+            PageInfo<CreateGroups> pageInfo = new PageInfo<>(list);
+            PageResult pageResult = PageUtils.getPageResult(pageInfo);
+            return pageResult;
+
+        } else {
+            logger.warn("taskResultList code = {} 不正确", paramReq.getCode());
+            throw new XRobotException(ErrorCode.ERROR_CODE_5);
+        }
+
+
     }
 
 

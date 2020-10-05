@@ -3,6 +3,8 @@ package com.fairyland.xrobot.modular.xrobot.dao.mapper;
 import com.fairyland.xrobot.modular.xrobot.domain.PushMessages;
 import com.fairyland.xrobot.modular.xrobot.domain.PushMessagesExample;
 import java.util.List;
+
+import com.fairyland.xrobot.modular.xrobot.domain.req.ExeResultReq;
 import org.apache.ibatis.annotations.Param;
 
 public interface PushMessagesMapper {
@@ -93,4 +95,6 @@ public interface PushMessagesMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(PushMessages record);
+
+    List<PushMessages> pushMessagesList(ExeResultReq paramReq);
 }

@@ -3,6 +3,8 @@ package com.fairyland.xrobot.modular.xrobot.dao.mapper;
 import com.fairyland.xrobot.modular.xrobot.domain.CreateGroups;
 import com.fairyland.xrobot.modular.xrobot.domain.CreateGroupsExample;
 import java.util.List;
+
+import com.fairyland.xrobot.modular.xrobot.domain.req.ExeResultReq;
 import org.apache.ibatis.annotations.Param;
 
 public interface CreateGroupsMapper {
@@ -93,4 +95,6 @@ public interface CreateGroupsMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(CreateGroups record);
+
+    List<CreateGroups> createGroupsList(ExeResultReq paramReq);
 }
