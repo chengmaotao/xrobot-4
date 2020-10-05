@@ -281,6 +281,40 @@ public class XrobotController {
     }
 
 
+    /**
+     * @Description: 设备 暂停使用，恢复使用
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/2 15:03
+     */
+    @RequestMapping(value = "/deviceResetAllowState")
+    @PreAuthorize("@ss.hasPermi('device:edit')")
+    public AjaxResult deviceResetAllowState(@RequestBody DeviceResetAllowStateReq paramReq) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            xrobotService.deviceResetAllowState(paramReq);
+
+            webResponse = AjaxResult.success();
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(998, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
+
+
     // == 终端设备分组表============================
 
 

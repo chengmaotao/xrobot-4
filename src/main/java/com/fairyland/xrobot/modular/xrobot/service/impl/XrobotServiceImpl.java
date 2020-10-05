@@ -769,6 +769,8 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         paramReq.setCurrentUser(getCurrentUser().getUserName());
 
+        paramReq.setAllow(1);
+
         List<Device> list = xrobotDao.deviceList(paramReq);
 
         if (list == null || list.isEmpty()) {
@@ -940,6 +942,34 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         }
 
 
+    }
+
+    @Override
+    public void deviceResetAllowState(DeviceResetAllowStateReq paramReq) {
+        logger.info("deviceResetAllowState paramReq = {}", paramReq);
+
+        paramReq.validate();
+        SysUser user = getCurrentUser();
+        Device oldInfo = xrobotDao.getDeviceInfoById(paramReq.getId(), user.getUserName());
+
+        if (oldInfo == null) {
+            logger.warn("deviceResetAllowState req = {},终端设备应用 不存在", paramReq);
+            throw new XRobotException(ErrorCode.SYS_FAIL);
+        }
+
+        if (robotServer.sessionIsActive(oldInfo.getDeviceid())) {
+            logger.warn("deviceResetAllowState req = {},终端设备应用编号 连接的状态 不允许暂停使用", paramReq);
+            throw new BusinessException("设备已登录，无法暂停使用！");
+        }
+
+        DeviceExample example = new DeviceExample();
+        example.createCriteria().andIdEqualTo(paramReq.getId()).andCreateByEqualTo(user.getUserName());
+
+        Device record = new Device();
+        record.setAllow(paramReq.getAllow());
+        record.preUpdate(user);
+
+        xrobotDao.updateDevice(record, example);
     }
 
 

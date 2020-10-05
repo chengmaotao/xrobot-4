@@ -73,4 +73,6 @@ public interface XrobotService {
     void serverQuiet(DelDeviceReq paramReq);
 
     PageResult taskResultList(ExeResultReq paramReq);
+
+    void deviceResetAllowState(DeviceResetAllowStateReq paramReq);
 }

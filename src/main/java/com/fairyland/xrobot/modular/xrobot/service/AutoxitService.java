@@ -6,4 +6,6 @@ import com.fairyland.xrobot.modular.xrobot.domain.Device;
 public interface AutoxitService {
 
     Device checkClinetLogin(ClinetLoginReq paramReq);
+
+    int modifyDeviceStateByClientStata(String id, String status);
 }

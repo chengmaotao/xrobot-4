@@ -269,7 +269,7 @@ public class LinkerServer {
             }
 
             // 账号被 暂停使用
-            if (device.getState() == 127) {
+            if (device.getAllow() == 0) {
 
                 log.warn("clientLogin 来自IP:{} req=:{} 终端连接被拒绝【认证失败】！,账号状态：暂停使用", ctx.channel().remoteAddress(), businessParam);
 
@@ -326,38 +326,68 @@ public class LinkerServer {
      * @param bodyString
      */
     public void clientReportStatus(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
-        if (command == MessagePacket.CLIENT_REPORTSTATUS_COMMAND) {
 
+        log.info("clientReportStatus req = {}", bodyString);
+
+        MessagePacket messagePacket = new MessagePacket();
+
+
+        try {
             JSONObject jsonObject = JSONObject.parseObject(bodyString);
             String id = (String) jsonObject.get("id");
             String status = (String) jsonObject.get("status");
+
             Map<String, Object> map = getSignature(ctx.channel());
             String sid = (String) map.get("id");// map.get("token");
             if (id.equals(sid)) {
+
+                //  更新数据表状态
+                int i = autoxitService.modifyDeviceStateByClientStata(id, status);
+                if (i == 99) {
+                    log.warn("clientReportStatus 请求数据错误！id = {} 更新数据库表状态异常", id);
+
+                    ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("99", "信息获取失败，请重试").toJSONString());
+                    responseMessage(ctx, buffer);
+
+                    try {
+                        ctx.channel().close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 updateStatus(ctx.channel(), status);
-                String responseBody = "{\"success\":\"1\"}";
-                MessagePacket message = new MessagePacket();
-                ByteBuf buffer = message.getRespPacket(command, messageSerial, responseBody);
+                JSONObject response = getSuccessResponse("1", "报告状态成功");
+
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response.toJSONString());
                 responseMessage(ctx, buffer);
-                /**
-                 * 更新数据库客户端状态
-                 *
-                 *
-                 *
-                 *
-                 *
-                 *
-                 *
-                 */
+
             } else {
-                log.info("请求数据错误！");
+                log.warn("clientReportStatus 请求数据错误！id = {},sid = {}", id, sid);
+
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("6", "请求数据id 和 sid不一致！").toJSONString());
+                responseMessage(ctx, buffer);
+
                 try {
                     ctx.channel().close();
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
+        } catch (Exception ex) {
+            log.error("clientReportStatus 未知错误：");
+            ex.printStackTrace();
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("99", "信息获取失败，请重试").toJSONString());
+            responseMessage(ctx, buffer);
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
         }
+
+
     }
 
     public void closeChannel(Channel channel) {

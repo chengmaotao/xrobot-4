@@ -18,7 +18,17 @@ public class DeviceListReq extends PageRequest implements Serializable {
 
     private String account1; // 目标APP1账号(wsup)
 
-    private Integer state; // 0:初始值 98:账号禁用 99:账号1禁用 100:账号全部禁用 127:暂停使用
+    private Integer state; // 0:初始值 98:账号禁用 99:账号1禁用 100:账号全部禁用
+
+    private Integer allow; // 0:暂停使用,1:允许使用
+
+    public Integer getAllow() {
+        return allow;
+    }
+
+    public void setAllow(Integer allow) {
+        this.allow = allow;
+    }
 
     private String currentUser;
 
