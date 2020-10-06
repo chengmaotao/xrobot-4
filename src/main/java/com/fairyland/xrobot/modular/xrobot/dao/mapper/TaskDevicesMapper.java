@@ -1,5 +1,6 @@
 package com.fairyland.xrobot.modular.xrobot.dao.mapper;
 
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ServerTaskNotifyCommandReq;
 import com.fairyland.xrobot.modular.xrobot.domain.TaskDevices;
 import com.fairyland.xrobot.modular.xrobot.domain.TaskDevicesExample;
 import java.util.List;
@@ -97,4 +98,6 @@ public interface TaskDevicesMapper {
     int updateByPrimaryKey(TaskDevices record);
 
     void insertTasksDevices(Map<String, Object> dbParams);
+
+    List<ServerTaskNotifyCommandReq> getClientGetTaskByDeviceId(String deviceid);
 }

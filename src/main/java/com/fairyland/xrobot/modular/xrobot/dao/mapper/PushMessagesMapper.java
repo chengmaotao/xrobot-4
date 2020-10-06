@@ -1,5 +1,6 @@
 package com.fairyland.xrobot.modular.xrobot.dao.mapper;
 
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClientCheckPushMessageReq;
 import com.fairyland.xrobot.modular.xrobot.domain.PushMessages;
 import com.fairyland.xrobot.modular.xrobot.domain.PushMessagesExample;
 import java.util.List;
@@ -97,4 +98,6 @@ public interface PushMessagesMapper {
     int updateByPrimaryKey(PushMessages record);
 
     List<PushMessages> pushMessagesList(ExeResultReq paramReq);
+
+    List<PushMessages> clientCheckPushMessageStatus(ClientCheckPushMessageReq paramReq);
 }

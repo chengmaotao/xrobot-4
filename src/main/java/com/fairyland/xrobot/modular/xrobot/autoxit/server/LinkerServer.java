@@ -3,9 +3,11 @@ package com.fairyland.xrobot.modular.xrobot.autoxit.server;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.*;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClientCheckPushMessageReq;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClinetLoginReq;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ServerTaskNotifyCommandReq;
 import com.fairyland.xrobot.modular.xrobot.domain.Device;
+import com.fairyland.xrobot.modular.xrobot.exception.XRobotException;
 import com.fairyland.xrobot.modular.xrobot.service.AutoxitService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
@@ -192,7 +194,14 @@ public class LinkerServer {
                      * 状态报告
                      */
                     clientReportStatus(ctx, command, messageSerial, bodyString);
+                } else if (command == MessagePacket.CLIENT_GETTASK_COMMAND) {
+                    // 领取任务
+                    clientGetTaskStatus(ctx, command, messageSerial, bodyString);
+                } else if (command == MessagePacket.CLIENT_CHECKPUSHMESSAGE_COMMAND) {
+                    // 检查用户是否可以发送消息
+                    clientCheckPushMessageStatus(ctx, command, messageSerial, bodyString);
                 }
+
 				/*其他请求（待补充）
 				else if (command == MessagePacket.CLIENT_XXX_COMMAND) {
 
@@ -208,6 +217,128 @@ public class LinkerServer {
                 log.warn("来自IP:{} 终端请求未认证！", ctx.channel().remoteAddress());
             }
         }
+    }
+
+    // 检查用户是否可以发送消息
+    private void clientCheckPushMessageStatus(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
+
+
+        log.info("clientCheckPushMessageStatus req = {}", bodyString);
+
+        MessagePacket messagePacket = new MessagePacket();
+
+
+        try {
+
+            ClientCheckPushMessageReq businessParam = JSON.parseObject(bodyString, ClientCheckPushMessageReq.class);
+
+            log.info("clientCheckPushMessageStatus req businessParam = {}", businessParam);
+
+            String id = businessParam.getId();
+
+            Map<String, Object> map = getSignature(ctx.channel());
+            String sid = (String) map.get("id");// map.get("token");
+            if (id.equals(sid)) {
+
+                // 检查用户是否可以发送消息
+                String response = autoxitService.clientCheckPushMessageStatus(businessParam);
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response);
+                responseMessage(ctx, buffer);
+
+            } else {
+                log.warn("clientCheckPushMessageStatus 请求数据错误！id = {},sid = {}", id, sid);
+
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("6", "请求数据id 和 sid不一致！").toJSONString());
+                responseMessage(ctx, buffer);
+
+                try {
+                    ctx.channel().close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (XRobotException ex) {
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(String.valueOf(ex.getErrorCode()), ex.getErrorMessage()).toJSONString());
+            responseMessage(ctx, buffer);
+
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        } catch (Exception ex) {
+            log.error("clientCheckPushMessageStatus 未知错误：");
+            ex.printStackTrace();
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("99", "信息获取失败，请重试").toJSONString());
+            responseMessage(ctx, buffer);
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+    }
+
+    // 领取任务
+    public void clientGetTaskStatus(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
+
+        log.info("clientGetTaskStatus req = {}", bodyString);
+
+        MessagePacket messagePacket = new MessagePacket();
+
+
+        try {
+            JSONObject jsonObject = JSONObject.parseObject(bodyString);
+            String id = (String) jsonObject.get("id");
+
+            Map<String, Object> map = getSignature(ctx.channel());
+            String sid = (String) map.get("id");// map.get("token");
+            if (id.equals(sid)) {
+
+                // 领取任务
+                String response = autoxitService.clientGetTaskStatus(id);
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response);
+                responseMessage(ctx, buffer);
+
+            } else {
+                log.warn("clientGetTaskStatus 请求数据错误！id = {},sid = {}", id, sid);
+
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("6", "请求数据id 和 sid不一致！").toJSONString());
+                responseMessage(ctx, buffer);
+
+                try {
+                    ctx.channel().close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (XRobotException ex) {
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(String.valueOf(ex.getErrorCode()), ex.getErrorMessage()).toJSONString());
+            responseMessage(ctx, buffer);
+
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        } catch (Exception ex) {
+            log.error("clientGetTaskStatus 未知错误：");
+            ex.printStackTrace();
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("99", "信息获取失败，请重试").toJSONString());
+            responseMessage(ctx, buffer);
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+
     }
 
     /**
@@ -342,19 +473,7 @@ public class LinkerServer {
             if (id.equals(sid)) {
 
                 //  更新数据表状态
-                int i = autoxitService.modifyDeviceStateByClientStata(id, status);
-                if (i == 99) {
-                    log.warn("clientReportStatus 请求数据错误！id = {} 更新数据库表状态异常", id);
-
-                    ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("99", "信息获取失败，请重试").toJSONString());
-                    responseMessage(ctx, buffer);
-
-                    try {
-                        ctx.channel().close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                autoxitService.modifyDeviceStateByClientStata(id, status);
 
                 updateStatus(ctx.channel(), status);
                 JSONObject response = getSuccessResponse("1", "报告状态成功");
@@ -374,6 +493,16 @@ public class LinkerServer {
                     e.printStackTrace();
                 }
             }
+        } catch (XRobotException ex) {
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(String.valueOf(ex.getErrorCode()), ex.getErrorMessage()).toJSONString());
+            responseMessage(ctx, buffer);
+
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
         } catch (Exception ex) {
             log.error("clientReportStatus 未知错误：");
             ex.printStackTrace();

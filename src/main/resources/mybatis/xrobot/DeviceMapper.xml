@@ -363,7 +363,7 @@
         state = #{record.state,jdbcType=TINYINT},
       </if>
       <if test="record.allow != null" >
-        state = #{record.allow,jdbcType=TINYINT},
+        allow = #{record.allow,jdbcType=TINYINT},
       </if>
     </set>
     <if test="_parameter != null" >

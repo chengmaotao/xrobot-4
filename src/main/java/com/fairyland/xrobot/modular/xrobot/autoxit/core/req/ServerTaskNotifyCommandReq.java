@@ -24,6 +24,43 @@ public class ServerTaskNotifyCommandReq {
     private String content; // 消息、帖子、评论内容
 
 
+    private Integer batch; // 执行批次号
+    private String md5;
+    private String cover; // 封面链接图片
+    private String user;
+
+    public Integer getBatch() {
+        return batch;
+    }
+
+    public void setBatch(Integer batch) {
+        this.batch = batch;
+    }
+
+    public String getMd5() {
+        return md5;
+    }
+
+    public void setMd5(String md5) {
+        this.md5 = md5;
+    }
+
+    public String getCover() {
+        return cover;
+    }
+
+    public void setCover(String cover) {
+        this.cover = cover;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
     public String getDeviceid() {
         return deviceid;
     }
@@ -72,6 +109,10 @@ public class ServerTaskNotifyCommandReq {
                 ", taskclass='" + taskclass + '\'' +
                 ", keywords='" + keywords + '\'' +
                 ", content='" + content + '\'' +
+                ", batch=" + batch +
+                ", md5='" + md5 + '\'' +
+                ", cover='" + cover + '\'' +
+                ", user='" + user + '\'' +
                 '}';
     }
 }

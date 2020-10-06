@@ -473,4 +473,34 @@
     </if>
   </select>
 
+
+  <select id="clientCheckPushMessageStatus" parameterType="com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClientCheckPushMessageReq" resultMap="BaseResultMap">
+      SELECT
+          a.id,
+          a.create_by,
+          a.create_date,
+          a.update_by,
+          a.update_date,
+          a.remarks,
+          a.del_flag,
+          a.taskID,
+          a.taskclass,
+          a.batch,
+          a.deviceID,
+          a.groupname,
+          a.groupname1,
+          a.usernumber,
+          a.state,
+          a.phone
+      FROM
+          c_pushmessages a
+      JOIN c_tasks b ON a.taskID = b.taskID and a.taskclass = b.taskclass
+      WHERE
+          b.md5 = #{md5}
+      AND a.phone = #{phone}
+      AND a.usernumber = #{usernumber}
+      AND a.state = 2
+
+  </select>
+
 </mapper>

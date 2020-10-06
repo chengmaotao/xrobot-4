@@ -689,12 +689,18 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                     serverCommandReq.setTaskclass(oldInfo.getTaskclass());
                     serverCommandReq.setKeywords(oldInfo.getKeywords());
                     serverCommandReq.setContent(oldInfo.getContent());
+
+                    serverCommandReq.setBatch(oldInfo.getBatch().intValue() + 1);
+                    serverCommandReq.setMd5(oldInfo.getMd5());
+                    serverCommandReq.setCover(oldInfo.getCover());
+                    serverCommandReq.setUser(oldInfo.getCreateBy());
+
                     robotServer.sendTaskNotifyCommand(taskDevices.getDeviceid(), serverCommandReq);
 
                     // 状态修改为 执行中 1
                     tempRecord.setState(1);
                 } else {
-                    tempRecord.setState(99); // 设备未在线
+                    tempRecord.setState(98); // 设备未在线
                     tempRecord.setRemarks(Utility.getMonitorClientAppStatus(seesionStatusCode));
                 }
 
@@ -894,6 +900,13 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         logger.info("taskResultList paramReq = {}", paramReq);
 
         paramReq.validate();
+
+/*        1. 搜索加群消息任务
+        2. 首页链接消息任务
+        3. 创建群组发帖任务
+        4. 搜索加群评论任务
+        5. 首页帖子评论任务*/
+
 
         // 1发消息加群结果表;2发消息执行结果表;3评论加群结果表;4评论执行结果表;5创建群组发帖任务执行结果表
         if (paramReq.getCode() == 1) {

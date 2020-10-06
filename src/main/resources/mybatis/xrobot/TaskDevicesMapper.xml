@@ -411,4 +411,27 @@
     </foreach>
 
   </insert>
+
+
+  <select id="getClientGetTaskByDeviceId" parameterType="java.lang.String" resultType="com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ServerTaskNotifyCommandReq">
+
+    SELECT
+        a.taskID AS "taskid",
+        b.taskclass AS "taskclass",
+        b.batch AS "batch",
+        b.keywords AS "keywords",
+        b.content AS "content",
+        b.md5 AS "md5",
+        b.cover AS "cover",
+        b.create_by AS "user",
+        a.deviceID AS "deviceid"
+    FROM
+         c_taskdevices a
+    JOIN c_tasks b ON a.taskID = b.taskID
+   where a.deviceID = #{deviceid}
+     AND a.state IN (0, 99, 98)
+   order by a.create_date desc
+
+
+  </select>
 </mapper>

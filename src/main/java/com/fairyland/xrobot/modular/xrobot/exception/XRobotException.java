@@ -19,6 +19,11 @@ public class XRobotException extends RuntimeException {
         this.errorCode = errorCode;
     }
 
+    public XRobotException(int errorCode, String errorMessage) {
+        this.errorCode = errorCode;
+        this.errorMessage = errorMessage;
+    }
+
 
     public int getErrorCode() {
         return errorCode;

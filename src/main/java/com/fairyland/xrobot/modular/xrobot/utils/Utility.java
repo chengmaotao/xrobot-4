@@ -1,15 +1,15 @@
 package com.fairyland.xrobot.modular.xrobot.utils;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.fairyland.xrobot.modular.xrobot.domain.Device;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 
 import java.security.MessageDigest;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @program: fairyland->Utility
@@ -28,7 +28,7 @@ public class Utility {
         monitorClientAppStatus.put("100", "正常");
         monitorClientAppStatus.put("200", "客户端已暂停");
         monitorClientAppStatus.put("300", "Facebook账号被禁用");
-        monitorClientAppStatus.put("3001", "WhatsApp账号被禁用");
+        monitorClientAppStatus.put("301", "WhatsApp账号被禁用");
 
     }
 
@@ -135,13 +135,39 @@ public class Utility {
         return key;
     }
 
+
+    /**
+     * @Description: 日期增加分钟
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2019/11/21 14:56
+     */
+    public static Date addMinute(Date date, int n) {
+        Calendar cd = Calendar.getInstance();
+        cd.setTime(date);
+        cd.add(Calendar.MINUTE, n);
+        Date time = cd.getTime();
+        return time;
+    }
+
     public static void main(String[] args) {
 
-        System.out.println(getMd5("nihao"));
+        List<Device> list = new ArrayList<>();
 
-        System.out.println(getMd5("ddddddddddddddddddd"));
+        Device d = new Device();
+        d.setDeviceid("id001");
+        d.setDevicesn("10001");
+        list.add(d);
 
+        Device d2 = new Device();
+        d2.setDeviceid("id002");
+        d2.setDevicesn("10002");
+        list.add(d2);
 
+        JSONArray objects = JSONArray.parseArray(JSON.toJSONString(list));
+
+        System.out.println(objects);
     }
 
 
