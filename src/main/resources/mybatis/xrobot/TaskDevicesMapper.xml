@@ -434,4 +434,27 @@
 
 
   </select>
+
+
+  <select id="selectTaskDevicesList" parameterType="com.fairyland.xrobot.modular.xrobot.domain.req.TaskDevicesListReq" resultType="com.fairyland.xrobot.modular.xrobot.domain.resp.TaskDevicesResp">
+
+    SELECT
+        a.id AS "id",
+        a.remarks AS "remarks",
+        a.taskID AS "taskid",
+        a.deviceID AS "deviceid",
+        a.state AS "state",
+        a.error AS "error",
+        a.errorMsg AS "errormsg",
+        b.deviceSN AS "devicesn",
+        b.phone AS "phone",
+        b.account AS "account",
+        b.account1 AS "account1"
+    FROM
+        c_taskdevices a
+    JOIN c_device b ON a.deviceID = b.deviceID
+     and a.del_flag = '0'
+     and a.create_by = #{currentUser}
+     and a.taskID = #{taskid}
+  </select>
 </mapper>

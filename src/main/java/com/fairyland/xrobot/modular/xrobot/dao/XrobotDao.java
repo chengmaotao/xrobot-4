@@ -3,10 +3,7 @@ package com.fairyland.xrobot.modular.xrobot.dao;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClinetLoginReq;
 import com.fairyland.xrobot.modular.xrobot.domain.*;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.SaveTaskInitResp;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.*;
 
 import java.util.List;
 import java.util.Map;
@@ -75,7 +72,7 @@ public interface XrobotDao {
 
     int exeTask(Tasks record);
 
-    List<TaskDevices> taskDevicesList(TaskDevicesListReq paramReq);
+    List<TaskDevicesResp> taskDevicesList(TaskDevicesListReq paramReq);
 
     List<DeviceGroupMembersListResp> deviceGroupMembersAllList(DeviceGroupMembersListReq paramReq);
 
@@ -95,4 +92,5 @@ public interface XrobotDao {
 
     List<CreateGroups> createGroupsList(ExeResultReq paramReq);
 
+    List<Device> deviceAllListByUser(DeviceListReq paramReq);
 }

@@ -8,9 +8,39 @@ package com.fairyland.xrobot.modular.xrobot.domain.resp;
  **/
 public class SaveTaskInitResp {
 
+    private String devicesn;
+    private String account;
+    private String account1;
+
+    public String getDevicesn() {
+        return devicesn;
+    }
+
+    public void setDevicesn(String devicesn) {
+        this.devicesn = devicesn;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public String getAccount1() {
+        return account1;
+    }
+
+    public void setAccount1(String account1) {
+        this.account1 = account1;
+    }
+
     private String deviceid;
 
     private String phone;
+
+
 
     private String tdeviceid; // 为空还未加入，不为空已经加入了
 
@@ -38,10 +68,14 @@ public class SaveTaskInitResp {
         this.tdeviceid = tdeviceid;
     }
 
+
     @Override
     public String toString() {
         return "SaveTaskInitResp{" +
-                "deviceid='" + deviceid + '\'' +
+                "devicesn='" + devicesn + '\'' +
+                ", account='" + account + '\'' +
+                ", account1='" + account1 + '\'' +
+                ", deviceid='" + deviceid + '\'' +
                 ", phone='" + phone + '\'' +
                 ", tdeviceid='" + tdeviceid + '\'' +
                 '}';

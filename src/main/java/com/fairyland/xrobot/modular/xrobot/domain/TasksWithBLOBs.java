@@ -64,4 +64,15 @@ public class TasksWithBLOBs extends Tasks {
     public void setContent(String content) {
         this.content = content == null ? null : content.trim();
     }
+
+
+    private String taskclassName;
+
+    public String getTaskclassName() {
+        return taskclassName;
+    }
+
+    public void setTaskclassName(String taskclassName) {
+        this.taskclassName = taskclassName;
+    }
 }

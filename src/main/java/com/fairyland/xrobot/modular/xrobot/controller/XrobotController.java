@@ -6,10 +6,7 @@ import com.fairyland.xrobot.common.utils.MessageUtils;
 import com.fairyland.xrobot.framework.web.domain.AjaxResult;
 import com.fairyland.xrobot.modular.xrobot.domain.*;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.PageResult;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.*;
 import com.fairyland.xrobot.modular.xrobot.exception.BusinessException;
 import com.fairyland.xrobot.modular.xrobot.exception.XRobotException;
 import com.fairyland.xrobot.modular.xrobot.service.XrobotService;
@@ -139,6 +136,35 @@ public class XrobotController {
         try {
 
             List<Device> list = xrobotService.monitorDeviceList(paramReq);
+
+            webResponse = AjaxResult.success(list);
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
+    /**
+     * @Description: 管理员终端设备监控中心（不分页）
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/5/26 16:07
+     */
+    @RequestMapping(value = "/monitorAdminDeviceList")
+    @PreAuthorize("@ss.hasPermi('device:monitor')")
+    public AjaxResult monitorAdminDeviceList(@RequestBody DeviceListReq paramReq) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            List<Device> list = xrobotService.monitorAdminDeviceList(paramReq);
 
             webResponse = AjaxResult.success(list);
         } catch (XRobotException ex) {
@@ -819,7 +845,7 @@ public class XrobotController {
         AjaxResult webResponse = null;
         try {
 
-            List<TaskDevices> list = xrobotService.taskDevicesList(paramReq);
+            List<TaskDevicesResp> list = xrobotService.taskDevicesList(paramReq);
 
             webResponse = AjaxResult.success(list);
         } catch (XRobotException ex) {

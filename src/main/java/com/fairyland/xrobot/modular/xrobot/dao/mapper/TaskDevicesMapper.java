@@ -6,6 +6,8 @@ import com.fairyland.xrobot.modular.xrobot.domain.TaskDevicesExample;
 import java.util.List;
 import java.util.Map;
 
+import com.fairyland.xrobot.modular.xrobot.domain.req.TaskDevicesListReq;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.TaskDevicesResp;
 import org.apache.ibatis.annotations.Param;
 
 public interface TaskDevicesMapper {
@@ -100,4 +102,6 @@ public interface TaskDevicesMapper {
     void insertTasksDevices(Map<String, Object> dbParams);
 
     List<ServerTaskNotifyCommandReq> getClientGetTaskByDeviceId(String deviceid);
+
+    List<TaskDevicesResp> selectTaskDevicesList(TaskDevicesListReq paramReq);
 }

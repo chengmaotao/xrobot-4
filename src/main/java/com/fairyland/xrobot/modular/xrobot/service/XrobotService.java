@@ -2,10 +2,7 @@ package com.fairyland.xrobot.modular.xrobot.service;
 
 import com.fairyland.xrobot.modular.xrobot.domain.*;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.PageResult;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -58,7 +55,7 @@ public interface XrobotService {
 
     void exeTask(ExeTaskReq paramReq);
 
-    List<TaskDevices> taskDevicesList(TaskDevicesListReq paramReq);
+    List<TaskDevicesResp> taskDevicesList(TaskDevicesListReq paramReq);
 
     Map<String, Object> saveTaskInit(SaveTaskInitReq paramReq);
 
@@ -75,4 +72,6 @@ public interface XrobotService {
     PageResult taskResultList(ExeResultReq paramReq);
 
     void deviceResetAllowState(DeviceResetAllowStateReq paramReq);
+
+    List<Device> monitorAdminDeviceList(DeviceListReq paramReq);
 }

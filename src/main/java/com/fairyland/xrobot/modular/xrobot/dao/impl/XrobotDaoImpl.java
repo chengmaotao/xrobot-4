@@ -6,10 +6,7 @@ import com.fairyland.xrobot.modular.xrobot.dao.XrobotDao;
 import com.fairyland.xrobot.modular.xrobot.dao.mapper.*;
 import com.fairyland.xrobot.modular.xrobot.domain.*;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.QRCodeResp;
-import com.fairyland.xrobot.modular.xrobot.domain.resp.SaveTaskInitResp;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.*;
 import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -382,11 +379,11 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public List<TaskDevices> taskDevicesList(TaskDevicesListReq paramReq) {
+    public List<TaskDevicesResp> taskDevicesList(TaskDevicesListReq paramReq) {
 
-        TaskDevicesExample example = new TaskDevicesExample();
-        example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(paramReq.getCurrentUser()).andTaskidEqualTo(paramReq.getTaskid());
-        List<TaskDevices> list = taskDevicesMapper.selectByExample(example);
+        //TaskDevicesExample example = new TaskDevicesExample();
+        //example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(paramReq.getCurrentUser()).andTaskidEqualTo(paramReq.getTaskid());
+        List<TaskDevicesResp> list = taskDevicesMapper.selectTaskDevicesList(paramReq);
 
         if (list == null) {
             list = new ArrayList<>();
@@ -502,6 +499,18 @@ public class XrobotDaoImpl implements XrobotDao {
 
 
         List<CreateGroups> list = createGroupsMapper.createGroupsList(paramReq);
+
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+
+        return list;
+    }
+
+    @Override
+    public List<Device> deviceAllListByUser(DeviceListReq paramReq) {
+
+        List<Device> list = deviceMapper.deviceList(paramReq);
 
         if (list == null) {
             list = new ArrayList<>();

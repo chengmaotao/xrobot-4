@@ -751,7 +751,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
     }
 
     @Override
-    public List<TaskDevices> taskDevicesList(TaskDevicesListReq paramReq) {
+    public List<TaskDevicesResp> taskDevicesList(TaskDevicesListReq paramReq) {
         logger.info("taskDevicesList paramReq = {}", paramReq);
         paramReq.setCurrentUser(getCurrentUser().getUserName());
 
@@ -812,7 +812,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         paramReq.setAllow(1);
 
-        List<Device> list = xrobotDao.deviceList(paramReq);
+        List<Device> list = xrobotDao.deviceAllListByUser(paramReq);
 
         if (list == null || list.isEmpty()) {
             return null;
@@ -1018,6 +1018,36 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         record.preUpdate(user);
 
         xrobotDao.updateDevice(record, example);
+    }
+
+    @Override
+    public List<Device> monitorAdminDeviceList(DeviceListReq paramReq)
+    {
+        logger.info("monitorAdminDeviceList req = {}", paramReq);
+
+        paramReq.setAllow(1);
+
+        List<Device> list = xrobotDao.deviceAllListByUser(paramReq);
+
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+
+        for (Device xclient : list) {
+
+            boolean isActive = robotServer.sessionIsActive(xclient.getDeviceid());
+            xclient.setMonitorClientStatus(isActive);
+            if (isActive) {
+                String seesionStatusCode = robotServer.getSeesionStatus(xclient.getDeviceid());
+                xclient.setMonitorClientAppStatusCode(seesionStatusCode);
+                xclient.setMonitorClientAppStatus(Utility.getMonitorClientAppStatus(seesionStatusCode));
+            } else {
+                xclient.setMonitorClientAppStatusCode("未知");
+                xclient.setMonitorClientAppStatus("未知状态");
+            }
+        }
+
+        return list;
     }
 
 

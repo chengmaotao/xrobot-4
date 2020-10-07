@@ -27,6 +27,7 @@
     -->
     <result column="keywords" property="keywords" jdbcType="LONGVARCHAR" />
     <result column="content" property="content" jdbcType="LONGVARCHAR" />
+    <result column="taskclassName" property="taskclassName" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <!--
@@ -508,26 +509,39 @@
 
   <select id="taskList" parameterType="com.fairyland.xrobot.modular.xrobot.domain.req.TaskListReq" resultMap="ResultMapWithBLOBs">
     select
-      <include refid="Base_Column_List" />
-      ,
-      <include refid="Blob_Column_List" />
-    from c_tasks
-   where del_flag = '0'
-     and create_by = #{currentUser}
+      a.id,
+      a.create_by,
+      a.create_date,
+      a.update_by,
+      a.update_date,
+      a.remarks,
+      a.del_flag,
+      a.taskID,
+      a.taskclass,
+      a.batch,
+      a.md5,
+      a.cover,
+      a.state,
+      a.keywords,
+      a.content,
+      b.name as "taskclassName"
+    from c_tasks a join c_taskdict b on a.taskclass = b.taskclass
+   where a.del_flag = '0'
+     and a.create_by = #{currentUser}
      <if test="taskid != null and taskid != ''">
-         and taskID = #{taskid}
+         and a.taskID = #{taskid}
      </if>
 
     <if test="taskclass != null and taskclass != ''">
-      and taskclass = #{taskclass}
+      and a.taskclass = #{taskclass}
     </if>
 
     <if test="keywords != null and keywords != ''">
-      and (keywords like CONCAT('%',#{keywords},'%') or content like CONCAT('%',#{keywords},'%'))
+      and (a.keywords like CONCAT('%',#{keywords},'%') or a.content like CONCAT('%',#{keywords},'%'))
     </if>
 
     <if test="state != null">
-      and state = #{state}
+      and a.state = #{state}
     </if>
 
   </select>
@@ -541,6 +555,7 @@
       state = 1
     where create_by = #{createBy}
       and (state = 0 or state = 2)
+      and id = #{id}
   </update>
 
 
@@ -549,11 +564,14 @@
           SELECT
               a.deviceID AS "deviceid",
               a.phone AS "phone",
-              b.deviceID AS "tdeviceid"
+              b.deviceID AS "tdeviceid",
+
+              a.deviceSN AS "devicesn",
+              a.account AS "account",
+              a.account1 AS "account1"
           FROM
               c_device a
-          LEFT JOIN c_taskdevices b ON a.deviceID = b.deviceID
-          LEFT JOIN c_tasks c ON c.taskID = b.taskID AND c.taskID = #{taskid}
+          LEFT JOIN c_taskdevices b ON a.deviceID = b.deviceID AND b.taskID = #{taskid}
           WHERE
               a.create_by = #{currentUser}
            and a.del_flag = '0'
