@@ -143,10 +143,10 @@ public class AutoxitDaoImpl implements AutoxitDao {
     }
 
     @Override
-    public List<TaskDevices> getTaskDevicesIsNotComplete(String deviceId, String taskID) {
+    public List<TaskDevices> getTaskDevicesIsNotComplete(String taskID) {
 
         TaskDevicesExample example = new TaskDevicesExample();
-        example.createCriteria().andDeviceidEqualTo(deviceId).andTaskidEqualTo(taskID).andStateNotEqualTo(2);
+        example.createCriteria().andTaskidEqualTo(taskID).andStateNotEqualTo(2);
         return taskDevicesMapper.selectByExample(example);
     }
 

@@ -110,9 +110,10 @@ public class AutoxitServiceImpl implements AutoxitService {
 
     }
 
+    // 领取任务
     @Override
     public String clientGetTaskStatus(String id) {
-        logger.info("clientGetTaskStatus deviceID = {}", id);
+        logger.info("领取任务 clientGetTaskStatus deviceID = {}", id);
 
         Device device = autoxitDao.getDeviceBydeviceID(id);
 
@@ -123,6 +124,7 @@ public class AutoxitServiceImpl implements AutoxitService {
         return JSON.toJSONString(list);
     }
 
+    // 检查用户是否可以发送消息
     @Override
     public String clientCheckPushMessageStatus(ClientCheckPushMessageReq paramReq) {
         logger.info("clientCheckPushMessageStatus req = {}", paramReq);
@@ -169,10 +171,11 @@ public class AutoxitServiceImpl implements AutoxitService {
 
     }
 
+    // 上报发消息加群结果
     @Override
     @Transactional(rollbackFor = Exception.class, value = "phoenixTransactionManager")
     public String clientSubmitPushJoinGroupsStatus(ClientSubmitPushJoinGroupsReq paramReq) {
-        logger.info("clientSubmitPushJoinGroupsStatus req = {}", paramReq);
+        logger.info("上报发消息加群结果 clientSubmitPushJoinGroupsStatus req = {}", paramReq);
 
         Device device = autoxitDao.getDeviceBydeviceID(paramReq.getId());
 
@@ -242,9 +245,10 @@ public class AutoxitServiceImpl implements AutoxitService {
         return "";
     }
 
+    // 上报发消息结果
     @Override
     public String clientSubmitPushMessagesStatus(ClientSubmitPushMessagesReq paramReq) {
-        logger.info("clientSubmitPushMessagesStatus req = {}", paramReq);
+        logger.info("上报发消息结果 clientSubmitPushMessagesStatus req = {}", paramReq);
 
         Device device = autoxitDao.getDeviceBydeviceID(paramReq.getId());
 
@@ -274,6 +278,7 @@ public class AutoxitServiceImpl implements AutoxitService {
         return "";
     }
 
+    // 上报评论加群结果
     @Override
     @Transactional(rollbackFor = Exception.class, value = "phoenixTransactionManager")
     public String clientSubmitCommentJoinGroupsStatus(ClientSubmitCommentJoinGroupsReq paramReq) {
@@ -436,7 +441,7 @@ public class AutoxitServiceImpl implements AutoxitService {
         autoxitDao.updateTaskDevices(record, example);
 
 
-        List<TaskDevices> list = autoxitDao.getTaskDevicesIsNotComplete(paramReq.getId(), paramReq.getTaskID());
+        List<TaskDevices> list = autoxitDao.getTaskDevicesIsNotComplete(paramReq.getTaskID());
 
         if (list == null || list.isEmpty()) {
 

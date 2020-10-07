@@ -213,10 +213,12 @@ public class LinkerServer {
                 } else if (command == MessagePacket.CLIENT_SUBMIT_CREATEGROUPS_COMMAND) {
                     // 上报建群发贴结果
                     clientSubmitCreateGroupsStatus(ctx, command, messageSerial, bodyString);
-                }else if (command == MessagePacket.CLIENT_SUBMIT_TASKRESPONSE_COMMAND) {
-                        // 任务执行结果报告
-                        clientSubmitTaskResponseStatus(ctx, command, messageSerial, bodyString);
-                    }
+                } else if (command == MessagePacket.CLIENT_SUBMIT_TASKRESPONSE_COMMAND) {
+                    // 任务执行结果报告
+                    clientSubmitTaskResponseStatus(ctx, command, messageSerial, bodyString);
+                } else {
+                    log.info("未知command = {},bodyString = {}", command, bodyString);
+                }
 
 				/*其他请求（待补充）
 				else if (command == MessagePacket.CLIENT_XXX_COMMAND) {

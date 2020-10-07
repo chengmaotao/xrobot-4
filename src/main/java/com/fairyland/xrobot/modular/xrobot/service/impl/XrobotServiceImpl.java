@@ -105,7 +105,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             lists = xrobotDao.getDeviceListByDeviceSN(paramReq.getDevicesn(), user.getUserName());
             if (lists != null && lists.size() > 0) {
                 logger.warn("SaveDeviceReq req = {},终端设备应用编号 已经存在,不能重复添加", paramReq);
-                throw new BusinessException("终端设备应用编号: " + paramReq.getDevicesn() + " 已经存在，不能重复添加。");
+                throw new BusinessException("不能重复添加修改为请使用其他编号");
             }
 
             // 判断 手机号 是否已经存在
@@ -141,7 +141,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                 lists = xrobotDao.getDeviceListByDeviceSN(paramReq.getDevicesn(), user.getUserName());
                 if (lists != null && lists.size() > 0) {
                     logger.warn("SaveDeviceReq2 req = {},终端设备应用编号 已经存在,不能重复添加", paramReq);
-                    throw new BusinessException("终端设备应用编号: " + paramReq.getDevicesn() + " 已经存在，不能重复添加。");
+                    throw new BusinessException("不能重复添加修改为请使用其他编号");
                 }
             }
 

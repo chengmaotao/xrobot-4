@@ -33,7 +33,7 @@ public interface AutoxitDao {
 
     void updateTaskDevices(TaskDevices record, TaskDevicesExample example);
 
-    List<TaskDevices> getTaskDevicesIsNotComplete(String id, String taskID);
+    List<TaskDevices> getTaskDevicesIsNotComplete(String taskID);
 
     void updateTask(TasksWithBLOBs tasksRecord, TasksExample tasksExample);
 }
