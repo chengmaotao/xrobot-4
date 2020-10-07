@@ -240,4 +240,14 @@ public class CommentJoinGroups extends BaseEntity {
     public void setPhone(String phone) {
         this.phone = phone == null ? null : phone.trim();
     }
+
+    private String keywords;
+
+    public String getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
+    }
 }

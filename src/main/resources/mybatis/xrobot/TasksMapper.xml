@@ -556,6 +556,7 @@
           LEFT JOIN c_tasks c ON c.taskID = b.taskID AND c.taskID = #{taskid}
           WHERE
               a.create_by = #{currentUser}
+           and a.del_flag = '0'
   </select>
 
 </mapper>

@@ -1,8 +1,7 @@
 package com.fairyland.xrobot.modular.xrobot.utils;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.fairyland.xrobot.modular.xrobot.domain.Device;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClientSubmitPushJoinGroupsReq;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -153,7 +152,7 @@ public class Utility {
 
     public static void main(String[] args) {
 
-        List<Device> list = new ArrayList<>();
+/*        List<Device> list = new ArrayList<>();
 
         Device d = new Device();
         d.setDeviceid("id001");
@@ -167,7 +166,25 @@ public class Utility {
 
         JSONArray objects = JSONArray.parseArray(JSON.toJSONString(list));
 
-        System.out.println(objects);
+        System.out.println(objects);*/
+
+
+String bodyString = "{\"id\":\"1\",\"phone\":\"11\",\"taskID\":\"111\",\"taskclass\":\"1111\",\"batch\":11111,\"user\":\"1111111\",\"keyword\":\"1234567\",\"join\":[{\"groupID\":\"23\",\"groupname\":\"34\",\"state\":2},{\"groupID\":\"45\",\"groupname\":\"67\",\"state\":3}]}";
+        ClientSubmitPushJoinGroupsReq businessParam = JSON.parseObject(bodyString, ClientSubmitPushJoinGroupsReq.class);
+
+        System.out.println(businessParam);
+
+
+/*String aa = "你好\r\n" +
+        "我也号\n" +
+        "大家好哦\r";
+
+
+// newString = myString.replaceAll("(\r\n|\r|\n|\n\r)", "<br>");
+        String[] split = aa.split("(\\r\\n|\\r|\\n|\\n\\r)");
+
+        System.out.println(split);*/
+
     }
 
 

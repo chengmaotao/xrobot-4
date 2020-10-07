@@ -58,7 +58,7 @@ public interface XrobotService {
 
     void exeTask(ExeTaskReq paramReq);
 
-    PageResult taskDevicesList(TaskDevicesListReq paramReq);
+    List<TaskDevices> taskDevicesList(TaskDevicesListReq paramReq);
 
     Map<String, Object> saveTaskInit(SaveTaskInitReq paramReq);
 

@@ -38,11 +38,7 @@
 
 
 
-        <table tableName="c_pushjoingroups" domainObjectName="PushJoinGroups" />
-        <table tableName="c_pushmessages" domainObjectName="PushMessages" />
-        <table tableName="c_commentjoingroups" domainObjectName="CommentJoinGroups" />
-        <table tableName="c_comments" domainObjectName="Comments" />
-        <table tableName="c_creategroups" domainObjectName="CreateGroups" />
+        <table tableName="c_summaryjoingroups" domainObjectName="SummaryJoinGroups" />
 
 
 

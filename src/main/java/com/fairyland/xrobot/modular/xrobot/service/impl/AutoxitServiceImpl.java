@@ -3,14 +3,11 @@ package com.fairyland.xrobot.modular.xrobot.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fairyland.xrobot.common.utils.StringUtils;
-import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClientCheckPushMessageReq;
-import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClinetLoginReq;
-import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ServerTaskNotifyCommandReq;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.ServerCode;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.*;
 import com.fairyland.xrobot.modular.xrobot.dao.AutoxitDao;
 import com.fairyland.xrobot.modular.xrobot.dao.XrobotDao;
-import com.fairyland.xrobot.modular.xrobot.domain.Device;
-import com.fairyland.xrobot.modular.xrobot.domain.Dict;
-import com.fairyland.xrobot.modular.xrobot.domain.PushMessages;
+import com.fairyland.xrobot.modular.xrobot.domain.*;
 import com.fairyland.xrobot.modular.xrobot.exception.XRobotException;
 import com.fairyland.xrobot.modular.xrobot.service.AutoxitService;
 import com.fairyland.xrobot.modular.xrobot.utils.Utility;
@@ -18,9 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: fairyland->AutoxitServiceImpl
@@ -67,15 +67,7 @@ public class AutoxitServiceImpl implements AutoxitService {
 
         Device device = autoxitDao.getDeviceBydeviceID(id);
 
-        if (device == null) {
-            logger.warn("modifyDeviceStateByClientStata deviceID={} 对应的设备不存在", id);
-            throw new XRobotException(98, "id = " + id + "对应设备不存在");
-        }
-
-        if (device.getAllow() == 0) {
-            logger.warn("modifyDeviceStateByClientStata deviceID={} 对应的设备 被禁用", id);
-            throw new XRobotException(3, "终端连接被拒绝，账号被禁用【认证失败】！");
-        }
+        checkDeviceByDeviceId(device, id);
 
         // 0:未连接  98:账号禁用 99:账号1禁用 100:账号全部禁用
 
@@ -124,15 +116,7 @@ public class AutoxitServiceImpl implements AutoxitService {
 
         Device device = autoxitDao.getDeviceBydeviceID(id);
 
-        if (device == null) {
-            logger.warn("clientGetTaskStatus deviceID={} 对应的设备不存在", id);
-            throw new XRobotException(98, "id = " + id + "对应设备不存在");
-        }
-
-        if (device.getAllow() == 0) {
-            logger.warn("clientGetTaskStatus deviceID={} 对应的设备 被禁用", id);
-            throw new XRobotException(3, "终端连接被拒绝，账号被禁用【认证失败】！");
-        }
+        checkDeviceByDeviceId(device, id);
 
         List<ServerTaskNotifyCommandReq> list = autoxitDao.getClientGetTaskByDeviceId(device.getDeviceid());
 
@@ -183,5 +167,327 @@ public class AutoxitServiceImpl implements AutoxitService {
             return response.toJSONString();
         }
 
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, value = "phoenixTransactionManager")
+    public String clientSubmitPushJoinGroupsStatus(ClientSubmitPushJoinGroupsReq paramReq) {
+        logger.info("clientSubmitPushJoinGroupsStatus req = {}", paramReq);
+
+        Device device = autoxitDao.getDeviceBydeviceID(paramReq.getId());
+
+        checkDeviceByDeviceId(device, paramReq.getId());
+
+
+        Tasks tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
+
+        checkClientSubmitTaskInfo(tasks, paramReq);
+
+        List<ClientSubmitPushJoinGroupsReq.GroupsInfo> join = paramReq.getJoin();
+
+
+        SummaryJoinGroups record = new SummaryJoinGroups();
+        record.setTaskid(paramReq.getTaskID());
+        record.setTaskclass(paramReq.getTaskclass());
+        record.setBatch(paramReq.getBatch());
+        record.setDeviceid(paramReq.getId());
+        record.setPhone(paramReq.getPhone());
+        record.setKeywords(paramReq.getKeyword());
+        record.preInsert(paramReq.getUser());
+
+        if (join == null || join.isEmpty()) {
+            record.setPass(0);
+            record.setWait(0);
+            autoxitDao.insertSummaryJoinGroups(record);
+            return "";
+        }
+
+        int pass = 0;
+        int wait = 0;
+
+
+        for (ClientSubmitPushJoinGroupsReq.GroupsInfo groupsInfo : join) {
+
+/*            private String groupID;
+            private String groupname;
+            private Integer state;*/
+
+            // 0:待加入 1:等待审核 2:已加入
+            if (groupsInfo.getState() == 1) {
+                wait++;
+            } else if (groupsInfo.getState() == 2) {
+                pass++;
+            } else {
+                logger.warn("clientSubmitPushJoinGroupsStatus keyword={} 状态={}", paramReq.getKeyword(), groupsInfo.getState());
+            }
+        }
+
+        record.setPass(pass);
+        record.setWait(wait);
+        autoxitDao.insertSummaryJoinGroups(record);
+
+        Map<String, Object> dbParams = new HashMap<>();
+        dbParams.put("nowDate", new Date());
+        dbParams.put("userName", paramReq.getUser());
+        dbParams.put("taskID", paramReq.getTaskID());
+        dbParams.put("taskclass", paramReq.getTaskclass());
+        dbParams.put("batch", paramReq.getBatch());
+        dbParams.put("deviceID", paramReq.getId());
+        dbParams.put("phone", paramReq.getPhone());
+        dbParams.put("list", paramReq.getJoin());
+        dbParams.put("keywords", paramReq.getKeyword());
+        autoxitDao.insertPushJoinGroups(dbParams);
+
+
+        return "";
+    }
+
+    @Override
+    public String clientSubmitPushMessagesStatus(ClientSubmitPushMessagesReq paramReq) {
+        logger.info("clientSubmitPushMessagesStatus req = {}", paramReq);
+
+        Device device = autoxitDao.getDeviceBydeviceID(paramReq.getId());
+
+        checkDeviceByDeviceId(device, paramReq.getId());
+
+
+        Tasks tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
+
+        checkClientSubmitTaskInfo(tasks, paramReq);
+
+
+        PushMessages record = new PushMessages();
+        record.setTaskid(paramReq.getTaskID());
+        record.setTaskclass(paramReq.getTaskclass());
+        record.setBatch(paramReq.getBatch());
+        record.setDeviceid(paramReq.getId());
+        record.setPhone(paramReq.getPhone());
+        record.setKeywords(paramReq.getKeyword());
+        record.preInsert(paramReq.getUser());
+        record.setGroupname(paramReq.getGroupname());
+        record.setGroupname1(paramReq.getGroupname1());
+        record.setUsernumber(paramReq.getUsernumber());
+        record.setState(paramReq.getState());
+        autoxitDao.insertPushMessages(record);
+
+
+        return "";
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, value = "phoenixTransactionManager")
+    public String clientSubmitCommentJoinGroupsStatus(ClientSubmitCommentJoinGroupsReq paramReq) {
+        logger.info("clientSubmitCommentJoinGroupsStatus req = {}", paramReq);
+
+        Device device = autoxitDao.getDeviceBydeviceID(paramReq.getId());
+
+        checkDeviceByDeviceId(device, paramReq.getId());
+
+
+        Tasks tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
+
+        checkClientSubmitTaskInfo(tasks, paramReq);
+
+        List<ClientSubmitCommentJoinGroupsReq.GroupsInfo> join = paramReq.getJoin();
+
+
+        SummaryJoinGroups record = new SummaryJoinGroups();
+        record.setTaskid(paramReq.getTaskID());
+        record.setTaskclass(paramReq.getTaskclass());
+        record.setBatch(paramReq.getBatch());
+        record.setDeviceid(paramReq.getId());
+        record.setPhone(paramReq.getPhone());
+        record.setKeywords(paramReq.getKeyword());
+        record.preInsert(paramReq.getUser());
+
+        if (join == null || join.isEmpty()) {
+            record.setPass(0);
+            record.setWait(0);
+            autoxitDao.insertSummaryJoinGroups(record);
+            return "";
+        }
+
+        int pass = 0;
+        int wait = 0;
+
+
+        for (ClientSubmitCommentJoinGroupsReq.GroupsInfo groupsInfo : join) {
+
+/*            private String groupID;
+            private String groupname;
+            private Integer state;*/
+
+            // 0:待加入 1:等待审核 2:已加入
+            if (groupsInfo.getState() == 1) {
+                wait++;
+            } else if (groupsInfo.getState() == 2) {
+                pass++;
+            } else {
+                logger.warn("clientSubmitCommentJoinGroupsStatus keyword={} 状态={}", paramReq.getKeyword(), groupsInfo.getState());
+            }
+        }
+
+        record.setPass(pass);
+        record.setWait(wait);
+        autoxitDao.insertSummaryJoinGroups(record);
+
+        Map<String, Object> dbParams = new HashMap<>();
+        dbParams.put("nowDate", new Date());
+        dbParams.put("userName", paramReq.getUser());
+        dbParams.put("taskID", paramReq.getTaskID());
+        dbParams.put("taskclass", paramReq.getTaskclass());
+        dbParams.put("batch", paramReq.getBatch());
+        dbParams.put("deviceID", paramReq.getId());
+        dbParams.put("phone", paramReq.getPhone());
+        dbParams.put("list", paramReq.getJoin());
+        dbParams.put("keywords", paramReq.getKeyword());
+        autoxitDao.insertCommentJoinGroups(dbParams);
+
+
+        return "";
+    }
+
+    @Override
+    public String clientSubmitCommentsStatus(ClientSubmitCommentsReq paramReq) {
+        logger.info("clientSubmitCommentsStatus req = {}", paramReq);
+
+        Device device = autoxitDao.getDeviceBydeviceID(paramReq.getId());
+
+        checkDeviceByDeviceId(device, paramReq.getId());
+
+
+        Tasks tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
+
+        checkClientSubmitTaskInfo(tasks, paramReq);
+
+
+        Comments record = new Comments();
+        record.setTaskid(paramReq.getTaskID());
+        record.setTaskclass(paramReq.getTaskclass());
+        record.setBatch(paramReq.getBatch());
+        record.setDeviceid(paramReq.getId());
+        record.setPhone(paramReq.getPhone());
+        record.setKeywords(paramReq.getKeyword());
+        record.preInsert(paramReq.getUser());
+        record.setGroupname(paramReq.getGroupname());
+        record.setGroupname1(paramReq.getGroupname1());
+        record.setPoster(paramReq.getPoster());
+        record.setState(paramReq.getState());
+        autoxitDao.insertComments(record);
+
+        return "";
+    }
+
+    @Override
+    public String clientSubmitCreateGroupsStatus(ClientSubmitCreateGroupsReq paramReq) {
+        logger.info("clientSubmitCreateGroupsStatus req = {}", paramReq);
+
+        Device device = autoxitDao.getDeviceBydeviceID(paramReq.getId());
+
+        checkDeviceByDeviceId(device, paramReq.getId());
+
+
+        Tasks tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
+
+        checkClientSubmitTaskInfo(tasks, paramReq);
+
+
+        CreateGroups record = new CreateGroups();
+        record.setTaskid(paramReq.getTaskID());
+        record.setTaskclass(paramReq.getTaskclass());
+        record.setBatch(paramReq.getBatch());
+        record.setDeviceid(paramReq.getId());
+        record.setPhone(paramReq.getPhone());
+        record.preInsert(paramReq.getUser());
+        record.setGroupid(paramReq.getGroupID());
+        record.setGroupname(paramReq.getGroupname());
+        record.setState(paramReq.getState());
+        record.setPost(paramReq.getPost());
+
+        autoxitDao.insertCreateGroups(record);
+
+        return "";
+
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, value = "phoenixTransactionManager")
+    public String clientSubmitTaskResponseStatus(ClientSubmitTaskResponseReq paramReq) {
+        logger.info("clientSubmitTaskResponseStatus req = {}", paramReq);
+
+        Device device = autoxitDao.getDeviceBydeviceID(paramReq.getId());
+
+        checkDeviceByDeviceId(device, paramReq.getId());
+
+
+        Tasks tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
+
+        checkClientSubmitTaskInfo(tasks, paramReq);
+
+
+        TaskDevices record = new TaskDevices();
+        record.setError(paramReq.getError());
+        record.setErrormsg(paramReq.getErrorMsg());
+        record.preUpdate(paramReq.getUser());
+        record.setState(2); // 执行完成
+        TaskDevicesExample example = new TaskDevicesExample();
+        example.createCriteria().andDeviceidEqualTo(paramReq.getId()).andTaskidEqualTo(paramReq.getTaskID());
+
+        autoxitDao.updateTaskDevices(record, example);
+
+
+        List<TaskDevices> list = autoxitDao.getTaskDevicesIsNotComplete(paramReq.getId(), paramReq.getTaskID());
+
+        if (list == null || list.isEmpty()) {
+
+            TasksWithBLOBs tasksRecord = new TasksWithBLOBs();
+            tasks.setState(2);
+            tasks.preUpdate(paramReq.getUser());
+
+            TasksExample tasksExample = new TasksExample();
+            tasksExample.createCriteria().andTaskidEqualTo(paramReq.getTaskID());
+
+            autoxitDao.updateTask(tasksRecord, tasksExample);
+        }
+
+
+        return "";
+    }
+
+
+    private void checkDeviceByDeviceId(Device device, String devicdId) {
+        if (device == null) {
+            logger.warn("clientGetTaskStatus deviceID={} 对应的设备不存在", devicdId);
+            throw new XRobotException(ServerCode.SERVER_CODE_INT_98, "id = " + devicdId + "对应设备不存在");
+        }
+
+        if (device.getAllow() == 0) {
+            logger.warn("clientGetTaskStatus deviceID={} 对应的设备 被禁用", devicdId);
+            throw new XRobotException(ServerCode.SERVER_CODE_INT_3, "终端连接被拒绝，账号被禁用【认证失败】！");
+        }
+    }
+
+
+    private void checkClientSubmitTaskInfo(Tasks tasks, BaseClientSubmitReq paramReq) {
+        if (tasks == null) {
+            logger.info("checkClientSubmitTaskInfo 任务id = {},taskClass={} 对应的任务不存在", paramReq.getTaskID(), paramReq.getTaskclass());
+            throw new XRobotException(ServerCode.SERVER_CODE_INT_97, "任务ID taskID = " + paramReq.getTaskID() + " ,taskClass = " + paramReq.getTaskclass() + " 对应的任务不存在");
+        }
+
+        if (tasks.getBatch().intValue() != paramReq.getBatch()) {
+            logger.info("clientSubmitPushJoinGroupsStatus 任务id={}, 服务端批次={}，请求的批次={}", paramReq.getTaskID(), tasks.getBatch(), paramReq.getBatch());
+            throw new XRobotException(ServerCode.SERVER_CODE_INT_96, "任务ID taskID = " + paramReq.getTaskID() + " 对应的任务批次 batch = " + tasks.getBatch().intValue() + ", 请求参数批次 batch=" + paramReq.getBatch());
+        }
+
+        if (!StringUtils.equals(paramReq.getUser(), tasks.getCreateBy())) {
+            logger.info("clientSubmitPushJoinGroupsStatus 任务id={}, 服务端用户={}，请求的用户={}", paramReq.getTaskID(), tasks.getCreateBy(), paramReq.getUser());
+            throw new XRobotException(ServerCode.SERVER_CODE_INT_96, "任务ID taskID = " + paramReq.getTaskID() + " 对应的任务所属用户 user = " + tasks.getCreateBy() + ", 请求参数用户user=" + paramReq.getUser());
+        }
+
+
+    }
+
+    public Tasks getTaskByTaskId(String taskId, String taskClass) {
+        return autoxitDao.getTaskByTaskId(taskId, taskClass);
     }
 }

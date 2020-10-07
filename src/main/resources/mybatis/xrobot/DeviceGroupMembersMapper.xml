@@ -346,7 +346,8 @@
           b.login AS "login",
           b.account1 AS "account1",
           b.login1 AS "login1",
-          b.state AS "state"
+          b.state AS "state",
+          b.deviceID as "deviceid"
       FROM
           c_devicegroupmembers a
       JOIN c_device b ON a.deviceID = b.deviceID

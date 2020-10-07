@@ -236,9 +236,29 @@ public class BaseEntity {
         setUpdateDate(Utility.getNowDate());
     }
 
+    public void preUpdate(String userName) {
+
+        setUpdateBy(userName);
+
+        setUpdateDate(Utility.getNowDate());
+    }
+
     public void preInsert(SysUser user) {
 
         setCreateBy(user.getUserName());
+        setCreateDate(Utility.getNowDate());
+
+        setUpdateBy(getCreateBy());
+
+        setUpdateDate(getCreateDate());
+
+        setDelFlag(XRobotCode.DEL_0);
+
+    }
+
+    public void preInsert(String userName) {
+
+        setCreateBy(userName);
         setCreateDate(Utility.getNowDate());
 
         setUpdateBy(getCreateBy());

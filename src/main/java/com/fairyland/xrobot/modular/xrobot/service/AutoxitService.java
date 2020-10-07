@@ -1,7 +1,6 @@
 package com.fairyland.xrobot.modular.xrobot.service;
 
-import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClientCheckPushMessageReq;
-import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClinetLoginReq;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.Device;
 
 public interface AutoxitService {
@@ -13,4 +12,16 @@ public interface AutoxitService {
     String clientGetTaskStatus(String id);
 
     String clientCheckPushMessageStatus(ClientCheckPushMessageReq businessParam);
+
+    String clientSubmitPushJoinGroupsStatus(ClientSubmitPushJoinGroupsReq businessParam);
+
+    String clientSubmitPushMessagesStatus(ClientSubmitPushMessagesReq businessParam);
+
+    String clientSubmitCommentJoinGroupsStatus(ClientSubmitCommentJoinGroupsReq businessParam);
+
+    String clientSubmitCommentsStatus(ClientSubmitCommentsReq businessParam);
+
+    String clientSubmitCreateGroupsStatus(ClientSubmitCreateGroupsReq businessParam);
+
+    String clientSubmitTaskResponseStatus(ClientSubmitTaskResponseReq businessParam);
 }

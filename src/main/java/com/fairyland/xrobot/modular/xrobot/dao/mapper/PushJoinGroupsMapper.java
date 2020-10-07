@@ -3,6 +3,7 @@ package com.fairyland.xrobot.modular.xrobot.dao.mapper;
 import com.fairyland.xrobot.modular.xrobot.domain.PushJoinGroups;
 import com.fairyland.xrobot.modular.xrobot.domain.PushJoinGroupsExample;
 import java.util.List;
+import java.util.Map;
 
 import com.fairyland.xrobot.modular.xrobot.domain.req.ExeResultReq;
 import org.apache.ibatis.annotations.Param;
@@ -97,4 +98,6 @@ public interface PushJoinGroupsMapper {
     int updateByPrimaryKey(PushJoinGroups record);
 
     List<PushJoinGroups> pushJoinGroupsList(ExeResultReq paramReq);
+
+    void insertPushJoinGroups(Map<String, Object> dbParams);
 }

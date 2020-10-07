@@ -358,7 +358,8 @@ public class XrobotDaoImpl implements XrobotDao {
 
     @Override
     public int updateTasks(TasksWithBLOBs record) {
-        return tasksMapper.updateByPrimaryKeyWithBLOBs(record);
+        //return tasksMapper.updateByPrimaryKeyWithBLOBs(record);
+        return tasksMapper.updateByPrimaryKeySelective(record);
     }
 
     @Override
@@ -382,10 +383,6 @@ public class XrobotDaoImpl implements XrobotDao {
 
     @Override
     public List<TaskDevices> taskDevicesList(TaskDevicesListReq paramReq) {
-        int pageNum = paramReq.getPageNum();
-        int pageSize = paramReq.getPageSize();
-        PageHelper.startPage(pageNum, pageSize);
-
 
         TaskDevicesExample example = new TaskDevicesExample();
         example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(paramReq.getCurrentUser()).andTaskidEqualTo(paramReq.getTaskid());

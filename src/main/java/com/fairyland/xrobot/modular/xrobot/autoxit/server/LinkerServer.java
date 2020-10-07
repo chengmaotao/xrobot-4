@@ -3,9 +3,7 @@ package com.fairyland.xrobot.modular.xrobot.autoxit.server;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.*;
-import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClientCheckPushMessageReq;
-import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClinetLoginReq;
-import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ServerTaskNotifyCommandReq;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.Device;
 import com.fairyland.xrobot.modular.xrobot.exception.XRobotException;
 import com.fairyland.xrobot.modular.xrobot.service.AutoxitService;
@@ -200,7 +198,25 @@ public class LinkerServer {
                 } else if (command == MessagePacket.CLIENT_CHECKPUSHMESSAGE_COMMAND) {
                     // 检查用户是否可以发送消息
                     clientCheckPushMessageStatus(ctx, command, messageSerial, bodyString);
-                }
+                } else if (command == MessagePacket.CLIENT_SUBMIT_PUSHJOINGROUPS_COMMAND) {
+                    // 上报发消息加群结果
+                    clientSubmitPushJoinGroupsStatus(ctx, command, messageSerial, bodyString);
+                } else if (command == MessagePacket.CLIENT_SUBMIT_PUSHMESSAGES_COMMAND) {
+                    // 上报发消息结果
+                    clientSubmitPushMessagesStatus(ctx, command, messageSerial, bodyString);
+                } else if (command == MessagePacket.CLIENT_SUBMIT_COMMENTJOINGROUPS_COMMAND) {
+                    // 上报评论加群结果
+                    clientSubmitCommentJoinGroupsStatus(ctx, command, messageSerial, bodyString);
+                } else if (command == MessagePacket.CLIENT_SUBMIT_COMMENTS_COMMAND) {
+                    // 上报评论结果
+                    clientSubmitCommentsStatus(ctx, command, messageSerial, bodyString);
+                } else if (command == MessagePacket.CLIENT_SUBMIT_CREATEGROUPS_COMMAND) {
+                    // 上报建群发贴结果
+                    clientSubmitCreateGroupsStatus(ctx, command, messageSerial, bodyString);
+                }else if (command == MessagePacket.CLIENT_SUBMIT_TASKRESPONSE_COMMAND) {
+                        // 任务执行结果报告
+                        clientSubmitTaskResponseStatus(ctx, command, messageSerial, bodyString);
+                    }
 
 				/*其他请求（待补充）
 				else if (command == MessagePacket.CLIENT_XXX_COMMAND) {
@@ -219,6 +235,533 @@ public class LinkerServer {
         }
     }
 
+    // 任务执行结果报告
+    private void clientSubmitTaskResponseStatus(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
+
+        log.info("clientSubmitTaskResponseStatus req = {}", bodyString);
+
+        MessagePacket messagePacket = new MessagePacket();
+
+
+        try {
+
+            ClientSubmitTaskResponseReq businessParam = JSON.parseObject(bodyString, ClientSubmitTaskResponseReq.class);
+
+            log.info("clientSubmitTaskResponseStatus req businessParam = {}", businessParam);
+
+            String id = businessParam.getId();
+            String phone = businessParam.getPhone(); //
+            String taskID = businessParam.getTaskID(); //
+            String taskclass = businessParam.getTaskclass(); //
+            Integer batch = businessParam.getBatch(); //
+            String user = businessParam.getUser();
+            Integer error = businessParam.getError();
+
+
+            if (StringUtils.isEmpty(id)
+                    || StringUtils.isEmpty(taskID)
+                    || StringUtils.isEmpty(taskclass)
+                    || StringUtils.isEmpty(user)
+                    || batch == null
+                    || StringUtils.isEmpty(phone)
+                    || error == null
+            ) {
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_5, "请求必填参数不能为空").toJSONString());
+                responseMessage(ctx, buffer);
+                return;
+            }
+
+            Map<String, Object> map = getSignature(ctx.channel());
+            String sid = (String) map.get("id");// map.get("token");
+            if (id.equals(sid)) {
+
+                // 任务执行结果报告
+                autoxitService.clientSubmitTaskResponseStatus(businessParam);
+
+                JSONObject response = getSuccessResponse("1", "处理成功！");
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response.toJSONString());
+                responseMessage(ctx, buffer);
+
+            } else {
+                log.warn("clientSubmitTaskResponseStatus 请求数据错误！id = {},sid = {}", id, sid);
+
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_6, "请求数据id 和 sid不一致！").toJSONString());
+                responseMessage(ctx, buffer);
+
+                try {
+                    ctx.channel().close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (XRobotException ex) {
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(String.valueOf(ex.getErrorCode()), ex.getErrorMessage()).toJSONString());
+            responseMessage(ctx, buffer);
+
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        } catch (Exception ex) {
+            log.error("clientSubmitTaskResponseStatus 未知错误：");
+            ex.printStackTrace();
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_99, "信息获取失败，请重试").toJSONString());
+            responseMessage(ctx, buffer);
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+    }
+
+    // 上报建群发贴结果
+    private void clientSubmitCreateGroupsStatus(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
+
+        log.info("clientSubmitCreateGroupsStatus req = {}", bodyString);
+
+        MessagePacket messagePacket = new MessagePacket();
+
+
+        try {
+
+            ClientSubmitCreateGroupsReq businessParam = JSON.parseObject(bodyString, ClientSubmitCreateGroupsReq.class);
+
+            log.info("clientSubmitCreateGroupsStatus req businessParam = {}", businessParam);
+
+            String id = businessParam.getId();
+            String phone = businessParam.getPhone(); //
+            String taskID = businessParam.getTaskID(); //
+            String taskclass = businessParam.getTaskclass(); //
+            Integer batch = businessParam.getBatch(); //
+            String user = businessParam.getUser();
+            String groupname = businessParam.getGroupname();
+            String groupID = businessParam.getGroupID();
+            Integer post = businessParam.getPost();
+
+
+            if (StringUtils.isEmpty(id)
+                    || StringUtils.isEmpty(taskID)
+                    || StringUtils.isEmpty(taskclass)
+                    || StringUtils.isEmpty(user)
+                    || batch == null
+                    || StringUtils.isEmpty(phone)
+                    || StringUtils.isEmpty(groupID)
+                    || StringUtils.isEmpty(groupname)
+                    || post == null
+            ) {
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_5, "请求必填参数不能为空").toJSONString());
+                responseMessage(ctx, buffer);
+                return;
+            }
+
+            Map<String, Object> map = getSignature(ctx.channel());
+            String sid = (String) map.get("id");// map.get("token");
+            if (id.equals(sid)) {
+
+                // 上报建群发贴结果
+                autoxitService.clientSubmitCreateGroupsStatus(businessParam);
+
+                JSONObject response = getSuccessResponse("1", "处理成功！");
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response.toJSONString());
+                responseMessage(ctx, buffer);
+
+            } else {
+                log.warn("clientSubmitCreateGroupsStatus 请求数据错误！id = {},sid = {}", id, sid);
+
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_6, "请求数据id 和 sid不一致！").toJSONString());
+                responseMessage(ctx, buffer);
+
+                try {
+                    ctx.channel().close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (XRobotException ex) {
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(String.valueOf(ex.getErrorCode()), ex.getErrorMessage()).toJSONString());
+            responseMessage(ctx, buffer);
+
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        } catch (Exception ex) {
+            log.error("clientSubmitCreateGroupsStatus 未知错误：");
+            ex.printStackTrace();
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_99, "信息获取失败，请重试").toJSONString());
+            responseMessage(ctx, buffer);
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+    }
+
+
+    // 上报评论结果
+    private void clientSubmitCommentsStatus(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
+
+        log.info("clientSubmitCommentsStatus req = {}", bodyString);
+
+        MessagePacket messagePacket = new MessagePacket();
+
+
+        try {
+
+            ClientSubmitCommentsReq businessParam = JSON.parseObject(bodyString, ClientSubmitCommentsReq.class);
+
+            log.info("clientSubmitCommentsStatus req businessParam = {}", businessParam);
+
+            String id = businessParam.getId();
+            String phone = businessParam.getPhone(); //
+            String taskID = businessParam.getTaskID(); //
+            String taskclass = businessParam.getTaskclass(); //
+            Integer batch = businessParam.getBatch(); //
+            String user = businessParam.getUser();
+            String keyword = businessParam.getKeyword();
+
+            String groupname = businessParam.getGroupname();
+            String groupname1 = businessParam.getGroupname1();
+            String poster = businessParam.getPoster();
+            Integer state = businessParam.getState();
+
+
+            if (StringUtils.isEmpty(id)
+                    || StringUtils.isEmpty(taskID)
+                    || StringUtils.isEmpty(taskclass)
+                    || StringUtils.isEmpty(user)
+                    || batch == null
+                    || StringUtils.isEmpty(phone)
+                    || StringUtils.isEmpty(keyword)
+                    || StringUtils.isEmpty(groupname)
+                    || StringUtils.isEmpty(groupname1)
+                    || StringUtils.isEmpty(poster)
+                    || state == null
+            ) {
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_5, "请求必填参数不能为空").toJSONString());
+                responseMessage(ctx, buffer);
+                return;
+            }
+
+            Map<String, Object> map = getSignature(ctx.channel());
+            String sid = (String) map.get("id");// map.get("token");
+            if (id.equals(sid)) {
+
+                // 上报评论结果
+                autoxitService.clientSubmitCommentsStatus(businessParam);
+
+                JSONObject response = getSuccessResponse("1", "处理成功！");
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response.toJSONString());
+                responseMessage(ctx, buffer);
+
+            } else {
+                log.warn("clientSubmitCommentsStatus 请求数据错误！id = {},sid = {}", id, sid);
+
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_6, "请求数据id 和 sid不一致！").toJSONString());
+                responseMessage(ctx, buffer);
+
+                try {
+                    ctx.channel().close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (XRobotException ex) {
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(String.valueOf(ex.getErrorCode()), ex.getErrorMessage()).toJSONString());
+            responseMessage(ctx, buffer);
+
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        } catch (Exception ex) {
+            log.error("clientSubmitCommentsStatus 未知错误：");
+            ex.printStackTrace();
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_99, "信息获取失败，请重试").toJSONString());
+            responseMessage(ctx, buffer);
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+    }
+
+    // 上报评论加群结果
+    private void clientSubmitCommentJoinGroupsStatus(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
+
+        log.info("clientSubmitCommentJoinGroupsStatus req = {}", bodyString);
+
+        MessagePacket messagePacket = new MessagePacket();
+
+
+        try {
+
+            ClientSubmitCommentJoinGroupsReq businessParam = JSON.parseObject(bodyString, ClientSubmitCommentJoinGroupsReq.class);
+
+            log.info("clientSubmitCommentJoinGroupsStatus req businessParam = {}", businessParam);
+
+            String id = businessParam.getId();
+            String phone = businessParam.getPhone(); //
+            String taskID = businessParam.getTaskID(); //
+            String taskclass = businessParam.getTaskclass(); //
+            Integer batch = businessParam.getBatch(); //
+            String user = businessParam.getUser();
+            String keyword = businessParam.getKeyword();
+
+
+            if (StringUtils.isEmpty(id)
+                    || StringUtils.isEmpty(taskID)
+                    || StringUtils.isEmpty(taskclass)
+                    || StringUtils.isEmpty(user)
+                    || batch == null
+                    || StringUtils.isEmpty(phone)
+                    || StringUtils.isEmpty(keyword)) {
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_5, "请求必填参数不能为空").toJSONString());
+                responseMessage(ctx, buffer);
+                return;
+            }
+
+            Map<String, Object> map = getSignature(ctx.channel());
+            String sid = (String) map.get("id");// map.get("token");
+            if (id.equals(sid)) {
+
+                // 上报评论加群结果
+                autoxitService.clientSubmitCommentJoinGroupsStatus(businessParam);
+
+                JSONObject response = getSuccessResponse("1", "处理成功！");
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response.toJSONString());
+                responseMessage(ctx, buffer);
+
+            } else {
+                log.warn("clientSubmitCommentJoinGroupsStatus 请求数据错误！id = {},sid = {}", id, sid);
+
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_6, "请求数据id 和 sid不一致！").toJSONString());
+                responseMessage(ctx, buffer);
+
+                try {
+                    ctx.channel().close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (XRobotException ex) {
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(String.valueOf(ex.getErrorCode()), ex.getErrorMessage()).toJSONString());
+            responseMessage(ctx, buffer);
+
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        } catch (Exception ex) {
+            log.error("clientSubmitCommentJoinGroupsStatus 未知错误：");
+            ex.printStackTrace();
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_99, "信息获取失败，请重试").toJSONString());
+            responseMessage(ctx, buffer);
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+    }
+
+    // 上报发消息结果
+    private void clientSubmitPushMessagesStatus(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
+
+        log.info("clientSubmitPushMessagesStatus req = {}", bodyString);
+
+        MessagePacket messagePacket = new MessagePacket();
+
+
+        try {
+
+            ClientSubmitPushMessagesReq businessParam = JSON.parseObject(bodyString, ClientSubmitPushMessagesReq.class);
+
+            log.info("clientSubmitPushMessagesStatus req businessParam = {}", businessParam);
+
+            String id = businessParam.getId();
+            String phone = businessParam.getPhone(); //
+            String taskID = businessParam.getTaskID(); //
+            String taskclass = businessParam.getTaskclass(); //
+            Integer batch = businessParam.getBatch(); //
+            String user = businessParam.getUser();
+            String keyword = businessParam.getKeyword();
+
+            String groupname = businessParam.getGroupname();
+            String groupname1 = businessParam.getGroupname1();
+            String usernumber = businessParam.getUsernumber();
+            Integer state = businessParam.getState();
+
+
+            if (StringUtils.isEmpty(id)
+                    || StringUtils.isEmpty(taskID)
+                    || StringUtils.isEmpty(taskclass)
+                    || StringUtils.isEmpty(user)
+                    || batch == null
+                    || StringUtils.isEmpty(phone)
+                    || StringUtils.isEmpty(keyword)
+                    || StringUtils.isEmpty(groupname)
+                    || StringUtils.isEmpty(groupname1)
+                    || StringUtils.isEmpty(usernumber)
+                    || state == null) {
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_5, "请求必填参数不能为空").toJSONString());
+                responseMessage(ctx, buffer);
+                return;
+            }
+
+            Map<String, Object> map = getSignature(ctx.channel());
+            String sid = (String) map.get("id");// map.get("token");
+            if (id.equals(sid)) {
+
+                // 上报发消息结果
+                autoxitService.clientSubmitPushMessagesStatus(businessParam);
+
+                JSONObject response = getSuccessResponse("1", "处理成功！");
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response.toJSONString());
+                responseMessage(ctx, buffer);
+
+            } else {
+                log.warn("clientSubmitPushMessagesStatus 请求数据错误！id = {},sid = {}", id, sid);
+
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_6, "请求数据id 和 sid不一致！").toJSONString());
+                responseMessage(ctx, buffer);
+
+                try {
+                    ctx.channel().close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (XRobotException ex) {
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(String.valueOf(ex.getErrorCode()), ex.getErrorMessage()).toJSONString());
+            responseMessage(ctx, buffer);
+
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        } catch (Exception ex) {
+            log.error("clientSubmitPushMessagesStatus 未知错误：");
+            ex.printStackTrace();
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_99, "信息获取失败，请重试").toJSONString());
+            responseMessage(ctx, buffer);
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+    }
+
+    // 上报发消息加群结果
+    private void clientSubmitPushJoinGroupsStatus(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
+
+        log.info("clientSubmitPushJoinGroupsStatus req = {}", bodyString);
+
+        MessagePacket messagePacket = new MessagePacket();
+
+
+        try {
+
+            ClientSubmitPushJoinGroupsReq businessParam = JSON.parseObject(bodyString, ClientSubmitPushJoinGroupsReq.class);
+
+            log.info("clientSubmitPushJoinGroupsStatus req businessParam = {}", businessParam);
+
+            String id = businessParam.getId();
+
+            String taskID = businessParam.getTaskID(); //
+            String taskclass = businessParam.getTaskclass(); //
+
+            Integer batch = businessParam.getBatch(); //
+            String user = businessParam.getUser();
+
+            String phone = businessParam.getPhone(); //
+
+            String keyword = businessParam.getKeyword();
+
+            if (StringUtils.isEmpty(id)
+                    || StringUtils.isEmpty(taskID)
+                    || StringUtils.isEmpty(taskclass)
+                    || StringUtils.isEmpty(user)
+                    || batch == null
+                    || StringUtils.isEmpty(phone)
+                    || StringUtils.isEmpty(keyword)) {
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_5, "请求必填参数不能为空").toJSONString());
+                responseMessage(ctx, buffer);
+                return;
+            }
+
+            Map<String, Object> map = getSignature(ctx.channel());
+            String sid = (String) map.get("id");// map.get("token");
+            if (id.equals(sid)) {
+
+                // 上报发消息加群结果
+                autoxitService.clientSubmitPushJoinGroupsStatus(businessParam);
+
+                JSONObject response = getSuccessResponse("1", "处理成功！");
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response.toJSONString());
+                responseMessage(ctx, buffer);
+
+            } else {
+                log.warn("clientSubmitPushJoinGroupsStatus 请求数据错误！id = {},sid = {}", id, sid);
+
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_6, "请求数据id 和 sid不一致！").toJSONString());
+                responseMessage(ctx, buffer);
+
+                try {
+                    ctx.channel().close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (XRobotException ex) {
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(String.valueOf(ex.getErrorCode()), ex.getErrorMessage()).toJSONString());
+            responseMessage(ctx, buffer);
+
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        } catch (Exception ex) {
+            log.error("clientSubmitPushJoinGroupsStatus 未知错误：");
+            ex.printStackTrace();
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_99, "信息获取失败，请重试").toJSONString());
+            responseMessage(ctx, buffer);
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+    }
+
     // 检查用户是否可以发送消息
     private void clientCheckPushMessageStatus(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
 
@@ -235,6 +778,16 @@ public class LinkerServer {
             log.info("clientCheckPushMessageStatus req businessParam = {}", businessParam);
 
             String id = businessParam.getId();
+            String md5 = businessParam.getMd5();
+            String phone = businessParam.getPhone();
+            String usernumber = businessParam.getUsernumber();
+
+            if (StringUtils.isEmpty(id) || StringUtils.isEmpty(md5) || StringUtils.isEmpty(phone) || StringUtils.isEmpty(usernumber)) {
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_5, "请求必填参数不能为空").toJSONString());
+                responseMessage(ctx, buffer);
+                return;
+            }
+
 
             Map<String, Object> map = getSignature(ctx.channel());
             String sid = (String) map.get("id");// map.get("token");
@@ -248,7 +801,7 @@ public class LinkerServer {
             } else {
                 log.warn("clientCheckPushMessageStatus 请求数据错误！id = {},sid = {}", id, sid);
 
-                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("6", "请求数据id 和 sid不一致！").toJSONString());
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_6, "请求数据id 和 sid不一致！").toJSONString());
                 responseMessage(ctx, buffer);
 
                 try {
@@ -270,7 +823,7 @@ public class LinkerServer {
         } catch (Exception ex) {
             log.error("clientCheckPushMessageStatus 未知错误：");
             ex.printStackTrace();
-            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("99", "信息获取失败，请重试").toJSONString());
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_99, "信息获取失败，请重试").toJSONString());
             responseMessage(ctx, buffer);
             try {
                 ctx.channel().close();
@@ -294,6 +847,12 @@ public class LinkerServer {
             JSONObject jsonObject = JSONObject.parseObject(bodyString);
             String id = (String) jsonObject.get("id");
 
+            if (StringUtils.isEmpty(id)) {
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_5, "请求必填参数不能为空").toJSONString());
+                responseMessage(ctx, buffer);
+                return;
+            }
+
             Map<String, Object> map = getSignature(ctx.channel());
             String sid = (String) map.get("id");// map.get("token");
             if (id.equals(sid)) {
@@ -306,7 +865,7 @@ public class LinkerServer {
             } else {
                 log.warn("clientGetTaskStatus 请求数据错误！id = {},sid = {}", id, sid);
 
-                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("6", "请求数据id 和 sid不一致！").toJSONString());
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_6, "请求数据id 和 sid不一致！").toJSONString());
                 responseMessage(ctx, buffer);
 
                 try {
@@ -328,7 +887,7 @@ public class LinkerServer {
         } catch (Exception ex) {
             log.error("clientGetTaskStatus 未知错误：");
             ex.printStackTrace();
-            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("99", "信息获取失败，请重试").toJSONString());
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_99, "信息获取失败，请重试").toJSONString());
             responseMessage(ctx, buffer);
             try {
                 ctx.channel().close();
@@ -376,7 +935,7 @@ public class LinkerServer {
                     || StringUtils.isEmpty(account)
                     || StringUtils.isEmpty(account1)) {
 
-                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("5", "请求必填参数不能为空").toJSONString());
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_5, "请求必填参数不能为空").toJSONString());
                 responseMessage(ctx, buffer);
                 return;
             }
@@ -388,7 +947,7 @@ public class LinkerServer {
 
                 log.warn("clientLogin 来自IP:{} req=:{} 终端连接被拒绝【认证失败】！", ctx.channel().remoteAddress(), businessParam);
 
-                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("2", "终端连接被拒绝【认证失败】！").toJSONString());
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_2, "终端连接被拒绝【认证失败】！").toJSONString());
                 responseMessage(ctx, buffer);
 
                 try {
@@ -404,7 +963,7 @@ public class LinkerServer {
 
                 log.warn("clientLogin 来自IP:{} req=:{} 终端连接被拒绝【认证失败】！,账号状态：暂停使用", ctx.channel().remoteAddress(), businessParam);
 
-                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("3", "终端连接被拒绝，账号被禁用【认证失败】！").toJSONString());
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_3, "终端连接被拒绝，账号被禁用【认证失败】！").toJSONString());
                 responseMessage(ctx, buffer);
 
                 try {
@@ -424,7 +983,7 @@ public class LinkerServer {
                 log.info("登录成功,终端数：{} 连接数：{}", sessionManager.getSessionCount(), sessionManager.getSessionCount());
             } else {
                 log.warn("clientLogin 来自IP:{} req:{} 终端连接被拒绝，已存在相同ID的终端连接认证", ctx.channel().remoteAddress(), businessParam);
-                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("4", "终端连接被拒绝，已存在相同ID的终端连接认证！").toJSONString());
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_4, "终端连接被拒绝，已存在相同ID的终端连接认证！").toJSONString());
                 responseMessage(ctx, buffer);
                 try {
                     ctx.channel().close();
@@ -436,7 +995,7 @@ public class LinkerServer {
         } catch (Exception ex) {
             log.error("clientLogin 未知错误：");
             ex.printStackTrace();
-            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("99", "信息获取失败，请重试").toJSONString());
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_99, "信息获取失败，请重试").toJSONString());
             responseMessage(ctx, buffer);
             try {
                 ctx.channel().close();
@@ -468,6 +1027,12 @@ public class LinkerServer {
             String id = (String) jsonObject.get("id");
             String status = (String) jsonObject.get("status");
 
+            if (StringUtils.isEmpty(id) || StringUtils.isEmpty(status)) {
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_5, "请求必填参数不能为空").toJSONString());
+                responseMessage(ctx, buffer);
+                return;
+            }
+
             Map<String, Object> map = getSignature(ctx.channel());
             String sid = (String) map.get("id");// map.get("token");
             if (id.equals(sid)) {
@@ -476,7 +1041,7 @@ public class LinkerServer {
                 autoxitService.modifyDeviceStateByClientStata(id, status);
 
                 updateStatus(ctx.channel(), status);
-                JSONObject response = getSuccessResponse("1", "报告状态成功");
+                JSONObject response = getSuccessResponse(ServerCode.SERVER_CODE_1, "报告状态成功");
 
                 ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response.toJSONString());
                 responseMessage(ctx, buffer);
@@ -484,7 +1049,7 @@ public class LinkerServer {
             } else {
                 log.warn("clientReportStatus 请求数据错误！id = {},sid = {}", id, sid);
 
-                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("6", "请求数据id 和 sid不一致！").toJSONString());
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_6, "请求数据id 和 sid不一致！").toJSONString());
                 responseMessage(ctx, buffer);
 
                 try {
@@ -506,7 +1071,7 @@ public class LinkerServer {
         } catch (Exception ex) {
             log.error("clientReportStatus 未知错误：");
             ex.printStackTrace();
-            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse("99", "信息获取失败，请重试").toJSONString());
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_99, "信息获取失败，请重试").toJSONString());
             responseMessage(ctx, buffer);
             try {
                 ctx.channel().close();

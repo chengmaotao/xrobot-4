@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.fairyland.xrobot.common.constant.ErrorCode;
 import com.fairyland.xrobot.common.utils.MessageUtils;
 import com.fairyland.xrobot.framework.web.domain.AjaxResult;
-import com.fairyland.xrobot.modular.xrobot.domain.Device;
-import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroup;
-import com.fairyland.xrobot.modular.xrobot.domain.Dict;
-import com.fairyland.xrobot.modular.xrobot.domain.TaskDict;
+import com.fairyland.xrobot.modular.xrobot.domain.*;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersInitResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.DeviceGroupMembersListResp;
@@ -809,7 +806,7 @@ public class XrobotController {
 
 
     /**
-     * @Description: 任务执行终端列表(带分页)
+     * @Description: 任务执行终端列表(不分页了)
      * @Param:
      * @return:
      * @Author: ctc
@@ -822,9 +819,9 @@ public class XrobotController {
         AjaxResult webResponse = null;
         try {
 
-            PageResult resp = xrobotService.taskDevicesList(paramReq);
+            List<TaskDevices> list = xrobotService.taskDevicesList(paramReq);
 
-            webResponse = AjaxResult.success(resp);
+            webResponse = AjaxResult.success(list);
         } catch (XRobotException ex) {
             logger.warn("XRobotException={}", ex);
             webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));

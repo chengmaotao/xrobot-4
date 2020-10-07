@@ -41,7 +41,7 @@ public class SaveTaskReq {
 
     public void validate() {
 
-        if (StringUtils.isNotEmpty(taskclass)
+        if (StringUtils.isEmpty(taskclass)
                 ||
                 (!StringUtils.equals("100001", taskclass)
                         && !StringUtils.equals("100002", taskclass)

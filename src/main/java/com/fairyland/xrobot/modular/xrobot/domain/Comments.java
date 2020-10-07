@@ -271,4 +271,14 @@ public class Comments extends BaseEntity {
     public void setPoster(String poster) {
         this.poster = poster == null ? null : poster.trim();
     }
+
+    private String keywords;
+
+    public String getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(String keywords) {
+        this.keywords = keywords;
+    }
 }

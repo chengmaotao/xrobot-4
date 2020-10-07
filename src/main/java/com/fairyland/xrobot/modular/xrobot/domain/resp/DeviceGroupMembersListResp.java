@@ -29,6 +29,9 @@ public class DeviceGroupMembersListResp {
     private Integer state; // 0:未连接 1:正常（连接并登录成功）98:账号禁用 99:账号1禁用 100:账号全部禁用 127:暂停使用
 
 
+    private String deviceid;
+
+
     public Long getId() {
         return id;
     }
@@ -109,6 +112,15 @@ public class DeviceGroupMembersListResp {
         this.state = state;
     }
 
+
+    public String getDeviceid() {
+        return deviceid;
+    }
+
+    public void setDeviceid(String deviceid) {
+        this.deviceid = deviceid;
+    }
+
     @Override
     public String toString() {
         return "DeviceGroupMembersListResp{" +
@@ -122,6 +134,7 @@ public class DeviceGroupMembersListResp {
                 ", account1='" + account1 + '\'' +
                 ", login1=" + login1 +
                 ", state=" + state +
+                ", deviceid='" + deviceid + '\'' +
                 '}';
     }
 }

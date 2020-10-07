@@ -470,6 +470,38 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         paramReq.validate();
 
+
+        if (StringUtils.equals(paramReq.getTaskclass(), "100001") || StringUtils.equals(paramReq.getTaskclass(), "100004") || StringUtils.equals(paramReq.getTaskclass(), "100003")) {
+            // 系统参数 不存在
+            List<Dict> dicts = xrobotDao.dictList();
+
+            if (!dicts.isEmpty()) {
+                Dict dict = dicts.get(0);
+
+                // 创建群任务支持批量创建群（最大值系统管理员设置，默认100）
+                Integer maxAddGroupValue = dict.getMaxAddGroupValue();
+
+                // 任务创建时支持多个搜索关键字问题（最大值系统管理员设置，默认100）
+                Integer maxSearchKeyValue = dict.getMaxSearchKeyValue();
+
+                int len = paramReq.getKeywords().split("(\\r\\n|\\r|\\n|\\n\\r)").length;
+                if (StringUtils.equals(paramReq.getTaskclass(), "100003")) {
+
+                    if (len > maxAddGroupValue) {
+                        logger.warn("saveTask keywords 回车换行 长度 超过最大值了");
+                        throw new BusinessException("创建群任务支持批量创建群 超过了最大值=" + maxAddGroupValue);
+                    }
+                } else if (StringUtils.equals(paramReq.getTaskclass(), "100001") || StringUtils.equals(paramReq.getTaskclass(), "100004")) {
+
+                    if (len > maxSearchKeyValue) {
+                        logger.warn("saveTask2 keywords 回车换行 长度 超过最大值了");
+                        throw new BusinessException("任务创建时支持多个搜索关键字问题 超过了最大值=" + maxSearchKeyValue);
+                    }
+                }
+            }
+        }
+
+
         String newFilePath = null;
 
         Iterator<String> files = ((MultipartHttpServletRequest) request).getFileNames();
@@ -527,7 +559,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         record.setKeywords(paramReq.getKeywords());
         record.setContent(paramReq.getContent());
         record.setMd5(Utility.getMd5(paramReq.getContent()));
-
+        record.setRemarks(paramReq.getRemarks());
         if (StringUtils.isNotEmpty(newFilePath)) {
             record.setCover(newFilePath);
         }
@@ -544,6 +576,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                     throw new XRobotException(ErrorCode.ERROR_CODE_5);
                 }
             }
+
 
             record.setBatch(0);
             record.setState(0); // 0:新创建
@@ -580,6 +613,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             num = xrobotDao.updateTasks(record);
 
             xrobotDao.delTasksDevicesByTaskId(oldInfo.getTaskid(), user.getUserName());
+
             Map<String, Object> dbParams = new HashMap<>();
             dbParams.put("nowDate", new Date());
             dbParams.put("username", user.getUserName());
@@ -717,16 +751,13 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
     }
 
     @Override
-    public PageResult taskDevicesList(TaskDevicesListReq paramReq) {
+    public List<TaskDevices> taskDevicesList(TaskDevicesListReq paramReq) {
         logger.info("taskDevicesList paramReq = {}", paramReq);
         paramReq.setCurrentUser(getCurrentUser().getUserName());
 
-        List<TaskDevices> list = xrobotDao.taskDevicesList(paramReq);
+        return xrobotDao.taskDevicesList(paramReq);
 
-        PageInfo<TaskDevices> pageInfo = new PageInfo<>(list);
-        PageResult pageResult = PageUtils.getPageResult(pageInfo);
 
-        return pageResult;
     }
 
     @Override
@@ -750,6 +781,10 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             List<SaveTaskInitResp> list = xrobotDao.saveTaskInit(paramReq);
 
             TasksWithBLOBs taskInfo = xrobotDao.getTaskInfoById(paramReq.getTaskid(), getCurrentUser().getUserName());
+
+            // 所有的分组信息
+            List<DeviceGroup> deviceGroups = deviceGroupAllList();
+            resp.put("deviceGroups", deviceGroups);
 
             resp.put("taskInfo", taskInfo);
             resp.put("initRespList", list);
