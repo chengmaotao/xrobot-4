@@ -429,7 +429,7 @@
          c_taskdevices a
     JOIN c_tasks b ON a.taskID = b.taskID
    where a.deviceID = #{deviceid}
-     AND a.state IN (0, 99, 98)
+     AND a.state IN (99, 98)
    order by a.create_date desc
 
 

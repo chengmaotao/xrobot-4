@@ -1,6 +1,7 @@
 package com.fairyland.xrobot.modular.xrobot.dao.impl;
 
 import com.fairyland.xrobot.common.constant.XRobotCode;
+import com.fairyland.xrobot.common.utils.StringUtils;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClinetLoginReq;
 import com.fairyland.xrobot.modular.xrobot.dao.XrobotDao;
 import com.fairyland.xrobot.modular.xrobot.dao.mapper.*;
@@ -189,13 +190,13 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public List<Device> deviceAllList(String userName,Integer role) {
+    public List<Device> deviceAllList(String userName, Integer role) {
 
         DeviceExample example = new DeviceExample();
 
-        if(role == null){
+        if (role == null) {
             example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(userName);
-        }else{
+        } else {
             example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(userName).andRoleEqualTo(role);
         }
 
@@ -288,7 +289,15 @@ public class XrobotDaoImpl implements XrobotDao {
     public Device checkClinetLogin(ClinetLoginReq paramReq) {
 
         DeviceExample example = new DeviceExample();
-        example.createCriteria().andDeviceidEqualTo(paramReq.getId()).andTokenEqualTo(paramReq.getToken()).andAccountEqualTo(paramReq.getAccount()).andAccount1EqualTo(paramReq.getAccount1()).andPhoneEqualTo(paramReq.getPhone()).andDelFlagEqualTo("0");
+        if (StringUtils.isNotEmpty(paramReq.getAccount()) && StringUtils.isNotEmpty(paramReq.getAccount1())) {
+            example.createCriteria().andDeviceidEqualTo(paramReq.getId()).andTokenEqualTo(paramReq.getToken()).andAccountEqualTo(paramReq.getAccount()).andAccount1EqualTo(paramReq.getAccount1()).andPhoneEqualTo(paramReq.getPhone()).andDelFlagEqualTo("0");
+        } else if (StringUtils.isNotEmpty(paramReq.getAccount())) {
+            example.createCriteria().andDeviceidEqualTo(paramReq.getId()).andTokenEqualTo(paramReq.getToken()).andAccountEqualTo(paramReq.getAccount()).andPhoneEqualTo(paramReq.getPhone()).andDelFlagEqualTo("0");
+        } else if (StringUtils.isNotEmpty(paramReq.getAccount1())) {
+            example.createCriteria().andDeviceidEqualTo(paramReq.getId()).andTokenEqualTo(paramReq.getToken()).andAccount1EqualTo(paramReq.getAccount1()).andPhoneEqualTo(paramReq.getPhone()).andDelFlagEqualTo("0");
+        }else{
+            example.createCriteria().andDeviceidEqualTo(paramReq.getId()).andTokenEqualTo(paramReq.getToken()).andPhoneEqualTo(paramReq.getPhone()).andDelFlagEqualTo("0");
+        }
 
         List<Device> list = deviceMapper.selectByExample(example);
 

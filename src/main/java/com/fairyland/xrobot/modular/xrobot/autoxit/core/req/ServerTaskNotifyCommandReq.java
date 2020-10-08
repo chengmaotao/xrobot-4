@@ -1,5 +1,7 @@
 package com.fairyland.xrobot.modular.xrobot.autoxit.core.req;
 
+import com.fairyland.xrobot.common.utils.StringUtils;
+
 /**
  * @program: fairyland->ServerTaskNotifyCommandReq
  * @description: TODO
@@ -46,6 +48,10 @@ public class ServerTaskNotifyCommandReq {
     }
 
     public String getCover() {
+
+        if (StringUtils.isNotEmpty(cover)) {
+            return "http://39.99.233.24:20001" + cover;
+        }
         return cover;
     }
 

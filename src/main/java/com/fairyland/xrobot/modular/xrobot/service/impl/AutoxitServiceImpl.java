@@ -1,6 +1,5 @@
 package com.fairyland.xrobot.modular.xrobot.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fairyland.xrobot.common.utils.StringUtils;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.ServerCode;
@@ -105,28 +104,28 @@ public class AutoxitServiceImpl implements AutoxitService {
             }
         }
 
-
-        autoxitDao.updateDeviceByid(record);
-
+        if (record.getState() != null) {
+            autoxitDao.updateDeviceByid(record);
+        }
     }
 
     // 领取任务
     @Override
-    public String clientGetTaskStatus(String id) {
+    public List<ServerTaskNotifyCommandReq> clientGetTaskStatus(String id) {
         logger.info("领取任务 clientGetTaskStatus deviceID = {}", id);
 
         Device device = autoxitDao.getDeviceBydeviceID(id);
 
         checkDeviceByDeviceId(device, id);
 
-        List<ServerTaskNotifyCommandReq> list = autoxitDao.getClientGetTaskByDeviceId(device.getDeviceid());
+        return autoxitDao.getClientGetTaskByDeviceId(device.getDeviceid());
 
-        return JSON.toJSONString(list);
+        //return JSON.toJSONString(list);
     }
 
     // 检查用户是否可以发送消息
     @Override
-    public String clientCheckPushMessageStatus(ClientCheckPushMessageReq paramReq) {
+    public boolean clientCheckPushMessageStatus(ClientCheckPushMessageReq paramReq) {
         logger.info("clientCheckPushMessageStatus req = {}", paramReq);
 
 
@@ -135,15 +134,13 @@ public class AutoxitServiceImpl implements AutoxitService {
         JSONObject response = new JSONObject();
 
         if (pushMessages == null) {
-            response.put("push", true);
-            return response.toJSONString();
+            return true;
         }
 
         // 系统参数 不存在
         List<Dict> dicts = xrobotDao.dictList();
         if (dicts.isEmpty()) {
-            response.put("push", true);
-            return response.toJSONString();
+            return true;
         }
 
         Dict dict = dicts.get(0);
@@ -162,11 +159,9 @@ public class AutoxitServiceImpl implements AutoxitService {
 
         if (nextBeginDate.compareTo(now) > 0) {
             logger.info("clientCheckPushMessageStatus contentmd5 = {},phone = {},usernumber = {},上次发送时间={},下次允许发送时间={},现在时间={}", paramReq.getMd5(), paramReq.getPhone(), paramReq.getUsernumber(), prePushDate, nextBeginDate, now);
-            response.put("push", false);
-            return response.toJSONString();
+            return false;
         } else {
-            response.put("push", true);
-            return response.toJSONString();
+            return true;
         }
 
     }

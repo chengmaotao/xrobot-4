@@ -3,15 +3,17 @@ package com.fairyland.xrobot.modular.xrobot.service;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.Device;
 
+import java.util.List;
+
 public interface AutoxitService {
 
     Device checkClinetLogin(ClinetLoginReq paramReq);
 
     void modifyDeviceStateByClientStata(String id, String status);
 
-    String clientGetTaskStatus(String id);
+    List<ServerTaskNotifyCommandReq> clientGetTaskStatus(String id);
 
-    String clientCheckPushMessageStatus(ClientCheckPushMessageReq businessParam);
+    boolean clientCheckPushMessageStatus(ClientCheckPushMessageReq businessParam);
 
     String clientSubmitPushJoinGroupsStatus(ClientSubmitPushJoinGroupsReq businessParam);
 

@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -796,8 +797,12 @@ public class LinkerServer {
             if (id.equals(sid)) {
 
                 // 检查用户是否可以发送消息
-                String response = autoxitService.clientCheckPushMessageStatus(businessParam);
-                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response);
+                boolean isPush = autoxitService.clientCheckPushMessageStatus(businessParam);
+
+                JSONObject response = getSuccessResponse("1", "处理成功");
+                response.put("data", isPush);
+
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response.toJSONString());
                 responseMessage(ctx, buffer);
 
             } else {
@@ -860,8 +865,11 @@ public class LinkerServer {
             if (id.equals(sid)) {
 
                 // 领取任务
-                String response = autoxitService.clientGetTaskStatus(id);
-                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response);
+                List<ServerTaskNotifyCommandReq> list = autoxitService.clientGetTaskStatus(id);
+                JSONObject response = getSuccessResponse("1", "处理成功");
+                response.put("data", list);
+
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response.toJSONString());
                 responseMessage(ctx, buffer);
 
             } else {
@@ -933,9 +941,7 @@ public class LinkerServer {
 
             if (StringUtils.isEmpty(id)
                     || StringUtils.isEmpty(token)
-                    || StringUtils.isEmpty(phone)
-                    || StringUtils.isEmpty(account)
-                    || StringUtils.isEmpty(account1)) {
+                    || StringUtils.isEmpty(phone)) {
 
                 ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_5, "请求必填参数不能为空").toJSONString());
                 responseMessage(ctx, buffer);
@@ -1298,6 +1304,7 @@ public class LinkerServer {
         JSONObject response = new JSONObject();
 
         response.put("success", "1");
+        response.put("code", 0);
 
         if (StringUtils.isNotEmpty(errorCode)) {
             response.put("code", errorCode);
