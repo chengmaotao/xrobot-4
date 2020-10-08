@@ -622,8 +622,7 @@ public class LinkerServer {
                     || batch == null
                     || StringUtils.isEmpty(phone)
                     || StringUtils.isEmpty(keyword)
-                    || StringUtils.isEmpty(groupname)
-                    || StringUtils.isEmpty(groupname1)
+                    || (StringUtils.isEmpty(groupname) && StringUtils.isEmpty(groupname1))
                     || StringUtils.isEmpty(usernumber)
                     || state == null) {
                 ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_5, "请求必填参数不能为空").toJSONString());
@@ -800,6 +799,7 @@ public class LinkerServer {
                 boolean isPush = autoxitService.clientCheckPushMessageStatus(businessParam);
 
                 JSONObject response = getSuccessResponse("1", "处理成功");
+
                 response.put("data", isPush);
 
                 ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response.toJSONString());

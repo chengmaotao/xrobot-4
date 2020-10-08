@@ -131,8 +131,6 @@ public class AutoxitServiceImpl implements AutoxitService {
 
         PushMessages pushMessages = autoxitDao.clientCheckPushMessageStatus(paramReq);
 
-        JSONObject response = new JSONObject();
-
         if (pushMessages == null) {
             return true;
         }
