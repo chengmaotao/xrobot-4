@@ -439,8 +439,8 @@ public class AutoxitServiceImpl implements AutoxitService {
         if (list == null || list.isEmpty()) {
 
             TasksWithBLOBs tasksRecord = new TasksWithBLOBs();
-            tasks.setState(2);
-            tasks.preUpdate(paramReq.getUser());
+            tasksRecord.setState(2);
+            tasksRecord.preUpdate(paramReq.getUser());
 
             TasksExample tasksExample = new TasksExample();
             tasksExample.createCriteria().andTaskidEqualTo(paramReq.getTaskID());
