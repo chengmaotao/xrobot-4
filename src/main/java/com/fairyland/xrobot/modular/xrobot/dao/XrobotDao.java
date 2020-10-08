@@ -36,7 +36,7 @@ public interface XrobotDao {
 
     void delDeviceGroup(DeviceGroup record, DeviceGroupExample example);
 
-    List<Device> deviceAllList(String userName);
+    List<Device> deviceAllList(String userName,Integer role);
 
     List<DeviceGroup> deviceGroupAllList(String userName);
 

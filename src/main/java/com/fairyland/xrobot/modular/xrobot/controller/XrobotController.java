@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.fairyland.xrobot.common.constant.ErrorCode;
 import com.fairyland.xrobot.common.utils.MessageUtils;
 import com.fairyland.xrobot.framework.web.domain.AjaxResult;
-import com.fairyland.xrobot.modular.xrobot.domain.*;
+import com.fairyland.xrobot.modular.xrobot.domain.Device;
+import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroup;
+import com.fairyland.xrobot.modular.xrobot.domain.Dict;
+import com.fairyland.xrobot.modular.xrobot.domain.TaskDict;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.*;
 import com.fairyland.xrobot.modular.xrobot.exception.BusinessException;
@@ -103,7 +106,7 @@ public class XrobotController {
         AjaxResult webResponse = null;
         try {
 
-            List<Device> resp = xrobotService.deviceAllList();
+            List<Device> resp = xrobotService.deviceAllList(null);
 
             webResponse = AjaxResult.success(resp);
         } catch (XRobotException ex) {
@@ -141,6 +144,9 @@ public class XrobotController {
         } catch (XRobotException ex) {
             logger.warn("XRobotException={}", ex);
             webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(998, ex.getTipsMessage());
         } catch (Exception ex) {
             logger.error("Exception={}", ex);
             webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
@@ -170,6 +176,9 @@ public class XrobotController {
         } catch (XRobotException ex) {
             logger.warn("XRobotException={}", ex);
             webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(998, ex.getTipsMessage());
         } catch (Exception ex) {
             logger.error("Exception={}", ex);
             webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
@@ -199,6 +208,9 @@ public class XrobotController {
         } catch (XRobotException ex) {
             logger.warn("XRobotException={}", ex);
             webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(998, ex.getTipsMessage());
         } catch (Exception ex) {
             logger.error("Exception={}", ex);
             webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
@@ -336,8 +348,6 @@ public class XrobotController {
     }
 
 
-
-
     // == 终端设备分组表============================
 
 
@@ -425,6 +435,9 @@ public class XrobotController {
         } catch (XRobotException ex) {
             logger.warn("XRobotException={}", ex);
             webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(998, ex.getTipsMessage());
         } catch (Exception ex) {
             logger.error("Exception={}", ex);
             webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
@@ -692,6 +705,9 @@ public class XrobotController {
         } catch (XRobotException ex) {
             logger.warn("XRobotException={}", ex);
             webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(998, ex.getTipsMessage());
         } catch (Exception ex) {
             logger.error("Exception={}", ex);
             webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
@@ -883,6 +899,9 @@ public class XrobotController {
         } catch (XRobotException ex) {
             logger.warn("XRobotException={}", ex);
             webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(998, ex.getTipsMessage());
         } catch (Exception ex) {
             logger.error("Exception={}", ex);
             webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
@@ -1010,6 +1029,9 @@ public class XrobotController {
         } catch (XRobotException ex) {
             logger.warn("XRobotException={}", ex);
             webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(998, ex.getTipsMessage());
         } catch (Exception ex) {
             logger.error("Exception={}", ex);
             webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
@@ -1039,6 +1061,9 @@ public class XrobotController {
         } catch (XRobotException ex) {
             logger.warn("XRobotException={}", ex);
             webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(998, ex.getTipsMessage());
         } catch (Exception ex) {
             logger.error("Exception={}", ex);
             webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
@@ -1068,6 +1093,9 @@ public class XrobotController {
         } catch (XRobotException ex) {
             logger.warn("XRobotException={}", ex);
             webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(998, ex.getTipsMessage());
         } catch (Exception ex) {
             logger.error("Exception={}", ex);
             webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
@@ -1075,7 +1103,6 @@ public class XrobotController {
 
         return webResponse;
     }
-
 
 
     // =================任务 执行 结果表==============================

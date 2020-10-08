@@ -95,7 +95,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         record.setPassword1(paramReq.getPassword1());
         record.setLogin1(paramReq.getLogin1());
         record.setRemarks(paramReq.getRemarks());
-
+        record.setRole(paramReq.getRole());
         List<Device> lists = null;
         int num = 0;
 
@@ -105,14 +105,14 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             lists = xrobotDao.getDeviceListByDeviceSN(paramReq.getDevicesn(), user.getUserName());
             if (lists != null && lists.size() > 0) {
                 logger.warn("SaveDeviceReq req = {},终端设备应用编号 已经存在,不能重复添加", paramReq);
-                throw new BusinessException("不能重复添加修改为请使用其他编号");
+                throw new BusinessException("终端设备应用编号: " + paramReq.getDevicesn() + " 已经存在，请使用其他编号");
             }
 
             // 判断 手机号 是否已经存在
             lists = xrobotDao.getDeviceListByPhone(paramReq.getPhone(), user.getUserName());
             if (lists != null && lists.size() > 0) {
                 logger.warn("SaveDeviceReq req = {},终端设备手机号 已经存在,不能重复添加", paramReq);
-                throw new BusinessException("终端设备手机号码: " + paramReq.getPhone() + " 已经存在，不能重复添加。");
+                throw new BusinessException("终端设备手机号码: " + paramReq.getPhone() + " 已经存在，请使用其他手机号。");
             }
 
             // 新增
@@ -141,7 +141,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                 lists = xrobotDao.getDeviceListByDeviceSN(paramReq.getDevicesn(), user.getUserName());
                 if (lists != null && lists.size() > 0) {
                     logger.warn("SaveDeviceReq2 req = {},终端设备应用编号 已经存在,不能重复添加", paramReq);
-                    throw new BusinessException("不能重复添加修改为请使用其他编号");
+                    throw new BusinessException("终端设备应用编号: " + paramReq.getDevicesn() + " 已经存在，请使用其他编号");
                 }
             }
 
@@ -150,7 +150,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                 lists = xrobotDao.getDeviceListByPhone(paramReq.getPhone(), user.getUserName());
                 if (lists != null && lists.size() > 0) {
                     logger.warn("SaveDeviceReq2 req = {},终端设备手机号 已经存在,不能重复添加", paramReq);
-                    throw new BusinessException("终端设备手机号码: " + paramReq.getPhone() + " 已经存在，不能重复添加。");
+                    throw new BusinessException("终端设备手机号码: " + paramReq.getPhone() + " 已经存在，请使用其他手机号。");
                 }
             }
 
@@ -349,11 +349,11 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
     }
 
     @Override
-    public List<Device> deviceAllList() {
+    public List<Device> deviceAllList(Integer role) {
 
         SysUser user = getCurrentUser();
 
-        return xrobotDao.deviceAllList(user.getUserName());
+        return xrobotDao.deviceAllList(user.getUserName(), role);
 
     }
 
@@ -769,7 +769,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         if (StringUtils.isEmpty(paramReq.getTaskid())) {
 
             // 所有的设备列表
-            List<Device> devices = deviceAllList();
+            List<Device> devices = deviceAllList(0);
             resp.put("devices", devices);
             // 所有的分组信息
             List<DeviceGroup> deviceGroups = deviceGroupAllList();
@@ -1021,8 +1021,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
     }
 
     @Override
-    public List<Device> monitorAdminDeviceList(DeviceListReq paramReq)
-    {
+    public List<Device> monitorAdminDeviceList(DeviceListReq paramReq) {
         logger.info("monitorAdminDeviceList req = {}", paramReq);
 
         paramReq.setAllow(1);

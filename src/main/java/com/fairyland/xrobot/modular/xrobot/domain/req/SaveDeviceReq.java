@@ -40,6 +40,8 @@ public class SaveDeviceReq {
 
     private String currentUser;
 
+    private Integer role; // 0:任务执行角色 1:机器人聊天角色
+
     public String getCurrentUser() {
         return currentUser;
     }
@@ -58,6 +60,11 @@ public class SaveDeviceReq {
         if (StringUtils.isEmpty(phone) || phone.length() > 16) {
             logger.warn("SaveDeviceReq 终端设备手机号码 phone = {} 不正确 超出长度限制16", phone);
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
+        }
+
+        if (role == null || (role != 0 && role != 1)) {
+            logger.warn("SaveDeviceReq role 设备角色(0:任务执行角色 1:机器人聊天角色) role = {} 不正确,设置为默认值0", role);
+            role = 0;
         }
 
         if (login == null || (login != 0 && login != 1)) {
@@ -96,6 +103,14 @@ public class SaveDeviceReq {
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
 
+    }
+
+    public Integer getRole() {
+        return role;
+    }
+
+    public void setRole(Integer role) {
+        this.role = role;
     }
 
     public boolean isResetState() {
@@ -194,6 +209,7 @@ public class SaveDeviceReq {
         this.login1 = login1;
     }
 
+
     @Override
     public String toString() {
         return "SaveDeviceReq{" +
@@ -209,6 +225,7 @@ public class SaveDeviceReq {
                 ", remarks='" + remarks + '\'' +
                 ", isResetState=" + isResetState +
                 ", currentUser='" + currentUser + '\'' +
+                ", role=" + role +
                 '}';
     }
 }

@@ -27,7 +27,7 @@ public interface XrobotService {
 
     void delDeviceGroup(DelDeviceGroupReq paramReq);
 
-    List<Device> deviceAllList();
+    List<Device> deviceAllList(Integer role);
 
     List<DeviceGroup> deviceGroupAllList();
 

@@ -600,6 +600,11 @@ public class DeviceExample {
             return (Criteria) this;
         }
 
+        public Criteria andRoleEqualTo(Integer value) {
+            addCriterion("role =", value, "role");
+            return (Criteria) this;
+        }
+
         public Criteria andDelFlagNotEqualTo(String value) {
             addCriterion("del_flag <>", value, "delFlag");
             return (Criteria) this;

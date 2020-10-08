@@ -189,10 +189,17 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public List<Device> deviceAllList(String userName) {
+    public List<Device> deviceAllList(String userName,Integer role) {
 
         DeviceExample example = new DeviceExample();
-        example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(userName);
+
+        if(role == null){
+            example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(userName);
+        }else{
+            example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(userName).andRoleEqualTo(role);
+        }
+
+
         example.setOrderByClause(" create_date desc");
         List<Device> list = deviceMapper.selectByExample(example);
 

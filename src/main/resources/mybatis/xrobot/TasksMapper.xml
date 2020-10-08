@@ -575,6 +575,7 @@
           WHERE
               a.create_by = #{currentUser}
            and a.del_flag = '0'
+           and a.role = 0
   </select>
 
 </mapper>

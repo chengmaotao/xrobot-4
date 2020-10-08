@@ -30,6 +30,8 @@ public class QRCodeResp {
 
     private Integer port;
 
+    private Integer role;
+
     public String getDeviceid() {
         return deviceid;
     }
@@ -127,6 +129,14 @@ public class QRCodeResp {
         this.port = port;
     }
 
+    public Integer getRole() {
+        return role;
+    }
+
+    public void setRole(Integer role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
         return "QRCodeResp{" +
@@ -142,6 +152,7 @@ public class QRCodeResp {
                 ", login1=" + login1 +
                 ", host='" + host + '\'' +
                 ", port=" + port +
+                ", role=" + role +
                 '}';
     }
 }

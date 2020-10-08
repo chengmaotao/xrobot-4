@@ -92,6 +92,16 @@ public class Device extends BaseEntity {
 
     private Integer allow;
 
+    private Integer role;
+
+    public Integer getRole() {
+        return role;
+    }
+
+    public void setRole(Integer role) {
+        this.role = role;
+    }
+
     public Integer getAllow() {
         return allow;
     }
