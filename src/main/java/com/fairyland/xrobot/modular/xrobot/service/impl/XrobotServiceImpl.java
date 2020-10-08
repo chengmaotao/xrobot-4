@@ -290,7 +290,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             lists = xrobotDao.getDeviceGroupListByName(paramReq.getGroupname(), user.getUserName());
             if (lists != null && lists.size() > 0) {
                 logger.warn("SaveDeviceReq req = {},终端设备分组名称 已经存在,不能重复添加", paramReq);
-                throw new BusinessException("终端设备分组名称: " + paramReq.getGroupname() + " 已经存在，不能重复添加。");
+                throw new BusinessException("终端设备分组名称: " + paramReq.getGroupname() + " 已经存在，请使用其他分组名称。");
             }
 
             // 新增
@@ -312,7 +312,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                 lists = xrobotDao.getDeviceGroupListByName(paramReq.getGroupname(), user.getUserName());
                 if (lists != null && lists.size() > 0) {
                     logger.warn("SaveDeviceReq2 req = {},终端设备分组名称 已经存在,不能重复添加", paramReq);
-                    throw new BusinessException("终端设备分组名称: " + paramReq.getGroupname() + " 已经存在，不能重复添加。");
+                    throw new BusinessException("终端设备分组名称: " + paramReq.getGroupname() + " 已经存在，请使用其他分组名称。");
                 }
             }
 
@@ -814,8 +814,8 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         List<Device> list = xrobotDao.deviceAllListByUser(paramReq);
 
-        if (list == null || list.isEmpty()) {
-            return null;
+        if (list.isEmpty() ) {
+            return list;
         }
 
         for (Device xclient : list) {
@@ -1028,8 +1028,8 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         List<Device> list = xrobotDao.deviceAllListByUser(paramReq);
 
-        if (list == null || list.isEmpty()) {
-            return null;
+        if (list.isEmpty()) {
+            return list;
         }
 
         for (Device xclient : list) {
