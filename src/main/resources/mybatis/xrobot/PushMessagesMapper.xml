@@ -505,7 +505,6 @@
       JOIN c_tasks b ON a.taskID = b.taskID and a.taskclass = b.taskclass
       WHERE
           b.md5 = #{md5}
-      AND a.phone = #{phone}
       AND a.usernumber = #{usernumber}
       AND a.state = 2
 
