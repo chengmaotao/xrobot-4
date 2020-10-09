@@ -41,8 +41,8 @@ public class SysLoginController {
      *
      * @param username 用户名
      * @param password 密码
-     * @param randstr  随机数
-     * @param ticket   票据
+     * @param randstr  随机数（废弃）
+     * @param ticket   票据（废弃）
      * @return 结果
      */
     @PostMapping("/login")

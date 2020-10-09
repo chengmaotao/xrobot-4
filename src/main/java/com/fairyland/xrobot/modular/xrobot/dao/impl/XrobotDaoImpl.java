@@ -65,6 +65,13 @@ public class XrobotDaoImpl implements XrobotDao {
     @Autowired
     private CreateGroupsMapper createGroupsMapper;
 
+    @Autowired
+    private SummaryJoinGroupsMapper summaryJoinGroupsMapper;
+
+
+    @Autowired
+    private AppVersionMapper appVersionMapper;
+
     @Override
     public List<Device> deviceList(DeviceListReq paramReq) {
         int pageNum = paramReq.getPageNum();
@@ -295,7 +302,7 @@ public class XrobotDaoImpl implements XrobotDao {
             example.createCriteria().andDeviceidEqualTo(paramReq.getId()).andTokenEqualTo(paramReq.getToken()).andAccountEqualTo(paramReq.getAccount()).andPhoneEqualTo(paramReq.getPhone()).andDelFlagEqualTo("0");
         } else if (StringUtils.isNotEmpty(paramReq.getAccount1())) {
             example.createCriteria().andDeviceidEqualTo(paramReq.getId()).andTokenEqualTo(paramReq.getToken()).andAccount1EqualTo(paramReq.getAccount1()).andPhoneEqualTo(paramReq.getPhone()).andDelFlagEqualTo("0");
-        }else{
+        } else {
             example.createCriteria().andDeviceidEqualTo(paramReq.getId()).andTokenEqualTo(paramReq.getToken()).andPhoneEqualTo(paramReq.getPhone()).andDelFlagEqualTo("0");
         }
 
@@ -533,5 +540,45 @@ public class XrobotDaoImpl implements XrobotDao {
         }
 
         return list;
+    }
+
+    @Override
+    public List<SummaryJoinGroups> summaryJoinGroupsList(ExeResultReq paramReq) {
+        int pageNum = paramReq.getPageNum();
+        int pageSize = paramReq.getPageSize();
+        PageHelper.startPage(pageNum, pageSize);
+
+
+        List<SummaryJoinGroups> list = summaryJoinGroupsMapper.summaryJoinGroupsList(paramReq);
+
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+
+        return list;
+    }
+
+    @Override
+    public void deleteAppVersion() {
+        appVersionMapper.deleteByExample(null);
+    }
+
+    @Override
+    public void insertAppVersion(AppVersion record) {
+        appVersionMapper.insertSelective(record);
+    }
+
+    @Override
+    public AppVersion getAppVersion() {
+
+        AppVersionExample example = new AppVersionExample();
+        example.setOrderByClause(" create_date desc");
+
+        List<AppVersion> list = appVersionMapper.selectByExample(example);
+
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        return list.get(0);
     }
 }

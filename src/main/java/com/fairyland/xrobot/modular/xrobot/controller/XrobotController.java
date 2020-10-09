@@ -1138,4 +1138,62 @@ public class XrobotController {
         return webResponse;
     }
 
+
+    /**
+     * @Description: app 上传
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/10 1:24
+     */
+    @RequestMapping(value = "/appUpload")
+    @PreAuthorize("@ss.hasPermi('app:upload')")
+    public AjaxResult appUpload(AppUploadReq paramReq, HttpServletRequest request) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            xrobotService.appUpload(paramReq, request);
+
+            webResponse = AjaxResult.success();
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
+    @RequestMapping(value = "/getAppUrl")
+    @PreAuthorize("@ss.hasPermi('app:url')")
+    public AjaxResult getAppUrl() {
+
+        AjaxResult webResponse = null;
+        try {
+
+            String url = xrobotService.getAppUrl();
+
+            webResponse = AjaxResult.success(url);
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
 }

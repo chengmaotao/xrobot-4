@@ -15,7 +15,7 @@ public class ExeResultReq extends PageRequest {
 
     private Logger logger = LoggerFactory.getLogger(ExeResultReq.class);
 
-    private Integer code; // 1发消息加群结果表;2发消息执行结果表;3评论加群结果表;4评论执行结果表;5创建群组发帖任务执行结果表
+    private Integer code; // 1发消息加群结果表;2发消息执行结果表;3评论加群结果表;4评论执行结果表;5创建群组发帖任务执行结果表 6关键字加群统计
 
     private String taskid;
 
@@ -30,7 +30,7 @@ public class ExeResultReq extends PageRequest {
     private String endTime; // 截止日期
 
     public void validate() {
-        if (code == null || (code != 1 && code != 2 && code != 3 && code != 4 && code != 5)) {
+        if (code == null || (code != 1 && code != 2 && code != 3 && code != 4 && code != 5 && code != 6)) {
             logger.warn("ExeResultReq code={} 不正确", code);
 
             throw new XRobotException(ErrorCode.ERROR_CODE_5);

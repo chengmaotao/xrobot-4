@@ -3,6 +3,8 @@ package com.fairyland.xrobot.modular.xrobot.dao.mapper;
 import com.fairyland.xrobot.modular.xrobot.domain.SummaryJoinGroups;
 import com.fairyland.xrobot.modular.xrobot.domain.SummaryJoinGroupsExample;
 import java.util.List;
+
+import com.fairyland.xrobot.modular.xrobot.domain.req.ExeResultReq;
 import org.apache.ibatis.annotations.Param;
 
 public interface SummaryJoinGroupsMapper {
@@ -93,4 +95,6 @@ public interface SummaryJoinGroupsMapper {
      * @mbggenerated
      */
     int updateByPrimaryKey(SummaryJoinGroups record);
+
+    List<SummaryJoinGroups> summaryJoinGroupsList(ExeResultReq paramReq);
 }

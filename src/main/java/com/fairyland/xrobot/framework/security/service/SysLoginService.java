@@ -1,18 +1,18 @@
 package com.fairyland.xrobot.framework.security.service;
 
-import com.alibaba.fastjson.JSONObject;
 import com.fairyland.xrobot.common.constant.Constants;
 import com.fairyland.xrobot.common.exception.CustomException;
 import com.fairyland.xrobot.common.exception.user.CaptchaException;
 import com.fairyland.xrobot.common.exception.user.UserPasswordNotMatchException;
 import com.fairyland.xrobot.common.utils.MessageUtils;
-import com.fairyland.xrobot.common.utils.ServletUtils;
-import com.fairyland.xrobot.common.utils.ip.IpUtils;
+import com.fairyland.xrobot.common.utils.StringUtils;
 import com.fairyland.xrobot.framework.manager.AsyncManager;
 import com.fairyland.xrobot.framework.manager.factory.AsyncFactory;
+import com.fairyland.xrobot.framework.redis.RedisCache;
 import com.fairyland.xrobot.framework.security.LoginUser;
-import com.fairyland.xrobot.modular.xrobot.exception.XRobotException;
 import com.fairyland.xrobot.modular.xrobot.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +28,7 @@ import javax.annotation.Resource;
  */
 @Component
 public class SysLoginService {
+    private Logger logger = LoggerFactory.getLogger(SysLoginService.class);
     @Autowired
     private TokenService tokenService;
 
@@ -40,6 +41,9 @@ public class SysLoginService {
     @Autowired
     private ReloadableResourceBundleMessageSource messageSource;
 
+    @Autowired
+    private RedisCache redisCache;
+
     /**
      * 登录验证
      *
@@ -49,17 +53,22 @@ public class SysLoginService {
      */
     public String login(String username, String password, String randstr, String ticket) {
 
-        JSONObject captchaParamsJson = userService.getCaptchaParamsJson();
 
-        captchaParamsJson.put("Ticket", ticket);
-        captchaParamsJson.put("UserIp", IpUtils.getIpAddr(ServletUtils.getRequest()));
-        captchaParamsJson.put("Randstr", randstr);
+        String verifyKey = Constants.CAPTCHA_CODE_KEY + ticket;
+        Object redisVerifyCode = redisCache.get(verifyKey);
 
-        try {
-            userService.checkCaptcha(captchaParamsJson);
-        } catch (XRobotException ex) {
+        if (redisVerifyCode == null) {
+            logger.info("login redis验证码为空");
             throw new CaptchaException();
         }
+
+        String redisCode = (String) redisVerifyCode;
+        if (!StringUtils.equals(redisCode, randstr)) {
+            logger.info("login redis验证码={}，请求验证码={} 不一致", redisCode, randstr);
+            throw new CaptchaException();
+        }
+
+        redisCache.del(verifyKey);
 
         // 用户验证
         Authentication authentication = null;

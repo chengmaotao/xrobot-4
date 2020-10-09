@@ -61,6 +61,10 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
     private String baseUploadPath;
 
 
+    @Value("#{'${app_suffix}'.split(',')}")
+    private List<String> app_suffix;
+
+
     @Override
     public PageResult deviceList(DeviceListReq paramReq) {
         logger.info("deviceList req = {}", paramReq);
@@ -814,7 +818,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         List<Device> list = xrobotDao.deviceAllListByUser(paramReq);
 
-        if (list.isEmpty() ) {
+        if (list.isEmpty()) {
             return list;
         }
 
@@ -984,6 +988,14 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             PageResult pageResult = PageUtils.getPageResult(pageInfo);
             return pageResult;
 
+        } else if (paramReq.getCode() == 6) {
+            // 关键字加群统计
+            List<SummaryJoinGroups> list = xrobotDao.summaryJoinGroupsList(paramReq);
+
+            PageInfo<SummaryJoinGroups> pageInfo = new PageInfo<>(list);
+            PageResult pageResult = PageUtils.getPageResult(pageInfo);
+            return pageResult;
+
         } else {
             logger.warn("taskResultList code = {} 不正确", paramReq.getCode());
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
@@ -1047,6 +1059,82 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         }
 
         return list;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class, value = "phoenixTransactionManager")
+    public void appUpload(AppUploadReq paramReq, HttpServletRequest request) {
+        logger.info("appUpload paramReq = {}", paramReq);
+
+        paramReq.validate();
+
+
+        String newFilePath = null;
+
+        Iterator<String> files = ((MultipartHttpServletRequest) request).getFileNames();
+
+
+        while (files.hasNext()) {
+            String fName = files.next();
+            MultipartFile file = ((MultipartHttpServletRequest) request).getFile(fName);
+
+            if (file != null) {
+                // 文件名称
+                String originalFilename = file.getOriginalFilename();
+
+                // 源文件后缀
+                String fileSuffix = getFileSuffix(originalFilename);
+
+                // 校验 图片格式 是否支持
+                if (fileSuffix == null || !app_suffix.contains(fileSuffix)) {
+                    logger.warn("appUpload  上传的文件格式不支持 = {}", originalFilename);
+                    throw new XRobotException(ErrorCode.ERROR_CODE_21);
+                }
+
+                String filePath = baseUploadPath + Utility.get32UUID() + originalFilename;
+
+                File dest = new File(filePath);
+
+                if (!dest.getParentFile().exists()) {
+                    dest.getParentFile().mkdirs();
+                }
+
+                try {
+                    file.transferTo(dest);  // 文件上传到 服务器
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    logger.error("appUpload 文件上传失败: ex = {}", e);
+                }
+
+                newFilePath = filePath;
+            }
+            break;
+        }
+
+        AppVersion record = new AppVersion();
+        record.setOsname(paramReq.getOsname());
+        record.setContext(paramReq.getContext());
+        record.setTitle(paramReq.getTitle());
+        record.setForceflag(paramReq.getForceflag());
+        record.setDownloadurl(newFilePath);
+        record.preInsert(getCurrentUser());
+
+        xrobotDao.deleteAppVersion();
+        xrobotDao.insertAppVersion(record);
+
+    }
+
+    @Override
+    public String getAppUrl() {
+        AppVersion appVersion = xrobotDao.getAppVersion();
+
+        if (appVersion == null) {
+            return "";
+        }
+
+        String downloadurl = appVersion.getDownloadurl();
+
+        return "http://39.99.233.24:20001" + downloadurl;
     }
 
 

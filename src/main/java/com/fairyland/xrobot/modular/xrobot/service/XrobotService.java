@@ -74,4 +74,8 @@ public interface XrobotService {
     void deviceResetAllowState(DeviceResetAllowStateReq paramReq);
 
     List<Device> monitorAdminDeviceList(DeviceListReq paramReq);
+
+    void appUpload(AppUploadReq paramReq, HttpServletRequest request);
+
+    String getAppUrl();
 }

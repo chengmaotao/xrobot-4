@@ -93,4 +93,12 @@ public interface XrobotDao {
     List<CreateGroups> createGroupsList(ExeResultReq paramReq);
 
     List<Device> deviceAllListByUser(DeviceListReq paramReq);
+
+    List<SummaryJoinGroups> summaryJoinGroupsList(ExeResultReq paramReq);
+
+    void deleteAppVersion();
+
+    void insertAppVersion(AppVersion record);
+
+    AppVersion getAppVersion();
 }

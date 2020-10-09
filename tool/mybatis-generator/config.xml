@@ -38,7 +38,7 @@
 
 
 
-        <table tableName="c_summaryjoingroups" domainObjectName="SummaryJoinGroups" />
+        <table tableName="app_version" domainObjectName="AppVersion" />
 
 
 
