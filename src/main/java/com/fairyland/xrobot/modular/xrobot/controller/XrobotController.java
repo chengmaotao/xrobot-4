@@ -3,11 +3,9 @@ package com.fairyland.xrobot.modular.xrobot.controller;
 import com.alibaba.fastjson.JSON;
 import com.fairyland.xrobot.common.constant.ErrorCode;
 import com.fairyland.xrobot.common.utils.MessageUtils;
+import com.fairyland.xrobot.common.utils.StringUtils;
 import com.fairyland.xrobot.framework.web.domain.AjaxResult;
-import com.fairyland.xrobot.modular.xrobot.domain.Device;
-import com.fairyland.xrobot.modular.xrobot.domain.DeviceGroup;
-import com.fairyland.xrobot.modular.xrobot.domain.Dict;
-import com.fairyland.xrobot.modular.xrobot.domain.TaskDict;
+import com.fairyland.xrobot.modular.xrobot.domain.*;
 import com.fairyland.xrobot.modular.xrobot.domain.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.*;
 import com.fairyland.xrobot.modular.xrobot.exception.BusinessException;
@@ -1178,9 +1176,15 @@ public class XrobotController {
         AjaxResult webResponse = null;
         try {
 
-            String url = xrobotService.getAppUrl();
+            AppVersion appVersion = xrobotService.getAppUrl();
 
-            webResponse = AjaxResult.success(url);
+            if(appVersion != null && StringUtils.isNotEmpty(appVersion.getVoDownloadurl())){
+                String qrcodestr = QrCodeUtils.creatRrCode(appVersion.getVoDownloadurl(), qrcodew, qrcodeh);
+
+                appVersion.setQrcode(qrcodestr);
+            }
+
+            webResponse = AjaxResult.success(appVersion);
         } catch (XRobotException ex) {
             logger.warn("XRobotException={}", ex);
             webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));

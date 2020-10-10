@@ -77,5 +77,5 @@ public interface XrobotService {
 
     void appUpload(AppUploadReq paramReq, HttpServletRequest request);
 
-    String getAppUrl();
+    AppVersion getAppUrl();
 }

@@ -1125,16 +1125,8 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
     }
 
     @Override
-    public String getAppUrl() {
-        AppVersion appVersion = xrobotDao.getAppVersion();
-
-        if (appVersion == null) {
-            return "";
-        }
-
-        String downloadurl = appVersion.getDownloadurl();
-
-        return "http://39.99.233.24:20001" + downloadurl;
+    public AppVersion getAppUrl() {
+        return xrobotDao.getAppVersion();
     }
 
 
