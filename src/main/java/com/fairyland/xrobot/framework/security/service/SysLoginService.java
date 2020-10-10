@@ -63,7 +63,7 @@ public class SysLoginService {
         }
 
         String redisCode = (String) redisVerifyCode;
-        if (!StringUtils.equals(redisCode, randstr)) {
+        if (!StringUtils.equalsIgnoreCase(redisCode, randstr)) {
             logger.info("login redis验证码={}，请求验证码={} 不一致", redisCode, randstr);
             throw new CaptchaException();
         }
