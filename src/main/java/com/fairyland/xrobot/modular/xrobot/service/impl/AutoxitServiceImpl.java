@@ -124,15 +124,19 @@ public class AutoxitServiceImpl implements AutoxitService {
         }
 
 
-        ServerTaskNotifyCommandReq serverTaskNotifyCommandReq = list.get(0);
+        ServerTaskNotifyCommandReq serverTaskNotify = list.get(0);
 
         // 任务设备 修改为执行中
 
         TaskDevices record = new TaskDevices();
 
-        xrobotDao.TaskDevices(record);
+        record.setUpdateDate(new Date());
+        record.setState(1);
+        record.setTaskid(serverTaskNotify.getTaskid());
 
-        return serverTaskNotifyCommandReq;
+        xrobotDao.exeTaskDevices(record);
+
+        return serverTaskNotify;
 
 
         //return JSON.toJSONString(list);

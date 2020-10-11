@@ -446,7 +446,7 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public void TaskDevices(TaskDevices tempRecord) {
+    public void exeTaskDevices(TaskDevices tempRecord) {
         taskDevicesMapper.updateByPrimaryKeySelective(tempRecord);
     }
 

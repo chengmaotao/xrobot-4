@@ -33,6 +33,8 @@ public class ServerTaskNotifyCommandReq {
 
     private String answers; // 加群问题答案 回车换行分割
 
+    private Long id; // 唯一标识
+
     public Integer getBatch() {
         return batch;
     }
@@ -119,6 +121,14 @@ public class ServerTaskNotifyCommandReq {
         this.answers = answers;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "ServerTaskNotifyCommandReq{" +
@@ -132,6 +142,7 @@ public class ServerTaskNotifyCommandReq {
                 ", cover='" + cover + '\'' +
                 ", user='" + user + '\'' +
                 ", answers='" + answers + '\'' +
+                ", id=" + id +
                 '}';
     }
 }

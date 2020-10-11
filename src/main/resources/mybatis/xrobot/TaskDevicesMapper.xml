@@ -416,6 +416,7 @@
   <select id="getClientGetTaskByDeviceId" parameterType="java.lang.String" resultType="com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ServerTaskNotifyCommandReq">
 
     SELECT
+        a.
         a.taskID AS "taskid",
         b.taskclass AS "taskclass",
         b.batch AS "batch",

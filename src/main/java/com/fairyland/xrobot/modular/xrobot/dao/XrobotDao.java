@@ -80,7 +80,7 @@ public interface XrobotDao {
 
     List<TaskDevices> taskDevicesAllList(String taskid, String userName);
 
-    void TaskDevices(TaskDevices tempRecord);
+    void exeTaskDevices(TaskDevices tempRecord);
 
     List<PushJoinGroups> pushJoinGroupsList(ExeResultReq paramReq);
 
