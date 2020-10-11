@@ -189,8 +189,8 @@ public class Tasks extends BaseEntity {
     public String getCoverUrl() {
 
         if (StringUtils.isNotEmpty(cover)) {
-            //return "http://39.99.233.24:20001" + cover;
-            return "http://148.66.129.158:20001" + cover;
+            return "http://39.99.233.24:20001" + cover;
+           // return "http://148.66.129.158:20001" + cover;
         }
         return coverUrl;
     }

@@ -446,11 +446,6 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public void exeTaskDevices(TaskDevices tempRecord) {
-        taskDevicesMapper.updateByPrimaryKeySelective(tempRecord);
-    }
-
-    @Override
     public List<PushJoinGroups> pushJoinGroupsList(ExeResultReq paramReq) {
         int pageNum = paramReq.getPageNum();
         int pageSize = paramReq.getPageSize();
@@ -581,4 +576,10 @@ public class XrobotDaoImpl implements XrobotDao {
         }
         return list.get(0);
     }
+
+    @Override
+    public void updateTaskDevices(TaskDevices taskDevicesRecord, TaskDevicesExample example) {
+        taskDevicesMapper.updateByExampleSelective(taskDevicesRecord, example);
+    }
+
 }

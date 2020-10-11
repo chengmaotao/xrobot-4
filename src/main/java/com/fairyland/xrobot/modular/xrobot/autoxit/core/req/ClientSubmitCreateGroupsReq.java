@@ -62,7 +62,7 @@ public class ClientSubmitCreateGroupsReq extends BaseClientSubmitReq {
                 ", groupname='" + groupname + '\'' +
                 ", post=" + post +
                 ", state=" + state +
-                "super.toString()=" + super.toString() +
+                ", super.toString()=" + super.toString() +
                 '}';
     }
 }

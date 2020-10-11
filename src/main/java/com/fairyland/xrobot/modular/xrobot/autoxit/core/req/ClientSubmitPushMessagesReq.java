@@ -65,7 +65,7 @@ public class ClientSubmitPushMessagesReq extends BaseClientSubmitReq {
                 ", groupname1='" + groupname1 + '\'' +
                 ", usernumber='" + usernumber + '\'' +
                 ", state=" + state +
-                "super.toString()=" + super.toString() +
+                ", super.toString()=" + super.toString() +
                 '}';
     }
 }

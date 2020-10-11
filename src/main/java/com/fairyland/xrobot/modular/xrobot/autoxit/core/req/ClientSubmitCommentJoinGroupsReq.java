@@ -77,7 +77,7 @@ public class ClientSubmitCommentJoinGroupsReq extends BaseClientSubmitReq {
         return "ClientSubmitCommentJoinGroupsReq{" +
                 "keyword='" + keyword + '\'' +
                 ", join=" + join +
-                "super.toString()=" + super.toString() +
+                ", super.toString()=" + super.toString() +
                 '}';
     }
 

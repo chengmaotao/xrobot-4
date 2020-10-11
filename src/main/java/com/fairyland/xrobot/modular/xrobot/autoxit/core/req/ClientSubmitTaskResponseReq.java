@@ -34,7 +34,7 @@ public class ClientSubmitTaskResponseReq extends BaseClientSubmitReq {
         return "ClientSubmitTaskResponseReq{" +
                 "error=" + error +
                 ", errorMsg='" + errorMsg + '\'' +
-                "super.toString()=" + super.toString() +
+                ", super.toString()=" + super.toString() +
                 '}';
     }
 }

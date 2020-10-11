@@ -33,8 +33,6 @@ public class ServerTaskNotifyCommandReq {
 
     private String answers; // 加群问题答案 回车换行分割
 
-    private Long id; // 唯一标识
-
     public Integer getBatch() {
         return batch;
     }
@@ -54,9 +52,9 @@ public class ServerTaskNotifyCommandReq {
     public String getCover() {
 
         if (StringUtils.isNotEmpty(cover)) {
-            //return "http://39.99.233.24:20001" + cover;
+            return "http://39.99.233.24:20001" + cover;
 
-            return "http://148.66.129.158:20001" + cover;
+            //return "http://148.66.129.158:20001" + cover;
         }
         return cover;
     }
@@ -121,14 +119,6 @@ public class ServerTaskNotifyCommandReq {
         this.answers = answers;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     @Override
     public String toString() {
         return "ServerTaskNotifyCommandReq{" +
@@ -142,7 +132,6 @@ public class ServerTaskNotifyCommandReq {
                 ", cover='" + cover + '\'' +
                 ", user='" + user + '\'' +
                 ", answers='" + answers + '\'' +
-                ", id=" + id +
                 '}';
     }
 }

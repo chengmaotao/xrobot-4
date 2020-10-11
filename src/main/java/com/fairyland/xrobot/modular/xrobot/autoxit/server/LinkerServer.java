@@ -174,14 +174,14 @@ public class LinkerServer {
 
     public void receiveReqMessages(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
 
-        log.info("开始 CLIENT_HEART_MESSAG ChannelHandlerContext = {},command = {},messageSerial = {},bodyString = {}", ctx, command, messageSerial, bodyString);
+        log.info("开始  sessionId = {},command = {},messageSerial = {},bodyString = {}", sessionManager.getChannelSessionId(ctx.channel()), command, messageSerial, bodyString);
 
         if (command == MessagePacket.CLIENT_HEART_MESSAG) {
             /**
              * 心跳包响应
              */
 
-            log.info("心跳包响应 CLIENT_HEART_MESSAG ChannelHandlerContext = {},command = {},messageSerial = {},bodyString = {}", ctx, command, messageSerial, bodyString);
+            log.info("心跳包响应  sessionId = {},command = {},messageSerial = {},bodyString = {}", sessionManager.getChannelSessionId(ctx.channel()), command, messageSerial, bodyString);
 
             MessagePacket messagePacket = new MessagePacket();
             ByteBuf buffer = messagePacket.getRespPacket(MessagePacket.CLIENT_HEART_MESSAG, messageSerial, "{}");

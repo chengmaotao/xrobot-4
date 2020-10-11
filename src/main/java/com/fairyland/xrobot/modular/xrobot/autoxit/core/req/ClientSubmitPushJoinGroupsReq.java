@@ -80,7 +80,7 @@ public class ClientSubmitPushJoinGroupsReq extends BaseClientSubmitReq {
         return "ClientSubmitPushJoinGroupsReq{" +
                 "keyword='" + keyword + '\'' +
                 ", join=" + join +
-                "super.toString()=" + super.toString() +
+                ", super.toString()=" + super.toString() +
                 '}';
     }
 }

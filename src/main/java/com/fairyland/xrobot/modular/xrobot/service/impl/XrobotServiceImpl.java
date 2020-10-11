@@ -724,7 +724,6 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             }
         }
 
-
         // 修改任务表为 1:执行中
         Tasks record = new Tasks();
         record.preUpdate(user);
@@ -736,6 +735,17 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             logger.warn("exeTask 任务表 影响行数num = {}", num);
             throw new XRobotException(ErrorCode.SYS_FAIL);
         }
+
+        TaskDevices taskDevicesRecord = new TaskDevices();
+        taskDevicesRecord.setState(0);
+        taskDevicesRecord.preUpdate(user);
+
+        TaskDevicesExample example = new TaskDevicesExample();
+        example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(user.getUserName()).andTaskidEqualTo(paramReq.getTaskid());
+
+        xrobotDao.updateTaskDevices(taskDevicesRecord, example);
+
+
     }
 
     @Override
@@ -845,7 +855,9 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             // 客户端已暂停
             if (StringUtils.equals(seesionStatusCode, "200")) {
                 // 启动客户端
-                robotServer.sendStartCommand(deviceInfo.getDeviceid());
+                logger.info("serverStart sendStartCommand req deviceId = {}", deviceInfo.getDeviceid());
+                boolean b = robotServer.sendStartCommand(deviceInfo.getDeviceid());
+                logger.info("serverStart sendStartCommand response = {}", b);
 
             } else if (StringUtils.equals(seesionStatusCode, "100")) {
                 // 正常
@@ -878,8 +890,10 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         // 设备是连接状态, 可以执行退出操作
         if (robotServer.sessionIsActive(deviceInfo.getDeviceid())) {
 
+            logger.info("serverExit sendExitCommand req deviceId = {}", deviceInfo.getDeviceid());
             // 退出客户端
-            robotServer.sendExitCommand(deviceInfo.getDeviceid());
+            boolean b = robotServer.sendExitCommand(deviceInfo.getDeviceid());
+            logger.info("serverExit sendExitCommand response = {}", b);
 
         } else {
             logger.warn("serverExit req = {},终端设备未连接", paramReq, deviceInfo.getState());
@@ -909,7 +923,9 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             if (StringUtils.equals(seesionStatusCode, "200")) {
                 logger.warn("终端设备连接已经暂停状态，不需要执行暂停命令");
             } else {
-                robotServer.sendQuietCommand(deviceInfo.getDeviceid());
+                logger.info("serverQuiet sendQuietCommand req deviceId = {}", deviceInfo.getDeviceid());
+                boolean b = robotServer.sendQuietCommand(deviceInfo.getDeviceid());
+                logger.info("serverQuiet sendQuietCommand response = {}", b);
             }
 
         } else {

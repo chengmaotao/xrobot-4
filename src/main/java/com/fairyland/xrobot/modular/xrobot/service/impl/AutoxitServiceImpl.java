@@ -1,5 +1,6 @@
 package com.fairyland.xrobot.modular.xrobot.service.impl;
 
+import com.fairyland.xrobot.common.constant.XRobotCode;
 import com.fairyland.xrobot.common.utils.StringUtils;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.ServerCode;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.*;
@@ -123,18 +124,17 @@ public class AutoxitServiceImpl implements AutoxitService {
             return null;
         }
 
-
         ServerTaskNotifyCommandReq serverTaskNotify = list.get(0);
 
         // 任务设备 修改为执行中
 
         TaskDevices record = new TaskDevices();
-
         record.setUpdateDate(new Date());
         record.setState(1);
-        record.setTaskid(serverTaskNotify.getTaskid());
 
-        xrobotDao.exeTaskDevices(record);
+        TaskDevicesExample example = new TaskDevicesExample();
+        example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0).andTaskidEqualTo(serverTaskNotify.getTaskid()).andDeviceidEqualTo(serverTaskNotify.getDeviceid());
+        xrobotDao.updateTaskDevices(record, example);
 
         return serverTaskNotify;
 

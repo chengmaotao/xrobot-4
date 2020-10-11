@@ -64,7 +64,7 @@ public class ClientSubmitCommentsReq extends BaseClientSubmitReq {
                 ", groupname1='" + groupname1 + '\'' +
                 ", poster='" + poster + '\'' +
                 ", state=" + state +
-                "super.toString()=" + super.toString() +
+                ", super.toString()=" + super.toString() +
                 '}';
     }
 }

@@ -80,8 +80,6 @@ public interface XrobotDao {
 
     List<TaskDevices> taskDevicesAllList(String taskid, String userName);
 
-    void exeTaskDevices(TaskDevices tempRecord);
-
     List<PushJoinGroups> pushJoinGroupsList(ExeResultReq paramReq);
 
     List<PushMessages> pushMessagesList(ExeResultReq paramReq);
@@ -101,4 +99,6 @@ public interface XrobotDao {
     void insertAppVersion(AppVersion record);
 
     AppVersion getAppVersion();
+
+    void updateTaskDevices(TaskDevices taskDevicesRecord, TaskDevicesExample example);
 }
