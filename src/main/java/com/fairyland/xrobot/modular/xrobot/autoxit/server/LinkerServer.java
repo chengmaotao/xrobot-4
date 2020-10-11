@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -174,10 +173,16 @@ public class LinkerServer {
     }
 
     public void receiveReqMessages(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
+
+        log.info("开始 CLIENT_HEART_MESSAG ChannelHandlerContext = {},command = {},messageSerial = {},bodyString = {}", ctx, command, messageSerial, bodyString);
+
         if (command == MessagePacket.CLIENT_HEART_MESSAG) {
             /**
              * 心跳包响应
              */
+
+            log.info("心跳包响应 CLIENT_HEART_MESSAG ChannelHandlerContext = {},command = {},messageSerial = {},bodyString = {}", ctx, command, messageSerial, bodyString);
+
             MessagePacket messagePacket = new MessagePacket();
             ByteBuf buffer = messagePacket.getRespPacket(MessagePacket.CLIENT_HEART_MESSAG, messageSerial, "{}");
             responseMessage(ctx, buffer);
@@ -861,9 +866,9 @@ public class LinkerServer {
             if (id.equals(sid)) {
 
                 // 领取任务
-                List<ServerTaskNotifyCommandReq> list = autoxitService.clientGetTaskStatus(id);
+                ServerTaskNotifyCommandReq task = autoxitService.clientGetTaskStatus(id);
                 JSONObject response = getSuccessResponse("1", "处理成功");
-                response.put("data", list);
+                response.put("data", task);
 
                 ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response.toJSONString());
                 responseMessage(ctx, buffer);
@@ -1275,11 +1280,10 @@ public class LinkerServer {
         return sendMessage(sessionId, buffer);
     }
 
-    public boolean sendTaskNotifyCommand(String sessionId, ServerTaskNotifyCommandReq serverCommandReq) {
-        String body = JSONObject.toJSONString(serverCommandReq);
-        log.info("sendTaskNotifyCommand 发送消息：{}", body);
+    public boolean sendTaskNotifyCommand(String sessionId) {
+        JSONObject json = new JSONObject();
         MessagePacket messagePacket = new MessagePacket();
-        ByteBuf buffer = messagePacket.getReqPacket(MessagePacket.SERVER_TASKNOTIFY_COMMAND, body);
+        ByteBuf buffer = messagePacket.getReqPacket(MessagePacket.SERVER_TASKNOTIFY_COMMAND, json.toJSONString());
         Message message = messagePacket.getMessage();
         WaitAckRequest waitAck = new WaitAckServerRequest(sessionId, message);
         waitAckRequestCache.put(message.getSerial(), waitAck);

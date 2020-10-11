@@ -5,7 +5,6 @@ import com.fairyland.xrobot.common.constant.XRobotCode;
 import com.fairyland.xrobot.common.utils.PageUtils;
 import com.fairyland.xrobot.common.utils.StringUtils;
 import com.fairyland.xrobot.modular.system.domain.SysUser;
-import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ServerTaskNotifyCommandReq;
 import com.fairyland.xrobot.modular.xrobot.autoxit.server.LinkerServer;
 import com.fairyland.xrobot.modular.xrobot.dao.XrobotDao;
 import com.fairyland.xrobot.modular.xrobot.domain.*;
@@ -94,7 +93,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         Device record = new Device();
         record.setDevicesn(paramReq.getDevicesn());
-        record.setPhone(paramReq.getPhone());
+        record.setPhone(paramReq.getPhone().replace(" ", ""));
         record.setAccount(paramReq.getAccount());
         record.setPassword(paramReq.getPassword());
         record.setLogin(paramReq.getLogin());
@@ -115,12 +114,12 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                 throw new BusinessException("终端设备应用编号: " + paramReq.getDevicesn() + " 已经存在，请使用其他编号");
             }
 
-            // 判断 手机号 是否已经存在
+/*            // 判断 手机号 是否已经存在
             lists = xrobotDao.getDeviceListByPhone(paramReq.getPhone(), user.getUserName());
             if (lists != null && lists.size() > 0) {
                 logger.warn("SaveDeviceReq req = {},终端设备手机号 已经存在,不能重复添加", paramReq);
                 throw new BusinessException("终端设备手机号码: " + paramReq.getPhone() + " 已经存在，请使用其他手机号。");
-            }
+            }*/
 
             // 新增
             record.setState(0);
@@ -152,14 +151,14 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                 }
             }
 
-            if (!StringUtils.equals(oldInfo.getPhone(), paramReq.getPhone())) {
+/*            if (!StringUtils.equals(oldInfo.getPhone(), paramReq.getPhone())) {
                 // 判断 手机号 是否已经存在
                 lists = xrobotDao.getDeviceListByPhone(paramReq.getPhone(), user.getUserName());
                 if (lists != null && lists.size() > 0) {
                     logger.warn("SaveDeviceReq2 req = {},终端设备手机号 已经存在,不能重复添加", paramReq);
                     throw new BusinessException("终端设备手机号码: " + paramReq.getPhone() + " 已经存在，请使用其他手机号。");
                 }
-            }
+            }*/
 
             // true 重置
             if (paramReq.isResetState()) {
@@ -684,7 +683,6 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         SysUser user = getCurrentUser();
 
-
         TasksWithBLOBs oldInfo = xrobotDao.getTaskInfoById(paramReq.getTaskid(), user.getUserName());
 
         if (oldInfo == null) {
@@ -695,6 +693,35 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         if (oldInfo.getState() == 1) {
             logger.warn("exeTask 任务表 任务已经在执行中了  id = {}", paramReq.getTaskid());
             throw new BusinessException("任务已经在执行中了");
+        }
+
+        List<TaskDevices> list = xrobotDao.taskDevicesAllList(paramReq.getTaskid(), user.getUserName());
+        if (list == null || list.isEmpty()) {
+            logger.warn("exeTask 该任务下没有对应的taskId={} 执行任务的终端", paramReq.getTaskid());
+            throw new BusinessException("该任务下没有对应的 执行任务的终端");
+        }
+
+        for (TaskDevices taskDevices : list) {
+            // 在线
+            if (robotServer.sessionIsActive(taskDevices.getDeviceid())) {
+
+                String seesionStatusCode = robotServer.getSeesionStatus(taskDevices.getDeviceid());
+                // 正常 发送新任务通知
+                if (StringUtils.equals("100", seesionStatusCode)) {
+
+                    // 有新任务通知
+                    robotServer.sendTaskNotifyCommand(taskDevices.getDeviceid());
+
+                } else {
+                    logger.warn("exeTask 该任务下taskId={} 设备={} 连接状态不正常={}", paramReq.getTaskid() + taskDevices.getDeviceid(), Utility.getMonitorClientAppStatus(seesionStatusCode));
+                    throw new BusinessException("该任务下设备" + taskDevices.getDeviceid() + "连接状态= " + Utility.getMonitorClientAppStatus(seesionStatusCode));
+                }
+
+            } else {
+                // 未在线
+                logger.warn("exeTask 该任务下taskId={} 设备={} 未在线", paramReq.getTaskid() + taskDevices.getDeviceid());
+                throw new BusinessException("该任务下设备" + taskDevices.getDeviceid() + "未在线");
+            }
         }
 
 
@@ -709,61 +736,6 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             logger.warn("exeTask 任务表 影响行数num = {}", num);
             throw new XRobotException(ErrorCode.SYS_FAIL);
         }
-
-        // SERVER_TASKNOTIFY_COMMAND 修改 任务执行终端表 为 执行中
-
-        List<TaskDevices> list = xrobotDao.taskDevicesAllList(paramReq.getTaskid(), user.getUserName());
-        if (list == null || list.isEmpty()) {
-            logger.warn("exeTask 该任务下没有对应的taskId={} 执行任务的终端", paramReq.getTaskid());
-            throw new BusinessException("该任务下没有对应的 执行任务的终端");
-        }
-
-        TaskDevices tempRecord = null;
-        ServerTaskNotifyCommandReq serverCommandReq = null;
-        for (TaskDevices taskDevices : list) {
-            tempRecord = new TaskDevices();
-            tempRecord.setId(taskDevices.getId());
-            tempRecord.preUpdate(user);
-            // 在线
-            if (robotServer.sessionIsActive(taskDevices.getDeviceid())) {
-
-                String seesionStatusCode = robotServer.getSeesionStatus(taskDevices.getDeviceid());
-                // 正常 发送新任务通知
-                if (StringUtils.equals("100", seesionStatusCode)) {
-
-                    // 有新任务通知
-                    serverCommandReq = new ServerTaskNotifyCommandReq();
-                    serverCommandReq.setDeviceid(taskDevices.getDeviceid());
-                    serverCommandReq.setTaskid(oldInfo.getTaskid());
-                    serverCommandReq.setTaskclass(oldInfo.getTaskclass());
-                    serverCommandReq.setKeywords(oldInfo.getKeywords());
-                    serverCommandReq.setContent(oldInfo.getContent());
-
-                    serverCommandReq.setBatch(oldInfo.getBatch().intValue() + 1);
-                    serverCommandReq.setMd5(oldInfo.getMd5());
-                    serverCommandReq.setCover(oldInfo.getCover());
-                    serverCommandReq.setUser(oldInfo.getCreateBy());
-                    serverCommandReq.setAnswers(oldInfo.getAnswers());
-
-                    robotServer.sendTaskNotifyCommand(taskDevices.getDeviceid(), serverCommandReq);
-
-                    // 状态修改为 执行中 1
-                    tempRecord.setState(1);
-                } else {
-                    tempRecord.setState(98); // 设备未在线
-                    tempRecord.setRemarks(Utility.getMonitorClientAppStatus(seesionStatusCode));
-                }
-
-            } else {
-                // 未在线
-                tempRecord.setState(99); // 设备未在线
-                tempRecord.setRemarks("执行任务时，设备未在线");
-            }
-
-            xrobotDao.TaskDevices(tempRecord);
-        }
-
-
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.fairyland.xrobot.modular.xrobot.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
 import com.fairyland.xrobot.common.utils.StringUtils;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.ServerCode;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.*;
@@ -111,14 +110,30 @@ public class AutoxitServiceImpl implements AutoxitService {
 
     // 领取任务
     @Override
-    public List<ServerTaskNotifyCommandReq> clientGetTaskStatus(String id) {
+    public ServerTaskNotifyCommandReq clientGetTaskStatus(String id) {
         logger.info("领取任务 clientGetTaskStatus deviceID = {}", id);
 
         Device device = autoxitDao.getDeviceBydeviceID(id);
 
         checkDeviceByDeviceId(device, id);
 
-        return autoxitDao.getClientGetTaskByDeviceId(device.getDeviceid());
+        List<ServerTaskNotifyCommandReq> list = autoxitDao.getClientGetTaskByDeviceId(device.getDeviceid());
+
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+
+
+        ServerTaskNotifyCommandReq serverTaskNotifyCommandReq = list.get(0);
+
+        // 任务设备 修改为执行中
+
+        TaskDevices record = new TaskDevices();
+
+        xrobotDao.TaskDevices(record);
+
+        return serverTaskNotifyCommandReq;
+
 
         //return JSON.toJSONString(list);
     }
@@ -226,8 +241,8 @@ public class AutoxitServiceImpl implements AutoxitService {
         dbParams.put("phone", paramReq.getPhone());
         dbParams.put("list", paramReq.getJoin());
         dbParams.put("keywords", paramReq.getKeyword());
-        dbParams.put("content",tasks.getContent());
-        dbParams.put("md5",tasks.getMd5());
+        dbParams.put("content", tasks.getContent());
+        dbParams.put("md5", tasks.getMd5());
         autoxitDao.insertPushJoinGroups(dbParams);
 
 
@@ -332,8 +347,8 @@ public class AutoxitServiceImpl implements AutoxitService {
         dbParams.put("phone", paramReq.getPhone());
         dbParams.put("list", paramReq.getJoin());
         dbParams.put("keywords", paramReq.getKeyword());
-        dbParams.put("content",tasks.getContent());
-        dbParams.put("md5",tasks.getMd5());
+        dbParams.put("content", tasks.getContent());
+        dbParams.put("md5", tasks.getMd5());
         autoxitDao.insertCommentJoinGroups(dbParams);
 
 
@@ -456,7 +471,7 @@ public class AutoxitServiceImpl implements AutoxitService {
 
         if (device.getAllow() == 0) {
             logger.warn("clientGetTaskStatus deviceID={} 对应的设备 被禁用", devicdId);
-            throw new XRobotException(ServerCode.SERVER_CODE_INT_3, "终端连接被拒绝，账号被禁用【认证失败】！");
+            throw new XRobotException(ServerCode.SERVER_CODE_INT_3, "终端连接被拒绝，账号被禁用！");
         }
     }
 

@@ -11,7 +11,7 @@ public interface AutoxitService {
 
     void modifyDeviceStateByClientStata(String id, String status);
 
-    List<ServerTaskNotifyCommandReq> clientGetTaskStatus(String id);
+    ServerTaskNotifyCommandReq clientGetTaskStatus(String id);
 
     boolean clientCheckPushMessageStatus(ClientCheckPushMessageReq businessParam);
 

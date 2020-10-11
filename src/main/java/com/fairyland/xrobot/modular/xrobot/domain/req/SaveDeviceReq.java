@@ -57,7 +57,7 @@ public class SaveDeviceReq {
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
 
-        if (StringUtils.isEmpty(phone) || phone.length() > 16) {
+        if (StringUtils.isEmpty(phone) || phone.replace(" ","").length() > 16) {
             logger.warn("SaveDeviceReq 终端设备手机号码 phone = {} 不正确 超出长度限制16", phone);
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
