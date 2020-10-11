@@ -1,5 +1,7 @@
 package com.fairyland.xrobot.modular.xrobot.domain;
 
+import com.fairyland.xrobot.modular.xrobot.utils.Utility;
+
 public class SummaryJoinGroups extends BaseEntity {
 
     /**
@@ -240,5 +242,15 @@ public class SummaryJoinGroups extends BaseEntity {
      */
     public void setWait(Integer wait) {
         this.wait = wait;
+    }
+
+    private String taskclassName;
+
+    public String getTaskclassName() {
+        return Utility.getTaskClassName(getTaskclass());
+    }
+
+    public void setTaskclassName(String taskclassName) {
+        this.taskclassName = taskclassName;
     }
 }

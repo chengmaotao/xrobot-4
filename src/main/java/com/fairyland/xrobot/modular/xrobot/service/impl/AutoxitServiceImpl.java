@@ -174,13 +174,11 @@ public class AutoxitServiceImpl implements AutoxitService {
 
         checkDeviceByDeviceId(device, paramReq.getId());
 
-
-        Tasks tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
+        TasksWithBLOBs tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
 
         checkClientSubmitTaskInfo(tasks, paramReq);
 
         List<ClientSubmitPushJoinGroupsReq.GroupsInfo> join = paramReq.getJoin();
-
 
         SummaryJoinGroups record = new SummaryJoinGroups();
         record.setTaskid(paramReq.getTaskID());
@@ -203,10 +201,6 @@ public class AutoxitServiceImpl implements AutoxitService {
 
 
         for (ClientSubmitPushJoinGroupsReq.GroupsInfo groupsInfo : join) {
-
-/*            private String groupID;
-            private String groupname;
-            private Integer state;*/
 
             // 0:待加入 1:等待审核 2:已加入
             if (groupsInfo.getState() == 1) {
@@ -232,6 +226,8 @@ public class AutoxitServiceImpl implements AutoxitService {
         dbParams.put("phone", paramReq.getPhone());
         dbParams.put("list", paramReq.getJoin());
         dbParams.put("keywords", paramReq.getKeyword());
+        dbParams.put("content",tasks.getContent());
+        dbParams.put("md5",tasks.getMd5());
         autoxitDao.insertPushJoinGroups(dbParams);
 
 
@@ -247,8 +243,7 @@ public class AutoxitServiceImpl implements AutoxitService {
 
         checkDeviceByDeviceId(device, paramReq.getId());
 
-
-        Tasks tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
+        TasksWithBLOBs tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
 
         checkClientSubmitTaskInfo(tasks, paramReq);
 
@@ -265,6 +260,9 @@ public class AutoxitServiceImpl implements AutoxitService {
         record.setGroupname1(paramReq.getGroupname1());
         record.setUsernumber(paramReq.getUsernumber());
         record.setState(paramReq.getState());
+        record.setContent(tasks.getContent());
+        record.setMd5(tasks.getMd5());
+
         autoxitDao.insertPushMessages(record);
 
 
@@ -281,8 +279,7 @@ public class AutoxitServiceImpl implements AutoxitService {
 
         checkDeviceByDeviceId(device, paramReq.getId());
 
-
-        Tasks tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
+        TasksWithBLOBs tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
 
         checkClientSubmitTaskInfo(tasks, paramReq);
 
@@ -311,10 +308,6 @@ public class AutoxitServiceImpl implements AutoxitService {
 
         for (ClientSubmitCommentJoinGroupsReq.GroupsInfo groupsInfo : join) {
 
-/*            private String groupID;
-            private String groupname;
-            private Integer state;*/
-
             // 0:待加入 1:等待审核 2:已加入
             if (groupsInfo.getState() == 1) {
                 wait++;
@@ -339,6 +332,8 @@ public class AutoxitServiceImpl implements AutoxitService {
         dbParams.put("phone", paramReq.getPhone());
         dbParams.put("list", paramReq.getJoin());
         dbParams.put("keywords", paramReq.getKeyword());
+        dbParams.put("content",tasks.getContent());
+        dbParams.put("md5",tasks.getMd5());
         autoxitDao.insertCommentJoinGroups(dbParams);
 
 
@@ -353,8 +348,7 @@ public class AutoxitServiceImpl implements AutoxitService {
 
         checkDeviceByDeviceId(device, paramReq.getId());
 
-
-        Tasks tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
+        TasksWithBLOBs tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
 
         checkClientSubmitTaskInfo(tasks, paramReq);
 
@@ -371,6 +365,8 @@ public class AutoxitServiceImpl implements AutoxitService {
         record.setGroupname1(paramReq.getGroupname1());
         record.setPoster(paramReq.getPoster());
         record.setState(paramReq.getState());
+        record.setContent(tasks.getContent());
+        record.setMd5(tasks.getMd5());
         autoxitDao.insertComments(record);
 
         return "";
@@ -384,8 +380,7 @@ public class AutoxitServiceImpl implements AutoxitService {
 
         checkDeviceByDeviceId(device, paramReq.getId());
 
-
-        Tasks tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
+        TasksWithBLOBs tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
 
         checkClientSubmitTaskInfo(tasks, paramReq);
 
@@ -401,6 +396,8 @@ public class AutoxitServiceImpl implements AutoxitService {
         record.setGroupname(paramReq.getGroupname());
         record.setState(paramReq.getState());
         record.setPost(paramReq.getPost());
+        record.setContent(tasks.getContent());
+        record.setMd5(tasks.getMd5());
 
         autoxitDao.insertCreateGroups(record);
 
@@ -417,11 +414,9 @@ public class AutoxitServiceImpl implements AutoxitService {
 
         checkDeviceByDeviceId(device, paramReq.getId());
 
-
         Tasks tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
 
         checkClientSubmitTaskInfo(tasks, paramReq);
-
 
         TaskDevices record = new TaskDevices();
         record.setError(paramReq.getError());
@@ -485,7 +480,7 @@ public class AutoxitServiceImpl implements AutoxitService {
 
     }
 
-    public Tasks getTaskByTaskId(String taskId, String taskClass) {
+    public TasksWithBLOBs getTaskByTaskId(String taskId, String taskClass) {
         return autoxitDao.getTaskByTaskId(taskId, taskClass);
     }
 }

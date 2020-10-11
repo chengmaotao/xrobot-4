@@ -61,6 +61,9 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
     private String baseUploadPath;
 
 
+    @Value("${app.uploa.path}")
+    private String baseAppUploadPath;
+
     @Value("#{'${app_suffix}'.split(',')}")
     private List<String> app_suffix;
 
@@ -493,13 +496,20 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
                     if (len > maxAddGroupValue) {
                         logger.warn("saveTask keywords 回车换行 长度 超过最大值了");
-                        throw new BusinessException("创建群任务支持批量创建群 超过了最大值=" + maxAddGroupValue);
+                        throw new BusinessException("创建群任务支持批量创建群 超过了最大值 " + maxAddGroupValue);
                     }
                 } else if (StringUtils.equals(paramReq.getTaskclass(), "100001") || StringUtils.equals(paramReq.getTaskclass(), "100004")) {
 
                     if (len > maxSearchKeyValue) {
                         logger.warn("saveTask2 keywords 回车换行 长度 超过最大值了");
-                        throw new BusinessException("任务创建时支持多个搜索关键字问题 超过了最大值=" + maxSearchKeyValue);
+                        throw new BusinessException("任务创建时支持多个搜索关键字问题 超过了最大值 " + maxSearchKeyValue);
+                    }
+
+                    int ansLen = paramReq.getAnswers().split("(\\r\\n|\\r|\\n|\\n\\r)").length;
+
+                    if (ansLen > 5) {
+                        logger.warn("saveTask2 answers 回车换行 长度 超过最大值了");
+                        throw new BusinessException("任务创建时加群回答问题 超过了最大值 5");
                     }
                 }
             }
@@ -562,6 +572,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         record.setTaskclass(paramReq.getTaskclass());
         record.setKeywords(paramReq.getKeywords());
         record.setContent(paramReq.getContent());
+        record.setAnswers(paramReq.getAnswers());
         record.setMd5(Utility.getMd5(paramReq.getContent()));
         record.setRemarks(paramReq.getRemarks());
         if (StringUtils.isNotEmpty(newFilePath)) {
@@ -732,6 +743,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                     serverCommandReq.setMd5(oldInfo.getMd5());
                     serverCommandReq.setCover(oldInfo.getCover());
                     serverCommandReq.setUser(oldInfo.getCreateBy());
+                    serverCommandReq.setAnswers(oldInfo.getAnswers());
 
                     robotServer.sendTaskNotifyCommand(taskDevices.getDeviceid(), serverCommandReq);
 
@@ -940,6 +952,8 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         paramReq.validate();
 
+        paramReq.setCurrentUser(getCurrentUser().getUserName());
+
 /*        1. 搜索加群消息任务
         2. 首页链接消息任务
         3. 创建群组发帖任务
@@ -1091,7 +1105,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                     throw new XRobotException(ErrorCode.ERROR_CODE_21);
                 }
 
-                String filePath = baseUploadPath + Utility.get32UUID() + originalFilename;
+                String filePath = baseAppUploadPath + originalFilename;
 
                 File dest = new File(filePath);
 
@@ -1118,6 +1132,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         record.setForceflag(paramReq.getForceflag());
         record.setDownloadurl(newFilePath);
         record.preInsert(getCurrentUser());
+        record.setAppversion(paramReq.getAppversion());
 
         xrobotDao.deleteAppVersion();
         xrobotDao.insertAppVersion(record);

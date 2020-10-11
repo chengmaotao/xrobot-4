@@ -32,7 +32,7 @@ public class MessagePacket {
      */
     public static final int CLIENT_CHECKPUSHMESSAGE_COMMAND = 10101;
     /**
-     * 上报发消息加群结果
+     * 上报发消息加群结果 0
      */
     public static final int CLIENT_SUBMIT_PUSHJOINGROUPS_COMMAND = 10102;
     /**

@@ -39,6 +39,8 @@ public class SaveTaskReq {
 
     private List<String> deviceidList;  // 终端设备记录唯一ID 集合
 
+    private String answers = ""; // 加群问题答案
+
     public void validate() {
 
         if (StringUtils.isEmpty(taskclass)
@@ -82,6 +84,13 @@ public class SaveTaskReq {
 
     }
 
+    public String getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(String answers) {
+        this.answers = answers;
+    }
 
     public String getDeviceids() {
         return deviceids;
@@ -143,12 +152,14 @@ public class SaveTaskReq {
     @Override
     public String toString() {
         return "SaveTaskReq{" +
-                "taskid=" + taskid +
+                "taskid='" + taskid + '\'' +
                 ", taskclass='" + taskclass + '\'' +
                 ", keywords='" + keywords + '\'' +
                 ", content='" + content + '\'' +
                 ", remarks='" + remarks + '\'' +
                 ", deviceids='" + deviceids + '\'' +
+                ", deviceidList=" + deviceidList +
+                ", answers='" + answers + '\'' +
                 '}';
     }
 }

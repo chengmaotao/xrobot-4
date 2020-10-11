@@ -20,6 +20,8 @@ public class Utility {
 
     public static Map<String, String> monitorClientAppStatus;
 
+    public static Map<String, String> taskClass;
+
     static {
         monitorClientAppStatus = new HashMap<>();
 
@@ -29,6 +31,19 @@ public class Utility {
         monitorClientAppStatus.put("300", "Facebook账号被禁用");
         monitorClientAppStatus.put("301", "WhatsApp账号被禁用");
 
+
+        taskClass = new HashMap<>();
+        taskClass.put("100001", "搜索加群消息任务");
+        taskClass.put("100002", "首页链接消息任务");
+        taskClass.put("100003", "创建群组发帖任务");
+        taskClass.put("100004", "搜索加群评论任务");
+        taskClass.put("100005", "首页帖子评论任务");
+
+
+    }
+
+    public static String getTaskClassName(String key) {
+        return taskClass.get(key);
     }
 
     public static String getMonitorClientAppStatus(String key) {
@@ -169,7 +184,7 @@ public class Utility {
         System.out.println(objects);*/
 
 
-String bodyString = "{\"id\":\"1\",\"phone\":\"11\",\"taskID\":\"111\",\"taskclass\":\"1111\",\"batch\":11111,\"user\":\"1111111\",\"keyword\":\"1234567\",\"join\":[{\"groupID\":\"23\",\"groupname\":\"34\",\"state\":2},{\"groupID\":\"45\",\"groupname\":\"67\",\"state\":3}]}";
+        String bodyString = "{\"id\":\"1\",\"phone\":\"11\",\"taskID\":\"111\",\"taskclass\":\"1111\",\"batch\":11111,\"user\":\"1111111\",\"keyword\":\"1234567\",\"join\":[{\"groupID\":\"23\",\"groupname\":\"34\",\"state\":2},{\"groupID\":\"45\",\"groupname\":\"67\",\"state\":3}]}";
         ClientSubmitPushJoinGroupsReq businessParam = JSON.parseObject(bodyString, ClientSubmitPushJoinGroupsReq.class);
 
         System.out.println(businessParam);

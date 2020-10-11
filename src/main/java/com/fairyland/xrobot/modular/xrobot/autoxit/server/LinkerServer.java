@@ -245,7 +245,6 @@ public class LinkerServer {
 
         MessagePacket messagePacket = new MessagePacket();
 
-
         try {
 
             ClientSubmitTaskResponseReq businessParam = JSON.parseObject(bodyString, ClientSubmitTaskResponseReq.class);
@@ -329,7 +328,6 @@ public class LinkerServer {
 
         MessagePacket messagePacket = new MessagePacket();
 
-
         try {
 
             ClientSubmitCreateGroupsReq businessParam = JSON.parseObject(bodyString, ClientSubmitCreateGroupsReq.class);
@@ -343,7 +341,6 @@ public class LinkerServer {
             Integer batch = businessParam.getBatch(); //
             String user = businessParam.getUser();
             String groupname = businessParam.getGroupname();
-            String groupID = businessParam.getGroupID();
             Integer post = businessParam.getPost();
 
 
@@ -353,7 +350,6 @@ public class LinkerServer {
                     || StringUtils.isEmpty(user)
                     || batch == null
                     || StringUtils.isEmpty(phone)
-                    || StringUtils.isEmpty(groupID)
                     || StringUtils.isEmpty(groupname)
                     || post == null
             ) {
@@ -417,7 +413,6 @@ public class LinkerServer {
         log.info("clientSubmitCommentsStatus req = {}", bodyString);
 
         MessagePacket messagePacket = new MessagePacket();
-
 
         try {
 
@@ -511,7 +506,6 @@ public class LinkerServer {
 
         MessagePacket messagePacket = new MessagePacket();
 
-
         try {
 
             ClientSubmitCommentJoinGroupsReq businessParam = JSON.parseObject(bodyString, ClientSubmitCommentJoinGroupsReq.class);
@@ -589,11 +583,9 @@ public class LinkerServer {
 
     // 上报发消息结果
     private void clientSubmitPushMessagesStatus(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
-
         log.info("clientSubmitPushMessagesStatus req = {}", bodyString);
 
         MessagePacket messagePacket = new MessagePacket();
-
 
         try {
 
@@ -614,6 +606,15 @@ public class LinkerServer {
             String usernumber = businessParam.getUsernumber();
             Integer state = businessParam.getState();
 
+            if (StringUtils.equals("100001", taskclass) || StringUtils.equals("100003", taskclass) || StringUtils.equals("100004", taskclass)) {
+                if (StringUtils.isEmpty(keyword)) {
+                    log.warn("clientSubmitPushMessagesStatus keywords = {} 不正确", keyword);
+                    ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_5, "请求必填参数不能为空").toJSONString());
+                    responseMessage(ctx, buffer);
+                    return;
+                }
+            }
+
 
             if (StringUtils.isEmpty(id)
                     || StringUtils.isEmpty(taskID)
@@ -621,7 +622,6 @@ public class LinkerServer {
                     || StringUtils.isEmpty(user)
                     || batch == null
                     || StringUtils.isEmpty(phone)
-                    || StringUtils.isEmpty(keyword)
                     || (StringUtils.isEmpty(groupname) && StringUtils.isEmpty(groupname1))
                     || StringUtils.isEmpty(usernumber)
                     || state == null) {
@@ -684,7 +684,6 @@ public class LinkerServer {
         log.info("clientSubmitPushJoinGroupsStatus req = {}", bodyString);
 
         MessagePacket messagePacket = new MessagePacket();
-
 
         try {
 
@@ -766,12 +765,9 @@ public class LinkerServer {
 
     // 检查用户是否可以发送消息
     private void clientCheckPushMessageStatus(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
-
-
         log.info("clientCheckPushMessageStatus req = {}", bodyString);
 
         MessagePacket messagePacket = new MessagePacket();
-
 
         try {
 

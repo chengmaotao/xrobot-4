@@ -17,7 +17,7 @@ public interface AutoxitDao {
 
     PushMessages clientCheckPushMessageStatus(ClientCheckPushMessageReq paramReq);
 
-    Tasks getTaskByTaskId(String taskId,String taskClass);
+    TasksWithBLOBs getTaskByTaskId(String taskId,String taskClass);
 
     void insertSummaryJoinGroups(SummaryJoinGroups record);
 

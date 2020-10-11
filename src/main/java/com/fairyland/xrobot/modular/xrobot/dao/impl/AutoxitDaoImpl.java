@@ -93,12 +93,12 @@ public class AutoxitDaoImpl implements AutoxitDao {
     }
 
     @Override
-    public Tasks getTaskByTaskId(String taskId, String taskCalss) {
+    public TasksWithBLOBs getTaskByTaskId(String taskId, String taskCalss) {
 
         TasksExample example = new TasksExample();
         example.createCriteria().andTaskidEqualTo(taskId).andTaskclassEqualTo(taskCalss);
 
-        List<Tasks> list = tasksMapper.selectByExample(example);
+        List<TasksWithBLOBs> list = tasksMapper.selectByExampleWithBLOBs(example);
 
         if (list == null || list.isEmpty()) {
             return null;

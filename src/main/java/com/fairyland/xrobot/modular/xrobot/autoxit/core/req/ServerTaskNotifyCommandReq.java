@@ -31,6 +31,8 @@ public class ServerTaskNotifyCommandReq {
     private String cover; // 封面链接图片
     private String user;
 
+    private String answers; // 加群问题答案 回车换行分割
+
     public Integer getBatch() {
         return batch;
     }
@@ -50,7 +52,9 @@ public class ServerTaskNotifyCommandReq {
     public String getCover() {
 
         if (StringUtils.isNotEmpty(cover)) {
-            return "http://39.99.233.24:20001" + cover;
+            //return "http://39.99.233.24:20001" + cover;
+
+            return "http://148.66.129.158:20001" + cover;
         }
         return cover;
     }
@@ -107,6 +111,14 @@ public class ServerTaskNotifyCommandReq {
         this.content = content;
     }
 
+    public String getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(String answers) {
+        this.answers = answers;
+    }
+
     @Override
     public String toString() {
         return "ServerTaskNotifyCommandReq{" +
@@ -119,6 +131,7 @@ public class ServerTaskNotifyCommandReq {
                 ", md5='" + md5 + '\'' +
                 ", cover='" + cover + '\'' +
                 ", user='" + user + '\'' +
+                ", answers='" + answers + '\'' +
                 '}';
     }
 }

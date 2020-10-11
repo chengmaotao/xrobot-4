@@ -29,12 +29,32 @@ public class ExeResultReq extends PageRequest {
 
     private String endTime; // 截止日期
 
+    private String currentUser;
+
+    private Integer batch; // 执行批次
+
+    public String getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(String currentUser) {
+        this.currentUser = currentUser;
+    }
+
     public void validate() {
         if (code == null || (code != 1 && code != 2 && code != 3 && code != 4 && code != 5 && code != 6)) {
             logger.warn("ExeResultReq code={} 不正确", code);
 
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
+    }
+
+    public Integer getBatch() {
+        return batch;
+    }
+
+    public void setBatch(Integer batch) {
+        this.batch = batch;
     }
 
     public String getTaskid() {
@@ -93,6 +113,7 @@ public class ExeResultReq extends PageRequest {
         this.code = code;
     }
 
+
     @Override
     public String toString() {
         return "ExeResultReq{" +
@@ -103,6 +124,8 @@ public class ExeResultReq extends PageRequest {
                 ", deviceid='" + deviceid + '\'' +
                 ", beginTime='" + beginTime + '\'' +
                 ", endTime='" + endTime + '\'' +
+                ", currentUser='" + currentUser + '\'' +
+                ", batch=" + batch +
                 '}';
     }
 }

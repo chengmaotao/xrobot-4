@@ -1,5 +1,7 @@
 package com.fairyland.xrobot.modular.xrobot.domain;
 
+import com.fairyland.xrobot.modular.xrobot.utils.Utility;
+
 public class CreateGroups extends BaseEntity {
 
     /**
@@ -281,4 +283,35 @@ public class CreateGroups extends BaseEntity {
     public void setKeywords(String keywords) {
         this.keywords = keywords;
     }
+
+    private String taskclassName;
+
+    public String getTaskclassName() {
+        return Utility.getTaskClassName(getTaskclass());
+    }
+
+    public void setTaskclassName(String taskclassName) {
+        this.taskclassName = taskclassName;
+    }
+
+    private String content;
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    private String md5;
+
+    public String getMd5() {
+        return md5;
+    }
+
+    public void setMd5(String md5) {
+        this.md5 = md5;
+    }
+
 }
