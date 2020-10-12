@@ -148,11 +148,31 @@ public class LinkerServer {
     public void receiveRespMessages(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
         WaitAckServerRequest waitAck = (WaitAckServerRequest) waitAckRequestCache.get(messageSerial);
         if (waitAck != null) {
-			/*
-			if (command == MessagePacket.SERVER_XXX_COMMAND) {
-				log.info("XXX指令执行结果:{}", bodyString);
 
-			} */
+
+           /* JSONObject jsonObject = JSONObject.parseObject(bodyString);
+
+            if (command == MessagePacket.SERVER_QUIET_COMMAND) {
+                //  暂停操作
+                log.info("暂停操作指令执行结果:{}", bodyString);
+                String status = (String) jsonObject.get("status");
+                updateStatus(ctx.channel(), status);
+
+            } else if (command == MessagePacket.SERVER_START_COMMAND) {
+                // 启动客户端
+                log.info("启动客户端操作指令执行结果:{}", bodyString);
+                String status = (String) jsonObject.get("status");
+                updateStatus(ctx.channel(), status);
+
+            } else if (command == MessagePacket.SERVER_EXIT_COMMAND) {
+
+                // 退出客户端
+                log.info("退出客户端操作指令执行结果:{}", bodyString);
+                String status = (String) jsonObject.get("status");
+                updateStatus(ctx.channel(), status);
+
+            }*/
+
             /**
              * reqbodyString请求数据，bodyString响应数据
              */
@@ -992,7 +1012,7 @@ public class LinkerServer {
                 log.info("登录成功,终端数：{} 连接数：{}", sessionManager.getSessionCount(), sessionManager.getSessionCount());
             } else {
                 log.warn("clientLogin 来自IP:{} req:{} 终端连接被拒绝，已存在相同ID的终端连接认证", ctx.channel().remoteAddress(), businessParam);
-                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_4, "终端连接被拒绝，已存在相同ID的终端连接认证！").toJSONString());
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_1, "登录失败，相同终端设备已登录").toJSONString());
                 responseMessage(ctx, buffer);
                 try {
                     ctx.channel().close();
@@ -1050,7 +1070,7 @@ public class LinkerServer {
                 autoxitService.modifyDeviceStateByClientStata(id, status);
 
                 updateStatus(ctx.channel(), status);
-                JSONObject response = getSuccessResponse(ServerCode.SERVER_CODE_1, "报告状态成功");
+                JSONObject response = getSuccessResponse(null, "报告状态成功");
 
                 ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response.toJSONString());
                 responseMessage(ctx, buffer);

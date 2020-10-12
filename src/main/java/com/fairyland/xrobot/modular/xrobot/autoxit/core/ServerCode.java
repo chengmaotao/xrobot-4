@@ -11,6 +11,7 @@ public class ServerCode {
     public static final String SERVER_CODE_0 = "0";
     public static final String SERVER_CODE_1 = "1";
     public static final String SERVER_CODE_2 = "2";
+    public static final int SERVER_CODE_INT_2 = 2;
     public static final String SERVER_CODE_3 = "3";
     public static final int SERVER_CODE_INT_3 = 3;
     public static final String SERVER_CODE_4 = "4";

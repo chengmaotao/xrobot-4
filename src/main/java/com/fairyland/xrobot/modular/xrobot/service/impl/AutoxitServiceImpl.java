@@ -470,12 +470,12 @@ public class AutoxitServiceImpl implements AutoxitService {
     private void checkDeviceByDeviceId(Device device, String devicdId) {
         if (device == null) {
             logger.warn("clientGetTaskStatus deviceID={} 对应的设备不存在", devicdId);
-            throw new XRobotException(ServerCode.SERVER_CODE_INT_98, "id = " + devicdId + "对应设备不存在");
+            throw new XRobotException(ServerCode.SERVER_CODE_INT_2, "终端连接被拒绝【认证失败】！");
         }
 
         if (device.getAllow() == 0) {
             logger.warn("clientGetTaskStatus deviceID={} 对应的设备 被禁用", devicdId);
-            throw new XRobotException(ServerCode.SERVER_CODE_INT_3, "终端连接被拒绝，账号被禁用！");
+            throw new XRobotException(ServerCode.SERVER_CODE_INT_3, "终端连接被拒绝，账号被禁用【认证失败】！");
         }
     }
 
