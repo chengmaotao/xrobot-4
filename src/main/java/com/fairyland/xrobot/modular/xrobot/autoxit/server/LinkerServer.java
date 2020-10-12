@@ -870,7 +870,6 @@ public class LinkerServer {
 
         MessagePacket messagePacket = new MessagePacket();
 
-
         try {
             JSONObject jsonObject = JSONObject.parseObject(bodyString);
             String id = (String) jsonObject.get("id");

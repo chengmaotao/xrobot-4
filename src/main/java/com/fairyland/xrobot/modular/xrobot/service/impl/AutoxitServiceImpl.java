@@ -133,7 +133,7 @@ public class AutoxitServiceImpl implements AutoxitService {
         record.setState(1);
 
         TaskDevicesExample example = new TaskDevicesExample();
-        example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0).andTaskidEqualTo(serverTaskNotify.getTaskid()).andDeviceidEqualTo(serverTaskNotify.getDeviceid());
+        example.createCriteria().andTaskidEqualTo(serverTaskNotify.getTaskid()).andDeviceidEqualTo(serverTaskNotify.getDeviceid());
         xrobotDao.updateTaskDevices(record, example);
 
         return serverTaskNotify;
@@ -493,7 +493,7 @@ public class AutoxitServiceImpl implements AutoxitService {
 
         if (!StringUtils.equals(paramReq.getUser(), tasks.getCreateBy())) {
             logger.info("clientSubmitPushJoinGroupsStatus 任务id={}, 服务端用户={}，请求的用户={}", paramReq.getTaskID(), tasks.getCreateBy(), paramReq.getUser());
-            throw new XRobotException(ServerCode.SERVER_CODE_INT_96, "任务ID taskID = " + paramReq.getTaskID() + " 对应的任务所属用户 user = " + tasks.getCreateBy() + ", 请求参数用户user=" + paramReq.getUser());
+            throw new XRobotException(ServerCode.SERVER_CODE_INT_95, "任务ID taskID = " + paramReq.getTaskID() + " 对应的任务所属用户 user = " + tasks.getCreateBy() + ", 请求参数用户user=" + paramReq.getUser());
         }
 
 

@@ -432,6 +432,8 @@
    where a.deviceID = #{deviceid}
      and b.state = 1
      AND a.state IN (0, 1)
+     and b.del_flag = '0'
+     and a.del_flag = '0'
    order by b.update_date desc
   </select>
 

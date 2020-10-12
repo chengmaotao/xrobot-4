@@ -660,10 +660,10 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             throw new XRobotException(ErrorCode.SYS_FAIL);
         }
 
-        if (oldInfo.getState() == 1) {
+/*        if (oldInfo.getState() == 1) {
             logger.warn("delTask 任务表 执行中的任务不允许修改  id = {}", paramReq.getTaskid());
             throw new BusinessException("任务正在执行中，暂不允许删除");
-        }
+        }*/
 
 
         TasksWithBLOBs record = new TasksWithBLOBs();
