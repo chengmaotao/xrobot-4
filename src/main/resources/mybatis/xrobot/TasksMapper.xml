@@ -555,6 +555,7 @@
     <if test="state != null">
       and a.state = #{state}
     </if>
+    order by a.create_date desc
 
   </select>
 
@@ -588,6 +589,10 @@
               a.create_by = #{currentUser}
            and a.del_flag = '0'
            and a.role = 0
+  </select>
+
+  <select id="setNamesUtf8mb4">
+    set names utf8mb4;
   </select>
 
 </mapper>

@@ -15,6 +15,8 @@ public interface AutoxitService {
 
     boolean clientCheckPushMessageStatus(ClientCheckPushMessageReq businessParam);
 
+
+
     String clientSubmitPushJoinGroupsStatus(ClientSubmitPushJoinGroupsReq businessParam);
 
     String clientSubmitPushMessagesStatus(ClientSubmitPushMessagesReq businessParam);

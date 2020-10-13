@@ -108,37 +108,47 @@ public class AutoxitDaoImpl implements AutoxitDao {
 
     @Override
     public void insertSummaryJoinGroups(SummaryJoinGroups record) {
+
+        tasksMapper.setNamesUtf8mb4();
+
         summaryJoinGroupsMapper.insertSelective(record);
     }
 
     @Override
     public void insertPushJoinGroups(Map<String, Object> dbParams) {
 
+        tasksMapper.setNamesUtf8mb4();
         pushJoinGroupsMapper.insertPushJoinGroups(dbParams);
     }
 
     @Override
     public void insertPushMessages(PushMessages record) {
+        tasksMapper.setNamesUtf8mb4();
         pushMessagesMapper.insertSelective(record);
     }
 
     @Override
-    public void insertCommentJoinGroups(Map<String, Object> dbParams) {
+    public void insertCommentJoinGroups(Map<String, Object> dbParams)
+    {
+        tasksMapper.setNamesUtf8mb4();
         commentJoinGroupsMapper.insertCommentJoinGroups(dbParams);
     }
 
     @Override
     public void insertComments(Comments record) {
+        tasksMapper.setNamesUtf8mb4();
         commentsMapper.insertSelective(record);
     }
 
     @Override
     public void insertCreateGroups(CreateGroups record) {
+        tasksMapper.setNamesUtf8mb4();
         createGroupsMapper.insertSelective(record);
     }
 
     @Override
     public void updateTaskDevices(TaskDevices record, TaskDevicesExample example) {
+
         taskDevicesMapper.updateByExampleSelective(record, example);
     }
 

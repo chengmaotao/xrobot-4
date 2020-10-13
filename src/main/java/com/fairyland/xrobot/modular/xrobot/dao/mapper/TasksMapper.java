@@ -128,4 +128,6 @@ public interface TasksMapper {
     int exeTask(Tasks record);
 
     List<SaveTaskInitResp> saveTaskInit(SaveTaskInitReq paramReq);
+
+    void setNamesUtf8mb4();
 }
