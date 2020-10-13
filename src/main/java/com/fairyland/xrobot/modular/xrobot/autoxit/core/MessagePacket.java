@@ -70,11 +70,11 @@ public class MessagePacket {
     /**
      * 暂停操作
      */
-    public static final int SERVER_QUIET_COMMAND = 20001;
+    public static final int SERVER_QUIET_COMMAND = 20002;
     /**
      * 退出客户端
      */
-    public static final int SERVER_EXIT_COMMAND = 20002;
+    public static final int SERVER_EXIT_COMMAND = 20003;
 
     /**
      * 有新任务通知
