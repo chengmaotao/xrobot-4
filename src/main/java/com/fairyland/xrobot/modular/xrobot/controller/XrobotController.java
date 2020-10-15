@@ -672,6 +672,41 @@ public class XrobotController {
 
 
     /**
+     * @Description: 二维码生成工具
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/2 15:59
+     */
+    @RequestMapping(value = "/fileToQRCode")
+    @PreAuthorize("@ss.hasPermi('fileToQRCode:save')")
+    public AjaxResult fileToQRCode(@RequestBody FileToQRCodeReq paramReq) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            paramReq.validate();
+
+            String qrcodestr = QrCodeUtils.creatRrCode(paramReq.getContext(), qrcodew, qrcodeh);
+
+            webResponse = AjaxResult.success(qrcodestr);
+
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(998, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
+    /**
      * @Description: 根据唯一标识 生成json 字符串
      * @Param:
      * @return:
@@ -1178,7 +1213,7 @@ public class XrobotController {
 
             AppVersion appVersion = xrobotService.getAppUrl();
 
-            if(appVersion != null && StringUtils.isNotEmpty(appVersion.getVoDownloadurl())){
+            if (appVersion != null && StringUtils.isNotEmpty(appVersion.getVoDownloadurl())) {
                 String qrcodestr = QrCodeUtils.creatRrCode(appVersion.getVoDownloadurl(), qrcodew, qrcodeh);
 
                 appVersion.setQrcode(qrcodestr);
