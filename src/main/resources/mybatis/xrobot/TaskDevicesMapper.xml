@@ -460,4 +460,27 @@
      and a.taskID = #{taskid}
   </select>
 
+  <select id="taskExeResult" parameterType="com.fairyland.xrobot.modular.xrobot.domain.req.TaskExeResultReq" resultType="com.fairyland.xrobot.modular.xrobot.domain.resp.TaskExeResultResp">
+
+    SELECT
+      a.taskID as "taskid",
+      a.deviceID as "deviceid",
+      a.state as "state",
+      a.errorMsg as "errorMsg",
+      b.taskclass as "taskclass"
+    FROM
+        c_taskdevices a join c_tasks b on a.taskID = b.taskID
+    WHERE
+        a.del_flag = 0
+    AND a.create_by = #{currentUser}
+    and a.state != 0
+    <if test="taskid != null and taskid != ''">
+      AND a.taskID = #{taskid}
+    </if>
+    <if test="deviceid != null and deviceid != ''">
+      AND a.deviceID = #{deviceid}
+    </if>
+    ORDER BY a.update_date DESC
+  </select>
+
 </mapper>

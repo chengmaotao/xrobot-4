@@ -582,4 +582,33 @@ public class XrobotDaoImpl implements XrobotDao {
         taskDevicesMapper.updateByExampleSelective(taskDevicesRecord, example);
     }
 
+    @Override
+    public List<TaskExeResultResp> taskExeResult(TaskExeResultReq paramReq) {
+        int pageNum = paramReq.getPageNum();
+        int pageSize = paramReq.getPageSize();
+        PageHelper.startPage(pageNum, pageSize);
+
+
+        List<TaskExeResultResp> list = taskDevicesMapper.taskExeResult(paramReq);
+
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+
+        return list;
+    }
+
+    @Override
+    public Device getDeviceInfoByDeviceId(String userName, String deviceid) {
+        DeviceExample example = new DeviceExample();
+        example.createCriteria().andDeviceidEqualTo(deviceid).andCreateByEqualTo(userName);
+
+        List<Device> list = deviceMapper.selectByExample(example);
+
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+        return list.get(0);
+    }
+
 }

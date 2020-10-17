@@ -78,4 +78,6 @@ public interface XrobotService {
     void appUpload(AppUploadReq paramReq, HttpServletRequest request);
 
     AppVersion getAppUrl();
+
+    PageResult taskExeResultList(TaskExeResultReq paramReq);
 }

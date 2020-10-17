@@ -10,6 +10,7 @@ import com.fairyland.xrobot.common.utils.StringUtils;
  **/
 public class ServerTaskNotifyCommandReq {
 
+
     private String deviceid;// 终端设备记录唯一ID
 
     private String taskid; // 任务唯一ID
@@ -52,7 +53,9 @@ public class ServerTaskNotifyCommandReq {
     public String getCover() {
 
         if (StringUtils.isNotEmpty(cover)) {
+
             return "http://39.99.233.24:20001" + cover;
+
 
             //return "http://148.66.129.158:20001" + cover;
         }

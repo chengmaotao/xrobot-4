@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.fairyland.xrobot.modular.xrobot.domain.req.TaskDevicesListReq;
+import com.fairyland.xrobot.modular.xrobot.domain.req.TaskExeResultReq;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.TaskDevicesResp;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.TaskExeResultResp;
 import org.apache.ibatis.annotations.Param;
 
 public interface TaskDevicesMapper {
@@ -104,4 +106,6 @@ public interface TaskDevicesMapper {
     List<ServerTaskNotifyCommandReq> getClientGetTaskByDeviceId(String deviceid);
 
     List<TaskDevicesResp> selectTaskDevicesList(TaskDevicesListReq paramReq);
+
+    List<TaskExeResultResp> taskExeResult(TaskExeResultReq paramReq);
 }

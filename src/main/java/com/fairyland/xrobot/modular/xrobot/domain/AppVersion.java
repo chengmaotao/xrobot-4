@@ -61,6 +61,7 @@ public class AppVersion extends BaseEntity {
         if (StringUtils.isNotEmpty(downloadurl)) {
             return "http://39.99.233.24:20001" + downloadurl;
             //return "http://148.66.129.158:20001" + downloadurl;
+
         }
 
         return voDownloadurl;

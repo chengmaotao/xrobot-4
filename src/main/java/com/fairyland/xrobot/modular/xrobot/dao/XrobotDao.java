@@ -101,4 +101,8 @@ public interface XrobotDao {
     AppVersion getAppVersion();
 
     void updateTaskDevices(TaskDevices taskDevicesRecord, TaskDevicesExample example);
+
+    List<TaskExeResultResp> taskExeResult(TaskExeResultReq paramReq);
+
+    Device getDeviceInfoByDeviceId(String userName, String deviceid);
 }

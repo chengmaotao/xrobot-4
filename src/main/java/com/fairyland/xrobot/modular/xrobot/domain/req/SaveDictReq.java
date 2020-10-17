@@ -2,6 +2,7 @@ package com.fairyland.xrobot.modular.xrobot.domain.req;
 
 import com.fairyland.xrobot.common.constant.ErrorCode;
 import com.fairyland.xrobot.common.utils.StringUtils;
+import com.fairyland.xrobot.modular.xrobot.exception.BusinessException;
 import com.fairyland.xrobot.modular.xrobot.exception.XRobotException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,16 @@ public class SaveDictReq {
         if (StringUtils.isNotEmpty(remarks) && remarks.length() > 255) {
             logger.warn("SaveDeviceReq 系统字典 备注 remarks = {} 不正确 超出长度限制255", remarks);
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
+        }
+
+        if(maxAddGroupValue > 10){
+            logger.warn("SaveDictReq 系统字典 一次加群最大值 maxAddGroupValue = {} 不能大于10 不正确", maxAddGroupValue);
+            throw new BusinessException("创建群组任务值 不能大于10");
+        }
+
+        if(maxSearchKeyValue > 10){
+            logger.warn("SaveDictReq 系统字典 关键字搜索最大值  maxSearchKeyValue = {} 不能大于10 不正确", maxSearchKeyValue);
+            throw new BusinessException("最大搜索关键字数量 不能大于10");
         }
     }
 

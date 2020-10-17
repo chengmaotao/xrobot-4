@@ -1235,4 +1235,36 @@ public class XrobotController {
     }
 
 
+    /**
+     * @Description: 任务执行状态结果表
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/17 20:27
+     */
+    @RequestMapping(value = "/taskExeResultList")
+    @PreAuthorize("@ss.hasPermi('taskExeResult:list')")
+    public AjaxResult taskExeResultList(@RequestBody TaskExeResultReq paramReq) {
+
+        AjaxResult webResponse = null;
+        try {
+
+            PageResult resp = xrobotService.taskExeResultList(paramReq);
+
+            webResponse = AjaxResult.success(resp);
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+
+        return webResponse;
+    }
+
+
 }

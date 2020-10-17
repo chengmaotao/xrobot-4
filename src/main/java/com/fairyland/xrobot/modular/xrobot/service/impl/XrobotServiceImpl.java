@@ -701,7 +701,13 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             throw new BusinessException("该任务下没有对应的 执行任务的终端");
         }
 
+        Device device = null;
         for (TaskDevices taskDevices : list) {
+
+            device = xrobotDao.getDeviceInfoByDeviceId(user.getUserName(), taskDevices.getDeviceid());
+
+            checkDeviceByDeviceId(device, taskDevices.getDeviceid());
+
             // 在线
             if (robotServer.sessionIsActive(taskDevices.getDeviceid())) {
 
@@ -713,14 +719,16 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                     robotServer.sendTaskNotifyCommand(taskDevices.getDeviceid());
 
                 } else {
+
+                    // 根据设备编号 获取设备信息
                     logger.warn("exeTask 该任务下taskId={} 设备={} 连接状态不正常={}", paramReq.getTaskid() + taskDevices.getDeviceid(), Utility.getMonitorClientAppStatus(seesionStatusCode));
-                    throw new BusinessException("该任务下设备" + taskDevices.getDeviceid() + "连接状态= " + Utility.getMonitorClientAppStatus(seesionStatusCode));
+                    throw new BusinessException("该任务下设备" + taskDevices.getDeviceid() + "(" + device.getDevicesn() + ")状态异常：" + Utility.getMonitorClientAppStatus(seesionStatusCode));
                 }
 
             } else {
                 // 未在线
                 logger.warn("exeTask 该任务下taskId={} 设备={} 未在线", paramReq.getTaskid() + taskDevices.getDeviceid());
-                throw new BusinessException("该任务下设备" + taskDevices.getDeviceid() + "未在线");
+                throw new BusinessException("该任务下设备" + taskDevices.getDeviceid() + "(" + device.getDevicesn() + ")状态异常：未在线");
             }
         }
 
@@ -1132,6 +1140,20 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         return xrobotDao.getAppVersion();
     }
 
+    @Override
+    public PageResult taskExeResultList(TaskExeResultReq paramReq) {
+        logger.info("taskExeResultList paramReq = {}", paramReq);
+
+        paramReq.setCurrentUser(getCurrentUser().getUserName());
+
+
+        List<TaskExeResultResp> list = xrobotDao.taskExeResult(paramReq);
+
+        PageInfo<TaskExeResultResp> pageInfo = new PageInfo<>(list);
+        PageResult pageResult = PageUtils.getPageResult(pageInfo);
+        return pageResult;
+    }
+
 
     private String getFileSuffix(String originalFilename) {
 
@@ -1146,5 +1168,18 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         String fileSuffix = originalFilename.substring(pos + 1);
         return fileSuffix.toLowerCase();
+    }
+
+    private void checkDeviceByDeviceId(Device device, String devicdId) {
+        if (device == null) {
+            logger.warn("checkDeviceByDeviceId deviceID={} 对应的设备不存在", devicdId);
+            throw new BusinessException("该任务下设备" + devicdId + "对应设备不存在");
+
+        }
+
+        if (device.getAllow() == 0) {
+            logger.warn("checkDeviceByDeviceId deviceID={} 对应的设备 被禁用", devicdId);
+            throw new BusinessException("该任务下设备" + devicdId + "(" + device.getDevicesn() + ")账号状态异常：账号被禁用");
+        }
     }
 }
