@@ -15,6 +15,11 @@ import com.fairyland.xrobot.modular.xrobot.exception.XRobotException;
 import com.fairyland.xrobot.modular.xrobot.service.XrobotService;
 import com.fairyland.xrobot.modular.xrobot.utils.Utility;
 import com.github.pagehelper.PageInfo;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +31,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
@@ -65,6 +72,14 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
     @Value("#{'${app_suffix}'.split(',')}")
     private List<String> app_suffix;
+
+
+    @Value("${export.username.model}")
+    private String exportUsernameModel;
+
+
+    @Value("${excel.model.path}")
+    private String outExcelPath;
 
 
     @Override
@@ -747,12 +762,28 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         TaskDevices taskDevicesRecord = new TaskDevices();
         taskDevicesRecord.setState(0);
         taskDevicesRecord.preUpdate(user);
+        taskDevicesRecord.setError(0);
+        taskDevicesRecord.setErrormsg("");
+        taskDevicesRecord.setBatch((oldInfo.getBatch().intValue() + 1));
 
         TaskDevicesExample example = new TaskDevicesExample();
         example.createCriteria().andDelFlagEqualTo(XRobotCode.DEL_0).andCreateByEqualTo(user.getUserName()).andTaskidEqualTo(paramReq.getTaskid());
 
-        xrobotDao.updateTaskDevices(taskDevicesRecord, example);
+        //xrobotDao.updateTaskDevices(taskDevicesRecord, example);
 
+        xrobotDao.exeTaskDevices(taskDevicesRecord, example);
+
+
+        // 插入任务设备日志表
+
+        Map<String, Object> dbParams = new HashMap<>();
+        dbParams.put("nowDate", record.getUpdateDate());
+        dbParams.put("username", user.getUserName());
+        dbParams.put("taskID", oldInfo.getTaskid());
+        dbParams.put("list", list);
+        dbParams.put("batch", (oldInfo.getBatch().intValue() + 1));
+        // 任务执行终端表
+        xrobotDao.insertTasksDevicesLog(dbParams);
 
     }
 
@@ -1152,6 +1183,60 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         PageInfo<TaskExeResultResp> pageInfo = new PageInfo<>(list);
         PageResult pageResult = PageUtils.getPageResult(pageInfo);
         return pageResult;
+    }
+
+    @Override
+    public String exportUserNumberList() {
+
+
+        List<String> userNumberList = xrobotDao.exportUserNumberList();
+
+        if (userNumberList.isEmpty()) {
+            throw new BusinessException("数据为空");
+        }
+
+
+        try {
+            SXSSFWorkbook workbook = new SXSSFWorkbook(new XSSFWorkbook(new FileInputStream(exportUsernameModel)), 1000);
+            Sheet sheet0 = workbook.getSheetAt(0);
+
+            int indexRowNum = 1;
+            Row row = null;
+            Cell cell = null;
+
+
+            for (String userNumber : userNumberList) {
+                row = sheet0.createRow(indexRowNum);
+
+                cell = row.createCell(0);
+                cell.setCellValue(userNumber);
+
+            }
+
+
+            String fileName = System.currentTimeMillis() + "_群员手机号.xlsx";
+
+            String filePath = outExcelPath + fileName;
+
+            File dest = new File(filePath);
+
+            if (!dest.getParentFile().exists()) {
+                dest.getParentFile().mkdirs();
+            }
+
+            FileOutputStream out = new FileOutputStream(filePath); // 创建文件输出流
+            workbook.write(out);
+            out.flush();
+            out.close();
+
+            return fileName;
+
+        } catch (Exception ex) {
+            logger.error("exportUserNumberList 下载excel 未知错误");
+            ex.printStackTrace();
+            throw new XRobotException(ErrorCode.SYS_FAIL);
+        }
+
     }
 
 

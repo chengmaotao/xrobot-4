@@ -38,7 +38,7 @@
 
 
 
-        <table tableName="app_version" domainObjectName="AppVersion" />
+        <table tableName="c_taskdeviceslog" domainObjectName="TaskDevicesLog" />
 
 
 

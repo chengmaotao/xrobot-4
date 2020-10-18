@@ -1,6 +1,9 @@
 package com.fairyland.xrobot.modular.xrobot.domain.resp;
 
 import com.fairyland.xrobot.modular.xrobot.utils.Utility;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.Date;
 
 /**
  * @program: fairyland->TaskExeResultResp
@@ -23,6 +26,48 @@ public class TaskExeResultResp {
     private String taskclass;
 
     private String taskclassName;
+
+    private String deviceSN;
+
+    public String getDeviceSN() {
+        return deviceSN;
+    }
+
+    public void setDeviceSN(String deviceSN) {
+        this.deviceSN = deviceSN;
+    }
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date starttime;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date endtime;
+
+    private Integer batch;
+
+    public Integer getBatch() {
+        return batch;
+    }
+
+    public void setBatch(Integer batch) {
+        this.batch = batch;
+    }
+
+    public Date getStarttime() {
+        return starttime;
+    }
+
+    public void setStarttime(Date starttime) {
+        this.starttime = starttime;
+    }
+
+    public Date getEndtime() {
+        return endtime;
+    }
+
+    public void setEndtime(Date endtime) {
+        this.endtime = endtime;
+    }
 
     public String getTaskclassName() {
         return Utility.getTaskClassName(getTaskclass());
@@ -70,13 +115,13 @@ public class TaskExeResultResp {
         if (state == null) {
             return "状态未知";
         } else if (state.intValue() == 0) {
-            return "新创建";
+            return "待执行";
         } else if (state.intValue() == 1) {
             return "执行中";
         } else if (state.intValue() == 2) {
             return "执行完成";
         }
-        return voState;
+        return "";
     }
 
     public void setVoState(String voState) {

@@ -533,4 +533,13 @@
       ORDER BY a.update_date DESC
   </select>
 
+  <select id="exportUserNumberList" resultType="java.lang.String">
+      SELECT
+          a.usernumber
+      FROM
+          c_pushmessages a
+      GROUP BY
+          a.usernumber
+  </select>
+
 </mapper>

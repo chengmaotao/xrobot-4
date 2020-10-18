@@ -72,6 +72,10 @@ public class XrobotDaoImpl implements XrobotDao {
     @Autowired
     private AppVersionMapper appVersionMapper;
 
+
+    @Autowired
+    private TaskDevicesLogMapper taskDevicesLogMapper;
+
     @Override
     public List<Device> deviceList(DeviceListReq paramReq) {
         int pageNum = paramReq.getPageNum();
@@ -609,6 +613,27 @@ public class XrobotDaoImpl implements XrobotDao {
             return null;
         }
         return list.get(0);
+    }
+
+    @Override
+    public void exeTaskDevices(TaskDevices taskDevicesRecord, TaskDevicesExample example) {
+        taskDevicesMapper.exeTaskDevices(taskDevicesRecord, example);
+    }
+
+    @Override
+    public void insertTasksDevicesLog(Map<String, Object> dbParams) {
+        //insertTasksDevicesLog
+        taskDevicesLogMapper.insertTasksDevicesLog(dbParams);
+    }
+
+    @Override
+    public List<String> exportUserNumberList() {
+        List<String> list = pushMessagesMapper.exportUserNumberList();
+
+        if (list == null) {
+            return new ArrayList<>();
+        }
+        return list;
     }
 
 }

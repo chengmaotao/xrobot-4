@@ -105,4 +105,10 @@ public interface XrobotDao {
     List<TaskExeResultResp> taskExeResult(TaskExeResultReq paramReq);
 
     Device getDeviceInfoByDeviceId(String userName, String deviceid);
+
+    void exeTaskDevices(TaskDevices taskDevicesRecord, TaskDevicesExample example);
+
+    void insertTasksDevicesLog(Map<String, Object> dbParams);
+
+    List<String> exportUserNumberList();
 }

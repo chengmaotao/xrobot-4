@@ -1,5 +1,9 @@
 package com.fairyland.xrobot.modular.xrobot.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.Date;
+
 public class TaskDevices extends BaseEntity {
 
 
@@ -152,5 +156,38 @@ public class TaskDevices extends BaseEntity {
      */
     public void setErrormsg(String errormsg) {
         this.errormsg = errormsg == null ? null : errormsg.trim();
+    }
+
+
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    private Date starttime;
+
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    private Date endtime;
+
+    private Integer batch;
+
+    public Integer getBatch() {
+        return batch;
+    }
+
+    public void setBatch(Integer batch) {
+        this.batch = batch;
+    }
+
+    public Date getStarttime() {
+        return starttime;
+    }
+
+    public void setStarttime(Date starttime) {
+        this.starttime = starttime;
+    }
+
+    public Date getEndtime() {
+        return endtime;
+    }
+
+    public void setEndtime(Date endtime) {
+        this.endtime = endtime;
     }
 }

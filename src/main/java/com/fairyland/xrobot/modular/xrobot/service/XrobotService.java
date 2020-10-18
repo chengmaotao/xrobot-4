@@ -80,4 +80,6 @@ public interface XrobotService {
     AppVersion getAppUrl();
 
     PageResult taskExeResultList(TaskExeResultReq paramReq);
+
+    String exportUserNumberList();
 }

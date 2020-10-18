@@ -100,4 +100,6 @@ public interface PushMessagesMapper {
     List<PushMessages> pushMessagesList(ExeResultReq paramReq);
 
     List<PushMessages> clientCheckPushMessageStatus(ClientCheckPushMessageReq paramReq);
+
+    List<String> exportUserNumberList();
 }

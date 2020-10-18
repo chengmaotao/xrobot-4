@@ -129,9 +129,9 @@ public class AutoxitServiceImpl implements AutoxitService {
         // 任务设备 修改为执行中
 
         TaskDevices record = new TaskDevices();
-        record.setUpdateDate(new Date());
+        record.setUpdateDate(Utility.getNowDate());
         record.setState(1);
-
+        record.setStarttime(record.getUpdateDate());
         TaskDevicesExample example = new TaskDevicesExample();
         example.createCriteria().andTaskidEqualTo(serverTaskNotify.getTaskid()).andDeviceidEqualTo(serverTaskNotify.getDeviceid());
         xrobotDao.updateTaskDevices(record, example);
@@ -442,6 +442,7 @@ public class AutoxitServiceImpl implements AutoxitService {
         record.setErrormsg(paramReq.getErrorMsg());
         record.preUpdate(paramReq.getUser());
         record.setState(2); // 执行完成
+        record.setEndtime(record.getUpdateDate());
         TaskDevicesExample example = new TaskDevicesExample();
         example.createCriteria().andDeviceidEqualTo(paramReq.getId()).andTaskidEqualTo(paramReq.getTaskID());
 

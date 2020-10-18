@@ -108,4 +108,6 @@ public interface TaskDevicesMapper {
     List<TaskDevicesResp> selectTaskDevicesList(TaskDevicesListReq paramReq);
 
     List<TaskExeResultResp> taskExeResult(TaskExeResultReq paramReq);
+
+    void exeTaskDevices(@Param("record") TaskDevices record, @Param("example") TaskDevicesExample example);
 }

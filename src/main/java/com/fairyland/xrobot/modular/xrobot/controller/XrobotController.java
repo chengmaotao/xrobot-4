@@ -1267,4 +1267,35 @@ public class XrobotController {
     }
 
 
+    /**
+    * @Description: 导出群员手机号
+    * @Param:
+    * @return:
+    * @Author: ctc
+    * @Date: 2020/10/18 21:52
+    */
+    @PreAuthorize("@ss.hasPermi('username:list')")
+    @RequestMapping("/exportUserNumberList")
+    public AjaxResult exportUserNumberList() {
+
+        AjaxResult webResponse;
+        try {
+            String fileName = xrobotService.exportUserNumberList();
+
+            webResponse = AjaxResult.success(fileName);
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+        return webResponse;
+
+    }
+
+
 }

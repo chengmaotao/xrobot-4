@@ -19,6 +19,15 @@ public class TaskExeResultReq extends PageRequest {
 
     private String currentUser;
 
+    private String taskclass;
+
+    public String getTaskclass() {
+        return taskclass;
+    }
+
+    public void setTaskclass(String taskclass) {
+        this.taskclass = taskclass;
+    }
 
     public String getTaskid() {
         return taskid;
@@ -44,12 +53,14 @@ public class TaskExeResultReq extends PageRequest {
         this.currentUser = currentUser;
     }
 
+
     @Override
     public String toString() {
         return "TaskExeResultReq{" +
                 "taskid='" + taskid + '\'' +
                 ", deviceid='" + deviceid + '\'' +
                 ", currentUser='" + currentUser + '\'' +
+                ", taskclass='" + taskclass + '\'' +
                 '}';
     }
 }
