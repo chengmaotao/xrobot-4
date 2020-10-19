@@ -200,4 +200,14 @@ public class Tasks extends BaseEntity {
     public void setCoverUrl(String coverUrl) {
         this.coverUrl = coverUrl;
     }
+
+    private String action;
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
 }

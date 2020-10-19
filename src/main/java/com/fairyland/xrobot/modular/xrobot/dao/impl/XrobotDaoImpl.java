@@ -76,6 +76,10 @@ public class XrobotDaoImpl implements XrobotDao {
     @Autowired
     private TaskDevicesLogMapper taskDevicesLogMapper;
 
+
+    @Autowired
+    private WsusernumbersMapper wsusernumbersMapper;
+
     @Override
     public List<Device> deviceList(DeviceListReq paramReq) {
         int pageNum = paramReq.getPageNum();
@@ -628,12 +632,17 @@ public class XrobotDaoImpl implements XrobotDao {
 
     @Override
     public List<String> exportUserNumberList() {
-        List<String> list = pushMessagesMapper.exportUserNumberList();
+        List<String> list = wsusernumbersMapper.exportUserNumberList();
 
         if (list == null) {
             return new ArrayList<>();
         }
         return list;
+    }
+
+    @Override
+    public void updateTaskDevicesLog(TaskDevicesLog taskDevicesLog, TaskDevicesLogExample taskDevicesLogExample) {
+        taskDevicesLogMapper.updateByExampleSelective(taskDevicesLog, taskDevicesLogExample);
     }
 
 }

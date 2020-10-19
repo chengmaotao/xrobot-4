@@ -111,4 +111,6 @@ public interface XrobotDao {
     void insertTasksDevicesLog(Map<String, Object> dbParams);
 
     List<String> exportUserNumberList();
+
+    void updateTaskDevicesLog(TaskDevicesLog taskDevicesLog, TaskDevicesLogExample taskDevicesLogExample);
 }

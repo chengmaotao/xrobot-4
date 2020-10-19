@@ -28,4 +28,6 @@ public interface AutoxitService {
     String clientSubmitCreateGroupsStatus(ClientSubmitCreateGroupsReq businessParam);
 
     String clientSubmitTaskResponseStatus(ClientSubmitTaskResponseReq businessParam);
+
+    String clientSubmitUserNumberStatus(ClientSubmitUserNumberReq businessParam);
 }

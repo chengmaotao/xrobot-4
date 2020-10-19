@@ -589,6 +589,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         record.setAnswers(paramReq.getAnswers());
         record.setMd5(Utility.getMd5(paramReq.getContent()));
         record.setRemarks(paramReq.getRemarks());
+        record.setAction(paramReq.getAction());
         if (StringUtils.isNotEmpty(newFilePath)) {
             record.setCover(newFilePath);
         }
@@ -611,7 +612,6 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             record.setState(0); // 0:新创建
             record.setTaskid(getSerializeVal());
             record.preInsert(user);
-
             num = xrobotDao.insertTasks(record);
 
             Map<String, Object> dbParams = new HashMap<>();

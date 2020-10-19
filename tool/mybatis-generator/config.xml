@@ -38,7 +38,7 @@
 
 
 
-        <table tableName="c_taskdeviceslog" domainObjectName="TaskDevicesLog" />
+        <table tableName="c_wsusernumbers" domainObjectName="Wsusernumbers" />
 
 
 

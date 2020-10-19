@@ -41,6 +41,10 @@ public class SaveTaskReq {
 
     private String answers = ""; // 加群问题答案
 
+
+    private String action = "0"; // 为1时表示只获取号码 不发消息
+
+
     public void validate() {
 
         if (StringUtils.isEmpty(taskclass)
@@ -61,9 +65,25 @@ public class SaveTaskReq {
             }
         }
 
-        if (StringUtils.isEmpty(content)) {
-            logger.warn("SaveTaskReq 任务表  消息、帖子、评论内容 content = {} 不正确", content);
-            throw new XRobotException(ErrorCode.ERROR_CODE_5);
+        if (StringUtils.equals("100001", taskclass) || StringUtils.equals("100002", taskclass)) {
+            if (StringUtils.isEmpty(action) || (!StringUtils.equals("0", action) && !StringUtils.equals("1", action))) {
+
+                logger.warn("SaveTaskReq 任务是 100001 或者 100002 时 action = {} 不正确", action);
+                throw new XRobotException(ErrorCode.ERROR_CODE_5);
+            }
+
+            if (StringUtils.equals("0", action)) {
+                if (StringUtils.isEmpty(content)) {
+                    logger.warn("SaveTaskReq 任务表  消息、帖子、评论内容 content = {} 不正确", content);
+                    throw new XRobotException(ErrorCode.ERROR_CODE_5);
+                }
+            }
+
+        } else {
+            if (StringUtils.isEmpty(content)) {
+                logger.warn("SaveTaskReq 任务表  消息、帖子、评论内容 content = {} 不正确", content);
+                throw new XRobotException(ErrorCode.ERROR_CODE_5);
+            }
         }
 
 
@@ -82,6 +102,14 @@ public class SaveTaskReq {
         List<String> tempDeviceidList = Arrays.asList(split);
         setDeviceidList(tempDeviceidList);
 
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 
     public String getAnswers() {

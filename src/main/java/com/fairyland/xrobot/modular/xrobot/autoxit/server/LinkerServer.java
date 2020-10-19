@@ -242,6 +242,9 @@ public class LinkerServer {
                 } else if (command == MessagePacket.CLIENT_SUBMIT_TASKRESPONSE_COMMAND) {
                     // 任务执行结果报告
                     clientSubmitTaskResponseStatus(ctx, command, messageSerial, bodyString);
+                } else if (command == MessagePacket.CLIENT_SUBMIT_USERNUMBER_COMMAND) {
+                    // 上报用户号码表
+                    clientSubmitUserNumberStatus(ctx, command, messageSerial, bodyString);
                 } else {
                     log.info("未知command = {},bodyString = {}", command, bodyString);
                 }
@@ -261,6 +264,103 @@ public class LinkerServer {
                 log.warn("来自IP:{} 终端请求未认证！", ctx.channel().remoteAddress());
             }
         }
+    }
+
+    // 上报用户号码表
+    private void clientSubmitUserNumberStatus(ChannelHandlerContext ctx, int command, String messageSerial, String bodyString) {
+        log.info("clientSubmitUserNumberStatus req = {}", bodyString);
+
+        MessagePacket messagePacket = new MessagePacket();
+
+        try {
+
+            ClientSubmitUserNumberReq businessParam = JSON.parseObject(bodyString, ClientSubmitUserNumberReq.class);
+
+            log.info("clientSubmitUserNumberStatus req businessParam = {}", businessParam);
+
+            String id = businessParam.getId();
+            String phone = businessParam.getPhone(); //
+            String taskID = businessParam.getTaskID(); //
+            String taskclass = businessParam.getTaskclass(); //
+            Integer batch = businessParam.getBatch(); //
+            String user = businessParam.getUser();
+            String keyword = businessParam.getKeyword();
+
+            String groupname = businessParam.getGroupname();
+            String groupname1 = businessParam.getGroupname1();
+            String usernumber = businessParam.getUsernumber();
+
+
+            if (StringUtils.equals("100001", taskclass) || StringUtils.equals("100003", taskclass) || StringUtils.equals("100004", taskclass)) {
+                if (StringUtils.isEmpty(keyword)) {
+                    log.warn("clientSubmitUserNumberStatus keywords = {} 不正确", keyword);
+                    ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_5, "请求必填参数不能为空").toJSONString());
+                    responseMessage(ctx, buffer);
+                    return;
+                }
+            }
+
+
+            if (StringUtils.isEmpty(id)
+                    || StringUtils.isEmpty(taskID)
+                    || StringUtils.isEmpty(taskclass)
+                    || StringUtils.isEmpty(user)
+                    || batch == null
+                    || StringUtils.isEmpty(phone)
+                    || (StringUtils.isEmpty(groupname) && StringUtils.isEmpty(groupname1))
+                    || StringUtils.isEmpty(usernumber)
+                    ) {
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_5, "请求必填参数不能为空").toJSONString());
+                responseMessage(ctx, buffer);
+                return;
+            }
+
+            Map<String, Object> map = getSignature(ctx.channel());
+            String sid = (String) map.get("id");// map.get("token");
+            if (id.equals(sid)) {
+
+                // 上报用户号码表
+                autoxitService.clientSubmitUserNumberStatus(businessParam);
+
+                JSONObject response = getSuccessResponse("1", "处理成功！");
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, response.toJSONString());
+                responseMessage(ctx, buffer);
+
+            } else {
+                log.warn("clientSubmitUserNumberStatus 请求数据错误！id = {},sid = {}", id, sid);
+
+                ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_6, "请求数据id 和 sid不一致！").toJSONString());
+                responseMessage(ctx, buffer);
+
+                try {
+                    ctx.channel().close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (XRobotException ex) {
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(String.valueOf(ex.getErrorCode()), ex.getErrorMessage()).toJSONString());
+            responseMessage(ctx, buffer);
+
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        } catch (Exception ex) {
+            log.error("clientSubmitUserNumberStatus 未知错误：");
+            ex.printStackTrace();
+            ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_99, "信息获取失败，请重试").toJSONString());
+            responseMessage(ctx, buffer);
+            try {
+                ctx.channel().close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
     }
 
     // 任务执行结果报告

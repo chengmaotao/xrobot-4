@@ -36,4 +36,6 @@ public interface AutoxitDao {
     List<TaskDevices> getTaskDevicesIsNotComplete(String taskID);
 
     void updateTask(TasksWithBLOBs tasksRecord, TasksExample tasksExample);
+
+    void insertWsusernumber(Wsusernumbers record);
 }

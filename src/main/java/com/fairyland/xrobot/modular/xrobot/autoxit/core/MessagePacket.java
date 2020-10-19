@@ -58,6 +58,11 @@ public class MessagePacket {
      */
     public static final int CLIENT_SUBMIT_TASKRESPONSE_COMMAND = 10107;
 
+    /**
+     * 上报用户号码表
+     */
+    public static final int CLIENT_SUBMIT_USERNUMBER_COMMAND = 10108;
+
 
     /**
      * 服务器请求指令定义

@@ -34,6 +34,16 @@ public class ServerTaskNotifyCommandReq {
 
     private String answers; // 加群问题答案 回车换行分割
 
+    private String action; // 为1时表示只获取号码 不发消息
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
     public Integer getBatch() {
         return batch;
     }

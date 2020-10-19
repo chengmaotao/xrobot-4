@@ -1,6 +1,5 @@
 package com.fairyland.xrobot.modular.xrobot.service.impl;
 
-import com.fairyland.xrobot.common.constant.XRobotCode;
 import com.fairyland.xrobot.common.utils.StringUtils;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.ServerCode;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.*;
@@ -135,6 +134,15 @@ public class AutoxitServiceImpl implements AutoxitService {
         TaskDevicesExample example = new TaskDevicesExample();
         example.createCriteria().andTaskidEqualTo(serverTaskNotify.getTaskid()).andDeviceidEqualTo(serverTaskNotify.getDeviceid());
         xrobotDao.updateTaskDevices(record, example);
+
+
+        TaskDevicesLog taskDevicesLog = new TaskDevicesLog();
+        taskDevicesLog.setUpdateDate(Utility.getNowDate());
+        taskDevicesLog.setStarttime(taskDevicesLog.getUpdateDate());
+        taskDevicesLog.setState(1);
+        TaskDevicesLogExample taskDevicesLogExample = new TaskDevicesLogExample();
+        taskDevicesLogExample.createCriteria().andTaskidEqualTo(serverTaskNotify.getTaskid()).andDeviceidEqualTo(serverTaskNotify.getDeviceid()).andBatchEqualTo(serverTaskNotify.getBatch());
+        xrobotDao.updateTaskDevicesLog(taskDevicesLog, taskDevicesLogExample);
 
         return serverTaskNotify;
 
@@ -449,6 +457,15 @@ public class AutoxitServiceImpl implements AutoxitService {
         autoxitDao.updateTaskDevices(record, example);
 
 
+        TaskDevicesLog taskDevicesLog = new TaskDevicesLog();
+        taskDevicesLog.setUpdateDate(Utility.getNowDate());
+        taskDevicesLog.setEndtime(taskDevicesLog.getUpdateDate());
+        taskDevicesLog.setState(2);
+        TaskDevicesLogExample taskDevicesLogExample = new TaskDevicesLogExample();
+        taskDevicesLogExample.createCriteria().andTaskidEqualTo(paramReq.getTaskID()).andDeviceidEqualTo(paramReq.getId()).andBatchEqualTo(paramReq.getBatch());
+        xrobotDao.updateTaskDevicesLog(taskDevicesLog, taskDevicesLogExample);
+
+
         List<TaskDevices> list = autoxitDao.getTaskDevicesIsNotComplete(paramReq.getTaskID());
 
         if (list == null || list.isEmpty()) {
@@ -462,6 +479,38 @@ public class AutoxitServiceImpl implements AutoxitService {
 
             autoxitDao.updateTask(tasksRecord, tasksExample);
         }
+
+
+        return "";
+    }
+
+    @Override
+    public String clientSubmitUserNumberStatus(ClientSubmitUserNumberReq paramReq) {
+        logger.info("上报用户号码 clientSubmitUserNumberStatus req = {}", paramReq);
+
+        Device device = autoxitDao.getDeviceBydeviceID(paramReq.getId());
+
+        checkDeviceByDeviceId(device, paramReq.getId());
+
+        TasksWithBLOBs tasks = getTaskByTaskId(paramReq.getTaskID(), paramReq.getTaskclass());
+
+        checkClientSubmitTaskInfo(tasks, paramReq);
+
+
+        Wsusernumbers record = new Wsusernumbers();
+        record.setTaskid(paramReq.getTaskID());
+        record.setTaskclass(paramReq.getTaskclass());
+        record.setBatch(paramReq.getBatch());
+        record.setDeviceid(paramReq.getId());
+        record.setPhone(paramReq.getPhone());
+        record.setKeywords(paramReq.getKeyword());
+        record.preInsert(paramReq.getUser());
+        record.setGroupname(paramReq.getGroupname());
+        record.setGroupname1(paramReq.getGroupname1());
+        record.setUsernumber(paramReq.getUsernumber());
+
+
+        autoxitDao.insertWsusernumber(record);
 
 
         return "";

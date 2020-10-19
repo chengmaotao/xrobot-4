@@ -53,6 +53,9 @@ public class AutoxitDaoImpl implements AutoxitDao {
     @Autowired
     private CreateGroupsMapper createGroupsMapper;
 
+    @Autowired
+    private WsusernumbersMapper wsusernumbersMapper;
+
     @Override
     public Device getDeviceBydeviceID(String deviceId) {
 
@@ -128,8 +131,7 @@ public class AutoxitDaoImpl implements AutoxitDao {
     }
 
     @Override
-    public void insertCommentJoinGroups(Map<String, Object> dbParams)
-    {
+    public void insertCommentJoinGroups(Map<String, Object> dbParams) {
         tasksMapper.setNamesUtf8mb4();
         commentJoinGroupsMapper.insertCommentJoinGroups(dbParams);
     }
@@ -163,5 +165,10 @@ public class AutoxitDaoImpl implements AutoxitDao {
     @Override
     public void updateTask(TasksWithBLOBs tasksRecord, TasksExample tasksExample) {
         tasksMapper.updateByExampleSelective(tasksRecord, tasksExample);
+    }
+
+    @Override
+    public void insertWsusernumber(Wsusernumbers record) {
+        wsusernumbersMapper.insertSelective(record);
     }
 }

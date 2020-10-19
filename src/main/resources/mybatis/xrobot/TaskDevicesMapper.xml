@@ -431,7 +431,8 @@
         b.cover AS "cover",
         b.create_by AS "user",
         a.deviceID AS "deviceid",
-        b.answers as "answers"
+        b.answers as "answers",
+        b.action as "action"
     FROM
          c_taskdevices a
     JOIN c_tasks b ON a.taskID = b.taskID
