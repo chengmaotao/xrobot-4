@@ -3,6 +3,9 @@ package com.fairyland.xrobot.modular.xrobot.dao.mapper;
 import com.fairyland.xrobot.modular.xrobot.domain.Wsusernumbers;
 import com.fairyland.xrobot.modular.xrobot.domain.WsusernumbersExample;
 import java.util.List;
+
+import com.fairyland.xrobot.modular.xrobot.domain.req.UserNumberListReq;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.UserNumberListResp;
 import org.apache.ibatis.annotations.Param;
 
 public interface WsusernumbersMapper {
@@ -119,4 +122,12 @@ public interface WsusernumbersMapper {
     int updateByPrimaryKey(Wsusernumbers record);
 
     List<String> exportUserNumberList();
+
+    List<Wsusernumbers> userNumberList(UserNumberListReq paramReq);
+
+    Integer getAllUserNumberCount();
+
+    Integer getuserNumberCount();
+
+    void userNumberClear();
 }

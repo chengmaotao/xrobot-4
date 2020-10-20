@@ -82,4 +82,10 @@ public interface XrobotService {
     PageResult taskExeResultList(TaskExeResultReq paramReq);
 
     String exportUserNumberList();
+
+    PageResult userNumberList(UserNumberListReq paramReq);
+
+    Map<String, Integer> userNumberCount();
+
+    void userNumberClear();
 }

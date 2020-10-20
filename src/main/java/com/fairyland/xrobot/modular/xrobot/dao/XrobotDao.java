@@ -113,4 +113,12 @@ public interface XrobotDao {
     List<String> exportUserNumberList();
 
     void updateTaskDevicesLog(TaskDevicesLog taskDevicesLog, TaskDevicesLogExample taskDevicesLogExample);
+
+    List<Wsusernumbers> userNumberList(UserNumberListReq paramReq);
+
+    Integer getAllUserNumberCount();
+
+    Integer userNumberCount();
+
+    void userNumberClear();
 }

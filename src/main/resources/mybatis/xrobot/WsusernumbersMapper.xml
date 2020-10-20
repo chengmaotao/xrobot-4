@@ -536,4 +536,40 @@
   </select>
 
 
+  <select id="userNumberList" parameterType="com.fairyland.xrobot.modular.xrobot.domain.req.UserNumberListReq" resultMap="ResultMapWithBLOBs">
+    select
+      <include refid="Base_Column_List" />
+      ,
+      <include refid="Blob_Column_List" />
+    from c_wsusernumbers
+   where batch = #{batch}
+     and create_by = #{currentUser}
+   <if test="taskid != null and taskid != ''">
+     and taskID = #{taskid}
+   </if>
+   order by create_date desc
+  </select>
+
+
+  <select id="getAllUserNumberCount" resultType="java.lang.Integer">
+      SELECT
+          count(usernumber)
+      FROM
+          c_wsusernumbers
+  </select>
+
+  <select id="getuserNumberCount" resultType="java.lang.Integer">
+      SELECT
+          COUNT(DISTINCT usernumber)
+      FROM
+          c_wsusernumbers
+  </select>
+
+  <select id="userNumberClear">
+
+    truncate table c_wsusernumbers
+
+  </select>
+
+
 </mapper>

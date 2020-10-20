@@ -645,4 +645,36 @@ public class XrobotDaoImpl implements XrobotDao {
         taskDevicesLogMapper.updateByExampleSelective(taskDevicesLog, taskDevicesLogExample);
     }
 
+    @Override
+    public List<Wsusernumbers> userNumberList(UserNumberListReq paramReq) {
+        int pageNum = paramReq.getPageNum();
+        int pageSize = paramReq.getPageSize();
+        PageHelper.startPage(pageNum, pageSize);
+
+        List<Wsusernumbers> list = wsusernumbersMapper.userNumberList(paramReq);
+
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+
+        return list;
+    }
+
+    @Override
+    public Integer getAllUserNumberCount() {
+        Integer allUserNumberCount = wsusernumbersMapper.getAllUserNumberCount();
+        return allUserNumberCount == null ? 0 : allUserNumberCount;
+    }
+
+    @Override
+    public Integer userNumberCount() {
+        Integer userNumberCount = wsusernumbersMapper.getuserNumberCount();
+        return userNumberCount == null ? 0 : userNumberCount;
+    }
+
+    @Override
+    public void userNumberClear() {
+        wsusernumbersMapper.userNumberClear();
+    }
+
 }

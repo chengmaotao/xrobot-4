@@ -1211,6 +1211,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                 cell = row.createCell(0);
                 cell.setCellValue(userNumber);
 
+                indexRowNum++;
             }
 
 
@@ -1237,6 +1238,43 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             throw new XRobotException(ErrorCode.SYS_FAIL);
         }
 
+    }
+
+    @Override
+    public PageResult userNumberList(UserNumberListReq paramReq) {
+        logger.info("userNumberList req = {}", paramReq);
+
+        paramReq.validate();
+
+        paramReq.setCurrentUser(getCurrentUser().getUserName());
+
+        List<Wsusernumbers> list = xrobotDao.userNumberList(paramReq);
+
+        PageInfo<Wsusernumbers> pageInfo = new PageInfo<>(list);
+        PageResult pageResult = PageUtils.getPageResult(pageInfo);
+
+        return pageResult;
+    }
+
+    @Override
+    public Map<String, Integer> userNumberCount() {
+        Map<String, Integer> resp = new HashMap<>();
+
+
+        Integer allUserNumberCount = xrobotDao.getAllUserNumberCount();
+
+        resp.put("allUserNumberCount", allUserNumberCount);
+
+        Integer userNumberCount = xrobotDao.userNumberCount();
+
+        resp.put("userNumberCount", userNumberCount);
+
+        return resp;
+    }
+
+    @Override
+    public void userNumberClear() {
+        xrobotDao.userNumberClear();
     }
 
 

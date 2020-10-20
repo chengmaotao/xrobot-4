@@ -1268,12 +1268,12 @@ public class XrobotController {
 
 
     /**
-    * @Description: 导出群员手机号
-    * @Param:
-    * @return:
-    * @Author: ctc
-    * @Date: 2020/10/18 21:52
-    */
+     * @Description: 导出群员手机号
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/18 21:52
+     */
     @PreAuthorize("@ss.hasPermi('username:list')")
     @RequestMapping("/exportUserNumberList")
     public AjaxResult exportUserNumberList() {
@@ -1283,6 +1283,97 @@ public class XrobotController {
             String fileName = xrobotService.exportUserNumberList();
 
             webResponse = AjaxResult.success(fileName);
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+        return webResponse;
+
+    }
+
+
+    /**
+     * @Description: 群员号码(分页)
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/20 22:06
+     */
+    @PreAuthorize("@ss.hasPermi('username:list')")
+    @RequestMapping("/userNumberList")
+    public AjaxResult userNumberList(@RequestBody UserNumberListReq paramReq) {
+
+        AjaxResult webResponse;
+        try {
+            PageResult resp = xrobotService.userNumberList(paramReq);
+
+            webResponse = AjaxResult.success(resp);
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+        return webResponse;
+
+    }
+
+
+    /**
+     * @Description: 数据清理（查看）
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/20 22:28
+     */
+    @PreAuthorize("@ss.hasPermi('username:list')")
+    @RequestMapping("/userNumberCount")
+    public AjaxResult userNumberCount() {
+
+        AjaxResult webResponse;
+        try {
+            Map<String, Integer> resp = xrobotService.userNumberCount();
+            webResponse = AjaxResult.success(resp);
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+        return webResponse;
+
+    }
+
+
+    /**
+     * @Description: 数据清理
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/20 22:40
+     */
+    @PreAuthorize("@ss.hasPermi('username:clear')")
+    @RequestMapping("/userNumberClear")
+    public AjaxResult userNumberClear() {
+
+        AjaxResult webResponse;
+        try {
+            xrobotService.userNumberClear();
+            webResponse = AjaxResult.success();
         } catch (XRobotException ex) {
             logger.warn("XRobotException={}", ex);
             webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
