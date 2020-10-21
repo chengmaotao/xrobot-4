@@ -1244,8 +1244,6 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
     public PageResult userNumberList(UserNumberListReq paramReq) {
         logger.info("userNumberList req = {}", paramReq);
 
-        paramReq.validate();
-
         paramReq.setCurrentUser(getCurrentUser().getUserName());
 
         List<Wsusernumbers> list = xrobotDao.userNumberList(paramReq);
@@ -1274,7 +1272,10 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
     @Override
     public void userNumberClear() {
+
+
         xrobotDao.userNumberClear();
+        logger.info("用户={} 执行了清理数据", getCurrentUser().getUserName());
     }
 
 

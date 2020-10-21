@@ -30,13 +30,6 @@ public class UserNumberListReq extends PageRequest implements Serializable {
     }
 
 
-    public void validate() {
-
-        if (batch == null) {
-            batch = 1;
-        }
-    }
-
     public String getTaskid() {
         return taskid;
     }

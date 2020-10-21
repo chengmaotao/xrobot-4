@@ -542,8 +542,10 @@
       ,
       <include refid="Blob_Column_List" />
     from c_wsusernumbers
-   where batch = #{batch}
-     and create_by = #{currentUser}
+   where create_by = #{currentUser}
+    <if test="batch != null">
+      and batch = #{batch}
+    </if>
    <if test="taskid != null and taskid != ''">
      and taskID = #{taskid}
    </if>
