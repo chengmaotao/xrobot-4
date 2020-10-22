@@ -210,4 +210,35 @@ public class Tasks extends BaseEntity {
     public void setAction(String action) {
         this.action = action;
     }
+
+
+    private Integer delay;
+
+    private Integer deadline;
+
+    public Integer getDelay() {
+        return delay;
+    }
+
+    public void setDelay(Integer delay) {
+        this.delay = delay;
+    }
+
+    public Integer getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(Integer deadline) {
+        this.deadline = deadline;
+    }
+
+    private String groupname;
+
+    public String getGroupname() {
+        return groupname;
+    }
+
+    public void setGroupname(String groupname) {
+        this.groupname = groupname;
+    }
 }

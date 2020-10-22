@@ -36,6 +36,36 @@ public class ServerTaskNotifyCommandReq {
 
     private String action; // 为1时表示只获取号码 不发消息
 
+
+    private Integer delay;
+    private Integer deadline;
+
+    private String groupname;
+
+    public String getGroupname() {
+        return groupname;
+    }
+
+    public void setGroupname(String groupname) {
+        this.groupname = groupname;
+    }
+
+    public Integer getDelay() {
+        return delay;
+    }
+
+    public void setDelay(Integer delay) {
+        this.delay = delay;
+    }
+
+    public Integer getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(Integer deadline) {
+        this.deadline = deadline;
+    }
+
     public String getAction() {
         return action;
     }

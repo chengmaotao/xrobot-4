@@ -59,8 +59,8 @@ public class SaveDictReq {
             throw new BusinessException("创建群组任务值 不能大于10");
         }
 
-        if(maxSearchKeyValue > 10){
-            logger.warn("SaveDictReq 系统字典 关键字搜索最大值  maxSearchKeyValue = {} 不能大于10 不正确", maxSearchKeyValue);
+        if(maxSearchKeyValue > 1){
+            logger.warn("SaveDictReq 系统字典 关键字搜索最大值  maxSearchKeyValue = {} 不能大于1 不正确", maxSearchKeyValue);
             throw new BusinessException("最大搜索关键字数量 不能大于10");
         }
     }

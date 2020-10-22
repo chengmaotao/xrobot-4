@@ -45,6 +45,37 @@ public class SaveTaskReq {
     private String action = "0"; // 为1时表示只获取号码 不发消息
 
 
+    private Integer delay; // 帖子全部浏览完成等待确认时间(单位秒) 默认20
+
+    private Integer deadline; // 浏览帖子的截止日期(2018表示2018年 及之前的帖子不再处理，即只处理2019年及以后的帖子) 默认2018
+
+
+    private String groupname = ""; // 目标群名称
+
+    public String getGroupname() {
+        return groupname;
+    }
+
+    public void setGroupname(String groupname) {
+        this.groupname = groupname;
+    }
+
+    public Integer getDelay() {
+        return delay;
+    }
+
+    public void setDelay(Integer delay) {
+        this.delay = delay;
+    }
+
+    public Integer getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(Integer deadline) {
+        this.deadline = deadline;
+    }
+
     public void validate() {
 
         if (StringUtils.isEmpty(taskclass)
@@ -63,6 +94,14 @@ public class SaveTaskReq {
                 logger.warn("SaveTaskReq 任务表 搜索关键字或待创建群名称 keywords = {} 不正确", keywords);
                 throw new XRobotException(ErrorCode.ERROR_CODE_5);
             }
+        }
+
+        if (delay == null) {
+            delay = 20;
+        }
+
+        if (deadline == null) {
+            deadline = 2018;
         }
 
         if (StringUtils.equals("100001", taskclass) || StringUtils.equals("100002", taskclass)) {
@@ -84,6 +123,11 @@ public class SaveTaskReq {
                 logger.warn("SaveTaskReq 任务表  消息、帖子、评论内容 content = {} 不正确", content);
                 throw new XRobotException(ErrorCode.ERROR_CODE_5);
             }
+        }
+
+        if (StringUtils.isNotEmpty(groupname) && groupname.length() > 128) {
+            logger.warn("SaveDeviceReq 任务表 备注 groupname = {} 不正确 超出长度限制128", groupname);
+            throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
 
 

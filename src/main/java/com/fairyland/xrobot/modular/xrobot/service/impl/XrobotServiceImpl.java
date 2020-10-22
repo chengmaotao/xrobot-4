@@ -590,6 +590,9 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         record.setMd5(Utility.getMd5(paramReq.getContent()));
         record.setRemarks(paramReq.getRemarks());
         record.setAction(paramReq.getAction());
+        record.setDeadline(paramReq.getDeadline());
+        record.setDelay(paramReq.getDelay());
+        record.setGroupname(paramReq.getGroupname());
         if (StringUtils.isNotEmpty(newFilePath)) {
             record.setCover(newFilePath);
         }

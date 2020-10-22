@@ -432,7 +432,10 @@
         b.create_by AS "user",
         a.deviceID AS "deviceid",
         b.answers as "answers",
-        b.action as "action"
+        b.action as "action",
+        b.delay as "delay",
+        b.deadline as "deadline",
+        b.groupname as "groupname"
     FROM
          c_taskdevices a
     JOIN c_tasks b ON a.taskID = b.taskID
