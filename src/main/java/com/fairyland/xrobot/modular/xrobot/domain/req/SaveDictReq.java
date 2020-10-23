@@ -54,14 +54,14 @@ public class SaveDictReq {
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
 
-        if(maxAddGroupValue > 10){
-            logger.warn("SaveDictReq 系统字典 一次加群最大值 maxAddGroupValue = {} 不能大于10 不正确", maxAddGroupValue);
-            throw new BusinessException("创建群组任务值 不能大于10");
+        if(maxAddGroupValue > 5){
+            logger.warn("SaveDictReq 系统字典 一次加群最大值 maxAddGroupValue = {} 不能大于5 不正确", maxAddGroupValue);
+            throw new BusinessException("每个任务最大只支持创建5个群组");
         }
 
         if(maxSearchKeyValue > 1){
             logger.warn("SaveDictReq 系统字典 关键字搜索最大值  maxSearchKeyValue = {} 不能大于1 不正确", maxSearchKeyValue);
-            throw new BusinessException("最大搜索关键字数量 不能大于10");
+            throw new BusinessException("每个任务最大只支持1个关键搜索");
         }
     }
 

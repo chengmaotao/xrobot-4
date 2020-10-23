@@ -516,14 +516,14 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
                     if (len > maxSearchKeyValue) {
                         logger.warn("saveTask2 keywords 回车换行 长度 超过最大值了");
-                        throw new BusinessException("任务创建时支持多个搜索关键字问题 超过了最大值 " + maxSearchKeyValue);
+                        throw new BusinessException("每个任务最大只支持" + maxSearchKeyValue + "个关键搜索");
                     }
 
                     int ansLen = paramReq.getAnswers().split("(\\r\\n|\\r|\\n|\\n\\r)").length;
 
                     if (ansLen > 5) {
                         logger.warn("saveTask2 answers 回车换行 长度 超过最大值了");
-                        throw new BusinessException("任务创建时加群回答问题 超过了最大值 5");
+                        throw new BusinessException("每个任务最大只支持创建" + 5 + "个群组");
                     }
                 }
             }
