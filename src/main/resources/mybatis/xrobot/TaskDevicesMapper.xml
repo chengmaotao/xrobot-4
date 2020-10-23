@@ -435,7 +435,8 @@
         b.action as "action",
         b.delay as "delay",
         b.deadline as "deadline",
-        b.groupname as "groupname"
+        b.groupname as "groupname",
+        b.nolinks as "nolinks"
     FROM
          c_taskdevices a
     JOIN c_tasks b ON a.taskID = b.taskID

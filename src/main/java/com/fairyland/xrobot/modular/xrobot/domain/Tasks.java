@@ -241,4 +241,14 @@ public class Tasks extends BaseEntity {
     public void setGroupname(String groupname) {
         this.groupname = groupname;
     }
+
+    private Integer nolinks; // 无新链接时间:XXX 分钟（结束当前任务） 默认30分钟
+
+    public Integer getNolinks() {
+        return nolinks;
+    }
+
+    public void setNolinks(Integer nolinks) {
+        this.nolinks = nolinks;
+    }
 }

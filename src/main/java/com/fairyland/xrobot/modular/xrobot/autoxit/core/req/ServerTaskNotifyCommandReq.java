@@ -42,6 +42,16 @@ public class ServerTaskNotifyCommandReq {
 
     private String groupname;
 
+    private Integer nolinks;
+
+    public Integer getNolinks() {
+        return nolinks;
+    }
+
+    public void setNolinks(Integer nolinks) {
+        this.nolinks = nolinks;
+    }
+
     public String getGroupname() {
         return groupname;
     }

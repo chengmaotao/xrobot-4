@@ -52,6 +52,8 @@ public class SaveTaskReq {
 
     private String groupname = ""; // 目标群名称
 
+    private Integer nolinks; // 无新链接时间:XXX 分钟（结束当前任务） 默认30分钟
+
     public String getGroupname() {
         return groupname;
     }
@@ -104,6 +106,10 @@ public class SaveTaskReq {
             deadline = 2018;
         }
 
+        if(nolinks == null){
+            nolinks = 30;
+        }
+
         if (StringUtils.equals("100001", taskclass) || StringUtils.equals("100002", taskclass)) {
             if (StringUtils.isEmpty(action) || (!StringUtils.equals("0", action) && !StringUtils.equals("1", action))) {
 
@@ -146,6 +152,14 @@ public class SaveTaskReq {
         List<String> tempDeviceidList = Arrays.asList(split);
         setDeviceidList(tempDeviceidList);
 
+    }
+
+    public Integer getNolinks() {
+        return nolinks;
+    }
+
+    public void setNolinks(Integer nolinks) {
+        this.nolinks = nolinks;
     }
 
     public String getAction() {
