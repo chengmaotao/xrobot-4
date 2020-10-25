@@ -2,6 +2,8 @@ package com.fairyland.xrobot.modular.xrobot.dao.impl;
 
 import com.fairyland.xrobot.common.constant.XRobotCode;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClientCheckPushMessageReq;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClientSubmitTaskResponseReq;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClientSubmitUserNumberReq;
 import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ServerTaskNotifyCommandReq;
 import com.fairyland.xrobot.modular.xrobot.dao.AutoxitDao;
 import com.fairyland.xrobot.modular.xrobot.dao.mapper.*;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +58,12 @@ public class AutoxitDaoImpl implements AutoxitDao {
 
     @Autowired
     private WsusernumbersMapper wsusernumbersMapper;
+
+    @Autowired
+    private GroupnameinfoMapper groupnameinfoMapper;
+
+    @Autowired
+    private WsurlsMapper wsurlsMapper;
 
     @Override
     public Device getDeviceBydeviceID(String deviceId) {
@@ -170,5 +179,53 @@ public class AutoxitDaoImpl implements AutoxitDao {
     @Override
     public void insertWsusernumber(Wsusernumbers record) {
         wsusernumbersMapper.insertSelective(record);
+    }
+
+    @Override
+    public void insertGroupnameinfoIsNotExists(ClientSubmitTaskResponseReq.Extra extra1, String user) {
+
+        Map<String, String> params = new HashMap<>();
+        params.put("keyword", extra1.getKeyword());
+        params.put("groupname", extra1.getGroupname());
+        params.put("username", user);
+
+        Integer num = groupnameinfoMapper.findContByParams(params);
+
+        if (num == null || num == 0) {
+
+            Groupnameinfo record = new Groupnameinfo();
+            record.setKeyword(extra1.getKeyword());
+            record.setGroupname(extra1.getGroupname());
+            record.preInsert(user);
+            groupnameinfoMapper.insertSelective(record);
+
+        }
+
+    }
+
+    @Override
+    public void batchInsertWsusernumber(Map<String, Object> dbParams) {
+        wsusernumbersMapper.batchInsertWsusernumber(dbParams);
+    }
+
+    @Override
+    public void insertWsUrls(ClientSubmitUserNumberReq dbParams) {
+
+
+        WsurlsExample example = new WsurlsExample();
+        example.createCriteria().andUrlEqualTo(dbParams.getUrl()).andCreateByEqualTo(dbParams.getUser());
+        List<Wsurls> list = wsurlsMapper.selectByExample(example);
+
+        if (list == null || list.isEmpty()) {
+
+            Wsurls record = new Wsurls();
+            record.preInsert(dbParams.getUser());
+            record.setKeyword(dbParams.getKeyword());
+            record.setGroupname(dbParams.getGroupname());
+            record.setGroupname1(dbParams.getGroupname1());
+            record.setUrl(dbParams.getUrl());
+            wsurlsMapper.insertSelective(record);
+        }
+
     }
 }

@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -289,6 +290,7 @@ public class LinkerServer {
             String groupname = businessParam.getGroupname();
             String groupname1 = businessParam.getGroupname1();
             String usernumber = businessParam.getUsernumber();
+            List<String> usernumbers = businessParam.getUsernumbers();
 
 
             if (StringUtils.equals("100001", taskclass) || StringUtils.equals("100003", taskclass) || StringUtils.equals("100004", taskclass)) {
@@ -308,8 +310,8 @@ public class LinkerServer {
                     || batch == null
                     || StringUtils.isEmpty(phone)
                     || (StringUtils.isEmpty(groupname) && StringUtils.isEmpty(groupname1))
-                    || StringUtils.isEmpty(usernumber)
-                    ) {
+                    || (StringUtils.isEmpty(usernumber) && (usernumbers == null || usernumbers.isEmpty()))
+            ) {
                 ByteBuf buffer = messagePacket.getRespPacket(command, messageSerial, getErrorResponse(ServerCode.SERVER_CODE_5, "请求必填参数不能为空").toJSONString());
                 responseMessage(ctx, buffer);
                 return;

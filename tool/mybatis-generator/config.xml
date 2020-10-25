@@ -38,7 +38,8 @@
 
 
 
-        <table tableName="c_wsusernumbers" domainObjectName="Wsusernumbers" />
+        <table tableName="c_groupnameinfo" domainObjectName="Groupnameinfo" />
+        <table tableName="c_wsurls" domainObjectName="Wsurls" />
 
 
 

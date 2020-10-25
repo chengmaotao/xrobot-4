@@ -1389,4 +1389,69 @@ public class XrobotController {
     }
 
 
+    /**
+     * @Description: 根据关键字查找群名称（分页）
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/26 1:47
+     */
+    @PreAuthorize("@ss.hasPermi('groupname:list')")
+    @RequestMapping("/groupnameList")
+    public AjaxResult groupnameList(@RequestBody GroupnameListReq paramReq) {
+
+        AjaxResult webResponse;
+        try {
+
+            PageResult resp = xrobotService.groupnameList(paramReq);
+
+            webResponse = AjaxResult.success(resp);
+
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+        return webResponse;
+
+    }
+
+
+    /**
+     * @Description: 根据关键字查找群名称（分页）
+     * @Param:
+     * @return:
+     * @Author: ctc
+     * @Date: 2020/10/26 1:47
+     */
+    @PreAuthorize("@ss.hasPermi('groupname:clear')")
+    @RequestMapping("/delGroupnameList")
+    public AjaxResult delGroupnameList(@RequestBody GroupnameListReq paramReq) {
+
+        AjaxResult webResponse;
+        try {
+
+            xrobotService.delGroupnameList(paramReq);
+
+            webResponse = AjaxResult.success();
+
+        } catch (XRobotException ex) {
+            logger.warn("XRobotException={}", ex);
+            webResponse = AjaxResult.error(ex.getErrorCode(), MessageUtils.message(messageSource, ex.getErrorCode()));
+        } catch (BusinessException ex) {
+            logger.warn("BusinessException={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, ex.getTipsMessage());
+        } catch (Exception ex) {
+            logger.error("Exception={}", ex);
+            webResponse = AjaxResult.error(ErrorCode.SYS_FAIL, MessageUtils.message(messageSource, ErrorCode.SYS_FAIL));
+        }
+        return webResponse;
+
+    }
+
 }

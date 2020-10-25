@@ -46,6 +46,17 @@ public class TaskDevicesResp extends TaskDevices {
         this.account1 = account1;
     }
 
+
+    private String groupname;
+
+    public String getGroupname() {
+        return groupname;
+    }
+
+    public void setGroupname(String groupname) {
+        this.groupname = groupname;
+    }
+
     @Override
     public String toString() {
         return "TaskDevicesResp{" +
@@ -53,6 +64,7 @@ public class TaskDevicesResp extends TaskDevices {
                 ", phone='" + phone + '\'' +
                 ", account='" + account + '\'' +
                 ", account1='" + account1 + '\'' +
+                ", groupname='" + groupname + '\'' +
                 '}';
     }
 }

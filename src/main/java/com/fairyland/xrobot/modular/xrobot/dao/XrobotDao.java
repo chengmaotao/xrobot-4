@@ -110,7 +110,7 @@ public interface XrobotDao {
 
     void insertTasksDevicesLog(Map<String, Object> dbParams);
 
-    List<String> exportUserNumberList();
+    List<ExportUserNumberListResp> exportUserNumberList();
 
     void updateTaskDevicesLog(TaskDevicesLog taskDevicesLog, TaskDevicesLogExample taskDevicesLogExample);
 
@@ -121,4 +121,8 @@ public interface XrobotDao {
     Integer userNumberCount();
 
     void userNumberClear();
+
+    List<Groupnameinfo> groupnameList(GroupnameListReq paramReq);
+
+    void delGroupnameList(GroupnameListReq paramReq);
 }

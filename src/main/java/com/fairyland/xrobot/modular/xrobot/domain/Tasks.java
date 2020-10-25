@@ -232,15 +232,6 @@ public class Tasks extends BaseEntity {
         this.deadline = deadline;
     }
 
-    private String groupname;
-
-    public String getGroupname() {
-        return groupname;
-    }
-
-    public void setGroupname(String groupname) {
-        this.groupname = groupname;
-    }
 
     private Integer nolinks; // 无新链接时间:XXX 分钟（结束当前任务） 默认30分钟
 

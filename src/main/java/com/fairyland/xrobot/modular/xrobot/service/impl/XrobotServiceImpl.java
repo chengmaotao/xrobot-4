@@ -592,7 +592,6 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         record.setAction(paramReq.getAction());
         record.setDeadline(paramReq.getDeadline());
         record.setDelay(paramReq.getDelay());
-        record.setGroupname(paramReq.getGroupname());
         record.setNolinks(paramReq.getNolinks());
         record.setMaxposts(paramReq.getMaxposts());
         if (StringUtils.isNotEmpty(newFilePath)) {
@@ -1194,7 +1193,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
     public String exportUserNumberList() {
 
 
-        List<String> userNumberList = xrobotDao.exportUserNumberList();
+        List<ExportUserNumberListResp> userNumberList = xrobotDao.exportUserNumberList();
 
         if (userNumberList.isEmpty()) {
             throw new BusinessException("数据为空");
@@ -1210,11 +1209,14 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
             Cell cell = null;
 
 
-            for (String userNumber : userNumberList) {
+            for (ExportUserNumberListResp userNumberInfo : userNumberList) {
                 row = sheet0.createRow(indexRowNum);
 
                 cell = row.createCell(0);
-                cell.setCellValue(userNumber);
+                cell.setCellValue(userNumberInfo.getUsernumber());
+
+                cell = row.createCell(1);
+                cell.setCellValue(String.valueOf(userNumberInfo.getCounts()));
 
                 indexRowNum++;
             }
@@ -1281,6 +1283,35 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
 
         xrobotDao.userNumberClear();
         logger.info("用户={} 执行了清理数据", getCurrentUser().getUserName());
+    }
+
+    @Override
+    public PageResult groupnameList(GroupnameListReq paramReq) {
+        logger.info("groupnameList req = {}", paramReq);
+
+        paramReq.setCurrentUser(getCurrentUser().getUserName());
+
+        List<Groupnameinfo> list = xrobotDao.groupnameList(paramReq);
+
+        PageInfo<Groupnameinfo> pageInfo = new PageInfo<>(list);
+        PageResult pageResult = PageUtils.getPageResult(pageInfo);
+
+        return pageResult;
+    }
+
+    @Override
+    public void delGroupnameList(GroupnameListReq paramReq) {
+
+        logger.info("delGroupnameList req = {}", paramReq);
+
+        if (StringUtils.isEmpty(paramReq.getKeyword())) {
+            logger.error("delGroupnameList keyword 不能为空");
+            throw new BusinessException("请输入关键字");
+        }
+
+        paramReq.setCurrentUser(getCurrentUser().getUserName());
+        xrobotDao.delGroupnameList(paramReq);
+
     }
 
 

@@ -1,12 +1,12 @@
 package com.fairyland.xrobot.modular.xrobot.domain.req;
 
+import com.alibaba.fastjson.JSONArray;
 import com.fairyland.xrobot.common.constant.ErrorCode;
 import com.fairyland.xrobot.common.utils.StringUtils;
 import com.fairyland.xrobot.modular.xrobot.exception.XRobotException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -37,7 +37,7 @@ public class SaveTaskReq {
 
     private String deviceids;  // 终端设备记录唯一ID 集合  逗号隔开
 
-    private List<String> deviceidList;  // 终端设备记录唯一ID 集合
+    private List<DeviceIdGroupName> deviceidList;  // 终端设备记录唯一ID 集合
 
     private String answers = ""; // 加群问题答案
 
@@ -50,19 +50,10 @@ public class SaveTaskReq {
     private Integer deadline; // 浏览帖子的截止日期(2018表示2018年 及之前的帖子不再处理，即只处理2019年及以后的帖子) 默认2018
 
 
-    private String groupname = ""; // 目标群名称
-
     private Integer nolinks; // 无新链接时间:XXX 分钟（结束当前任务） 默认30分钟
 
     private Integer maxposts; // 最大帖子数量 默认 1500
 
-    public String getGroupname() {
-        return groupname;
-    }
-
-    public void setGroupname(String groupname) {
-        this.groupname = groupname;
-    }
 
     public Integer getDelay() {
         return delay;
@@ -108,11 +99,11 @@ public class SaveTaskReq {
             deadline = 2018;
         }
 
-        if(nolinks == null){
+        if (nolinks == null) {
             nolinks = 30;
         }
 
-        if(maxposts == null){
+        if (maxposts == null) {
             maxposts = 1500;
         }
 
@@ -137,11 +128,6 @@ public class SaveTaskReq {
             }
         }
 
-        if (StringUtils.isNotEmpty(groupname) && groupname.length() > 128) {
-            logger.warn("SaveDeviceReq 任务表 备注 groupname = {} 不正确 超出长度限制128", groupname);
-            throw new XRobotException(ErrorCode.ERROR_CODE_5);
-        }
-
 
         if (StringUtils.isNotEmpty(remarks) && remarks.length() > 255) {
             logger.warn("SaveDeviceReq 任务表 备注 remarks = {} 不正确 超出长度限制255", remarks);
@@ -153,10 +139,19 @@ public class SaveTaskReq {
             throw new XRobotException(ErrorCode.ERROR_CODE_5);
         }
 
-        String[] split = deviceids.split(",");
 
-        List<String> tempDeviceidList = Arrays.asList(split);
-        setDeviceidList(tempDeviceidList);
+        List<DeviceIdGroupName> tempDeviceids = JSONArray.parseArray(this.deviceids, DeviceIdGroupName.class);
+
+        if (tempDeviceids == null || tempDeviceids.isEmpty()) {
+            logger.warn("SaveDeviceReq2  deviceids = {} 不正确", deviceids);
+            throw new XRobotException(ErrorCode.ERROR_CODE_5);
+        }
+
+        for (DeviceIdGroupName tempDeviceid : tempDeviceids) {
+            tempDeviceid.validate();
+        }
+
+        setDeviceidList(tempDeviceids);
 
     }
 
@@ -192,11 +187,11 @@ public class SaveTaskReq {
         this.deviceids = deviceids;
     }
 
-    public List<String> getDeviceidList() {
+    public List<DeviceIdGroupName> getDeviceidList() {
         return deviceidList;
     }
 
-    public void setDeviceidList(List<String> deviceidList) {
+    public void setDeviceidList(List<DeviceIdGroupName> deviceidList) {
         this.deviceidList = deviceidList;
     }
 
@@ -263,9 +258,47 @@ public class SaveTaskReq {
                 ", action='" + action + '\'' +
                 ", delay=" + delay +
                 ", deadline=" + deadline +
-                ", groupname='" + groupname + '\'' +
                 ", nolinks=" + nolinks +
                 ", maxposts=" + maxposts +
                 '}';
+    }
+
+
+    public static class DeviceIdGroupName {
+        private String id;
+        private String groupname;
+
+        private Logger logger = LoggerFactory.getLogger(DeviceIdGroupName.class);
+
+        public void validate() {
+            if (StringUtils.isEmpty(id) || StringUtils.isEmpty(groupname)) {
+                logger.error("DeviceIdGroupName id = {} 和  groupname = {}不能为空", id, groupname);
+                throw new XRobotException(ErrorCode.ERROR_CODE_5);
+            }
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getGroupname() {
+            return groupname;
+        }
+
+        public void setGroupname(String groupname) {
+            this.groupname = groupname;
+        }
+
+        @Override
+        public String toString() {
+            return "DeviceIdGroupName{" +
+                    "id='" + id + '\'' +
+                    ", groupname='" + groupname + '\'' +
+                    '}';
+        }
     }
 }

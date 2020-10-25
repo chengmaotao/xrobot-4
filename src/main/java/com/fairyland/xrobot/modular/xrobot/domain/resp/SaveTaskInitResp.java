@@ -12,6 +12,17 @@ public class SaveTaskInitResp {
     private String account;
     private String account1;
 
+    private String groupname;
+
+    public String getGroupname() {
+        return groupname;
+    }
+
+    public void setGroupname(String groupname) {
+        this.groupname = groupname;
+    }
+
+
     public String getDevicesn() {
         return devicesn;
     }

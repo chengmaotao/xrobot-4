@@ -480,6 +480,20 @@ public class AutoxitServiceImpl implements AutoxitService {
             autoxitDao.updateTask(tasksRecord, tasksExample);
         }
 
+        if (paramReq.getError() == 10) {
+            List<ClientSubmitTaskResponseReq.Extra> extra = paramReq.getExtra();
+
+            if (extra == null || extra.isEmpty()) {
+                logger.warn("clientSubmitTaskResponseStatus error = 10, extra 确是空了");
+                return "";
+            }
+
+            for (ClientSubmitTaskResponseReq.Extra extra1 : extra) {
+
+                autoxitDao.insertGroupnameinfoIsNotExists(extra1,paramReq.getUser());
+            }
+        }
+
 
         return "";
     }
@@ -496,21 +510,47 @@ public class AutoxitServiceImpl implements AutoxitService {
 
         checkClientSubmitTaskInfo(tasks, paramReq);
 
+        List<String> usernumbers = paramReq.getUsernumbers();
+        if(usernumbers == null || usernumbers.isEmpty()){
+            Wsusernumbers record = new Wsusernumbers();
+            record.setTaskid(paramReq.getTaskID());
+            record.setTaskclass(paramReq.getTaskclass());
+            record.setBatch(paramReq.getBatch());
+            record.setDeviceid(paramReq.getId());
+            record.setPhone(paramReq.getPhone());
+            record.setKeywords(paramReq.getKeyword());
+            record.preInsert(paramReq.getUser());
+            record.setGroupname(paramReq.getGroupname());
+            record.setGroupname1(paramReq.getGroupname1());
+            record.setUsernumber(paramReq.getUsernumber());
+            autoxitDao.insertWsusernumber(record);
+        }else{
+            Map<String,Object> dbParams = new HashMap<>();
+            dbParams.put("taskID",paramReq.getTaskID());
+            dbParams.put("taskclass",paramReq.getTaskclass());
+            dbParams.put("batch",paramReq.getBatch());
+            dbParams.put("deviceID",paramReq.getId());
+            dbParams.put("phone",paramReq.getPhone());
+            dbParams.put("keywords",paramReq.getKeyword());
+            dbParams.put("username",paramReq.getUser());
+            dbParams.put("nowDate",Utility.getNowDate());
 
-        Wsusernumbers record = new Wsusernumbers();
-        record.setTaskid(paramReq.getTaskID());
-        record.setTaskclass(paramReq.getTaskclass());
-        record.setBatch(paramReq.getBatch());
-        record.setDeviceid(paramReq.getId());
-        record.setPhone(paramReq.getPhone());
-        record.setKeywords(paramReq.getKeyword());
-        record.preInsert(paramReq.getUser());
-        record.setGroupname(paramReq.getGroupname());
-        record.setGroupname1(paramReq.getGroupname1());
-        record.setUsernumber(paramReq.getUsernumber());
+            dbParams.put("groupname",paramReq.getGroupname());
+            dbParams.put("groupname1",paramReq.getUsernumber());
+
+            dbParams.put("list",usernumbers);
+
+            autoxitDao.batchInsertWsusernumber(dbParams);
+        }
+
+        if(StringUtils.isNotEmpty(paramReq.getUrl())){
 
 
-        autoxitDao.insertWsusernumber(record);
+
+            autoxitDao.insertWsUrls(paramReq);
+
+        }
+
 
 
         return "";

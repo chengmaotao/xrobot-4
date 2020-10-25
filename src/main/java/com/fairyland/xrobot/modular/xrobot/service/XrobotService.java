@@ -88,4 +88,8 @@ public interface XrobotService {
     Map<String, Integer> userNumberCount();
 
     void userNumberClear();
+
+    PageResult groupnameList(GroupnameListReq paramReq);
+
+    void delGroupnameList(GroupnameListReq paramReq);
 }

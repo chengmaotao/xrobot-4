@@ -1,5 +1,7 @@
 package com.fairyland.xrobot.modular.xrobot.autoxit.core.req;
 
+import java.util.List;
+
 /**
  * @program: fairyland->ClientSubmitUserNumberReq
  * @description: TODO
@@ -16,6 +18,18 @@ public class ClientSubmitUserNumberReq extends BaseClientSubmitReq {
     private String usernumber; //
 
     private Integer state;
+
+    private List<String> usernumbers;
+
+    private String url;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     public String getKeyword() {
         return keyword;
@@ -57,6 +71,16 @@ public class ClientSubmitUserNumberReq extends BaseClientSubmitReq {
         this.state = state;
     }
 
+
+    public List<String> getUsernumbers() {
+        return usernumbers;
+    }
+
+    public void setUsernumbers(List<String> usernumbers) {
+        this.usernumbers = usernumbers;
+    }
+
+
     @Override
     public String toString() {
         return "ClientSubmitUserNumberReq{" +
@@ -65,6 +89,8 @@ public class ClientSubmitUserNumberReq extends BaseClientSubmitReq {
                 ", groupname1='" + groupname1 + '\'' +
                 ", usernumber='" + usernumber + '\'' +
                 ", state=" + state +
+                ", usernumbers=" + usernumbers +
+                ", url='" + url + '\'' +
                 '}';
     }
 }

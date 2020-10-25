@@ -1,8 +1,6 @@
 package com.fairyland.xrobot.modular.xrobot.dao;
 
-import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClientCheckPushMessageReq;
-import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ClientSubmitPushJoinGroupsReq;
-import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.ServerTaskNotifyCommandReq;
+import com.fairyland.xrobot.modular.xrobot.autoxit.core.req.*;
 import com.fairyland.xrobot.modular.xrobot.domain.*;
 
 import java.util.List;
@@ -38,4 +36,10 @@ public interface AutoxitDao {
     void updateTask(TasksWithBLOBs tasksRecord, TasksExample tasksExample);
 
     void insertWsusernumber(Wsusernumbers record);
+
+    void insertGroupnameinfoIsNotExists(ClientSubmitTaskResponseReq.Extra extra1,String user);
+
+    void batchInsertWsusernumber(Map<String, Object> dbParams);
+
+    void insertWsUrls(ClientSubmitUserNumberReq dbParams);
 }

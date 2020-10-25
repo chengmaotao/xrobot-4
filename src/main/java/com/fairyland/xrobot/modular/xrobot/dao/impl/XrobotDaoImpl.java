@@ -80,6 +80,10 @@ public class XrobotDaoImpl implements XrobotDao {
     @Autowired
     private WsusernumbersMapper wsusernumbersMapper;
 
+
+    @Autowired
+    private GroupnameinfoMapper groupnameinfoMapper;
+
     @Override
     public List<Device> deviceList(DeviceListReq paramReq) {
         int pageNum = paramReq.getPageNum();
@@ -631,8 +635,8 @@ public class XrobotDaoImpl implements XrobotDao {
     }
 
     @Override
-    public List<String> exportUserNumberList() {
-        List<String> list = wsusernumbersMapper.exportUserNumberList();
+    public List<ExportUserNumberListResp> exportUserNumberList() {
+        List<ExportUserNumberListResp> list = wsusernumbersMapper.exportUserNumberList();
 
         if (list == null) {
             return new ArrayList<>();
@@ -675,6 +679,26 @@ public class XrobotDaoImpl implements XrobotDao {
     @Override
     public void userNumberClear() {
         wsusernumbersMapper.userNumberClear();
+    }
+
+    @Override
+    public List<Groupnameinfo> groupnameList(GroupnameListReq paramReq) {
+        int pageNum = paramReq.getPageNum();
+        int pageSize = paramReq.getPageSize();
+        PageHelper.startPage(pageNum, pageSize);
+
+        List<Groupnameinfo> list = groupnameinfoMapper.groupnameList(paramReq);
+
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+
+        return list;
+    }
+
+    @Override
+    public void delGroupnameList(GroupnameListReq paramReq) {
+        groupnameinfoMapper.delGroupnameList(paramReq);
     }
 
 }
