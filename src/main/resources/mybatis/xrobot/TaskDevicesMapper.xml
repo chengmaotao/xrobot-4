@@ -436,7 +436,8 @@
         b.delay as "delay",
         b.deadline as "deadline",
         b.groupname as "groupname",
-        b.nolinks as "nolinks"
+        b.nolinks as "nolinks",
+        b.maxposts as "maxposts"
     FROM
          c_taskdevices a
     JOIN c_tasks b ON a.taskID = b.taskID

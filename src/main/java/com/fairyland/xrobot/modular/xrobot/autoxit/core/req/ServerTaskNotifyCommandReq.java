@@ -44,6 +44,17 @@ public class ServerTaskNotifyCommandReq {
 
     private Integer nolinks;
 
+
+    private Integer maxposts; // 最大帖子数量
+
+    public Integer getMaxposts() {
+        return maxposts;
+    }
+
+    public void setMaxposts(Integer maxposts) {
+        this.maxposts = maxposts;
+    }
+
     public Integer getNolinks() {
         return nolinks;
     }

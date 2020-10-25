@@ -314,4 +314,14 @@ public class CreateGroups extends BaseEntity {
         this.md5 = md5;
     }
 
+    private String devicesn;
+
+    public String getDevicesn() {
+        return devicesn;
+    }
+
+    public void setDevicesn(String devicesn) {
+        this.devicesn = devicesn;
+    }
+
 }

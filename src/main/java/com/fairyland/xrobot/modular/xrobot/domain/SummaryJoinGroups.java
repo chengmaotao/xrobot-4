@@ -253,4 +253,14 @@ public class SummaryJoinGroups extends BaseEntity {
     public void setTaskclassName(String taskclassName) {
         this.taskclassName = taskclassName;
     }
+
+    private String devicesn;
+
+    public String getDevicesn() {
+        return devicesn;
+    }
+
+    public void setDevicesn(String devicesn) {
+        this.devicesn = devicesn;
+    }
 }

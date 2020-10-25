@@ -54,6 +54,8 @@ public class SaveTaskReq {
 
     private Integer nolinks; // 无新链接时间:XXX 分钟（结束当前任务） 默认30分钟
 
+    private Integer maxposts; // 最大帖子数量 默认 1500
+
     public String getGroupname() {
         return groupname;
     }
@@ -108,6 +110,10 @@ public class SaveTaskReq {
 
         if(nolinks == null){
             nolinks = 30;
+        }
+
+        if(maxposts == null){
+            maxposts = 1500;
         }
 
         if (StringUtils.equals("100001", taskclass) || StringUtils.equals("100002", taskclass)) {
@@ -235,6 +241,14 @@ public class SaveTaskReq {
     }
 
 
+    public Integer getMaxposts() {
+        return maxposts;
+    }
+
+    public void setMaxposts(Integer maxposts) {
+        this.maxposts = maxposts;
+    }
+
     @Override
     public String toString() {
         return "SaveTaskReq{" +
@@ -246,6 +260,12 @@ public class SaveTaskReq {
                 ", deviceids='" + deviceids + '\'' +
                 ", deviceidList=" + deviceidList +
                 ", answers='" + answers + '\'' +
+                ", action='" + action + '\'' +
+                ", delay=" + delay +
+                ", deadline=" + deadline +
+                ", groupname='" + groupname + '\'' +
+                ", nolinks=" + nolinks +
+                ", maxposts=" + maxposts +
                 '}';
     }
 }

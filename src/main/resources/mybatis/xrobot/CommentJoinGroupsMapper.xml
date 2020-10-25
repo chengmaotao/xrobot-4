@@ -25,6 +25,7 @@
     <result column="taskclassName" property="taskclassName" />
     <result column="content" property="content" />
     <result column="md5" property="md5" />
+    <result column="deviceSN" property="devicesn" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -451,40 +452,60 @@
   </update>
 
   <select id="commentJoinGroupsList" parameterType="com.fairyland.xrobot.modular.xrobot.domain.req.ExeResultReq" resultMap="BaseResultMap">
-    select
-    <include refid="Base_Column_List" />
-    from c_commentjoingroups
-    where del_flag = '0'
-    and create_by = #{currentUser}
+    SELECT
+      a.id,
+      a.create_by,
+      a.create_date,
+      a.update_by,
+      a.update_date,
+      a.remarks,
+      a.del_flag,
+      a.taskID,
+      a.taskclass,
+      a.batch,
+      a.deviceID,
+      a.groupID,
+      a.groupname,
+      a.state,
+      a.phone,
+      a.keywords,
+      a.content,
+      a.md5,
+      b.deviceSN
+    FROM
+        c_commentjoingroups a
+    JOIN c_device b ON a.deviceID = b.deviceID
+    where a.del_flag = '0'
+    and a.create_by = #{currentUser}
     <if test="taskid != null and taskid != ''">
-      and taskID = #{taskid}
+      and a.taskID = #{taskid}
     </if>
 
     <if test="taskclass != null and taskclass != ''">
-      and taskclass = #{taskclass}
+      and a.taskclass = #{taskclass}
     </if>
 
     <if test="phone != null and phone != ''">
-      and phone = #{phone}
+      and a.phone = #{phone}
     </if>
 
     <if test="deviceid != null and deviceid != ''">
-      and deviceID = #{deviceid}
+      and a.deviceID = #{deviceid}
     </if>
 
     <if test="beginTime != null and beginTime != ''">
-      and update_date &gt;= #{beginTime}
+      and a.update_date &gt;= #{beginTime}
     </if>
 
     <if test="endTime != null and endTime != ''">
-      and update_date &lt;= #{endTime}
+      and a.update_date &lt;= #{endTime}
     </if>
 
     <if test="batch != null">
-      and batch = #{batch}
+      and a.batch = #{batch}
     </if>
 
-    order by update_date desc
+    order by a.update_date desc
   </select>
 
   <insert id="insertCommentJoinGroups" parameterType="java.util.Map">

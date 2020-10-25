@@ -594,6 +594,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         record.setDelay(paramReq.getDelay());
         record.setGroupname(paramReq.getGroupname());
         record.setNolinks(paramReq.getNolinks());
+        record.setMaxposts(paramReq.getMaxposts());
         if (StringUtils.isNotEmpty(newFilePath)) {
             record.setCover(newFilePath);
         }

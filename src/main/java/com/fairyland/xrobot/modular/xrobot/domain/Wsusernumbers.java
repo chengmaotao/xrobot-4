@@ -271,4 +271,14 @@ public class Wsusernumbers extends BaseEntity {
     public void setKeywords(String keywords) {
         this.keywords = keywords == null ? null : keywords.trim();
     }
+
+    private String devicesn;
+
+    public String getDevicesn() {
+        return devicesn;
+    }
+
+    public void setDevicesn(String devicesn) {
+        this.devicesn = devicesn;
+    }
 }

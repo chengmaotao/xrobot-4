@@ -21,6 +21,7 @@
     <result column="groupname" property="groupname" jdbcType="VARCHAR" />
     <result column="groupname1" property="groupname1" jdbcType="VARCHAR" />
     <result column="usernumber" property="usernumber" jdbcType="VARCHAR" />
+    <result column="deviceSN" property="devicesn" />
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.fairyland.xrobot.modular.xrobot.domain.Wsusernumbers" extends="BaseResultMap" >
     <!--
@@ -537,19 +538,35 @@
 
 
   <select id="userNumberList" parameterType="com.fairyland.xrobot.modular.xrobot.domain.req.UserNumberListReq" resultMap="ResultMapWithBLOBs">
-    select
-      <include refid="Base_Column_List" />
-      ,
-      <include refid="Blob_Column_List" />
-    from c_wsusernumbers
-   where create_by = #{currentUser}
+    SELECT
+      a.id,
+      a.create_by,
+      a.create_date,
+      a.update_by,
+      a.update_date,
+      a.remarks,
+      a.del_flag,
+      a.taskID,
+      a.taskclass,
+      a.batch,
+      a.deviceID,
+      a.phone,
+      a.groupname,
+      a.groupname1,
+      a.usernumber,
+      a.keywords,
+      b.deviceSN
+    FROM
+        c_wsusernumbers a
+    JOIN c_device b ON a.deviceID = b.deviceID
+   where a.create_by = #{currentUser}
     <if test="batch != null">
-      and batch = #{batch}
+      and a.batch = #{batch}
     </if>
    <if test="taskid != null and taskid != ''">
-     and taskID = #{taskid}
+     and a.taskID = #{taskid}
    </if>
-   order by create_date desc
+   order by a.create_date desc
   </select>
 
 

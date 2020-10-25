@@ -274,4 +274,14 @@ public class CommentJoinGroups extends BaseEntity {
     public void setContent(String content) {
         this.content = content;
     }
+
+    private String devicesn;
+
+    public String getDevicesn() {
+        return devicesn;
+    }
+
+    public void setDevicesn(String devicesn) {
+        this.devicesn = devicesn;
+    }
 }
