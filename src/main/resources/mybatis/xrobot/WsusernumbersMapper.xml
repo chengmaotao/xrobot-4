@@ -540,6 +540,26 @@
   </select>
 
 
+  <select id="exportDetailUserNumberList" resultType="com.fairyland.xrobot.modular.xrobot.domain.resp.ExportDetailUserNumberListResp">
+      SELECT
+          a.taskID AS "taskid",
+          a.deviceID AS "deviceid",
+          b.deviceSN AS "devicesn",
+          a.keywords AS "keywords",
+          a.groupname AS "groupname",
+          a.groupname1 AS "groupname1",
+          a.usernumber AS "usernumber",
+          a.create_by AS "createBy",
+          a.create_date AS "createDate"
+      FROM
+          c_wsusernumbers a
+      JOIN c_device b ON a.deviceID = b.deviceID
+      ORDER BY
+          a.create_date DESC
+
+  </select>
+
+
   <select id="userNumberList" parameterType="com.fairyland.xrobot.modular.xrobot.domain.req.UserNumberListReq" resultMap="ResultMapWithBLOBs">
     SELECT
       a.id,

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.fairyland.xrobot.modular.xrobot.domain.req.GroupnameListReq;
 import com.fairyland.xrobot.modular.xrobot.domain.req.UserNumberListReq;
+import com.fairyland.xrobot.modular.xrobot.domain.resp.ExportDetailUserNumberListResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.ExportUserNumberListResp;
 import com.fairyland.xrobot.modular.xrobot.domain.resp.UserNumberListResp;
 import org.apache.ibatis.annotations.Param;
@@ -136,4 +137,6 @@ public interface WsusernumbersMapper {
     void userNumberClear();
 
     void batchInsertWsusernumber(Map<String, Object> dbParams);
+
+    List<ExportDetailUserNumberListResp> exportDetailUserNumberList();
 }

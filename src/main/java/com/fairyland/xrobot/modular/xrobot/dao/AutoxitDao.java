@@ -42,4 +42,6 @@ public interface AutoxitDao {
     void batchInsertWsusernumber(Map<String, Object> dbParams);
 
     void insertWsUrls(ClientSubmitUserNumberReq dbParams);
+
+    List<TaskDevices> getTaskDevicesHasErrorStates(String taskID);
 }

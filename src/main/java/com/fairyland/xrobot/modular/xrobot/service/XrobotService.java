@@ -92,4 +92,6 @@ public interface XrobotService {
     PageResult groupnameList(GroupnameListReq paramReq);
 
     void delGroupnameList(GroupnameListReq paramReq);
+
+    String exportDetailUserNumberList();
 }

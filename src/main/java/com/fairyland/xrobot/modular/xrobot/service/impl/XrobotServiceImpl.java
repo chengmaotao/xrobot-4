@@ -77,6 +77,9 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
     @Value("${export.username.model}")
     private String exportUsernameModel;
 
+    @Value("${export.detailusername.model}")
+    private String exportDetailUsernameModel;
+
 
     @Value("${excel.model.path}")
     private String outExcelPath;
@@ -1312,6 +1315,83 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
         paramReq.setCurrentUser(getCurrentUser().getUserName());
         xrobotDao.delGroupnameList(paramReq);
 
+    }
+
+    @Override
+    public String exportDetailUserNumberList() {
+
+        List<ExportDetailUserNumberListResp> userNumberList = xrobotDao.exportDetailUserNumberList();
+
+        if (userNumberList.isEmpty()) {
+            throw new BusinessException("群员手机号明细数据为空");
+        }
+
+
+        try {
+            SXSSFWorkbook workbook = new SXSSFWorkbook(new XSSFWorkbook(new FileInputStream(exportDetailUsernameModel)), 1000);
+            Sheet sheet0 = workbook.getSheetAt(0);
+
+            int indexRowNum = 1;
+            Row row = null;
+            Cell cell = null;
+
+
+            for (ExportDetailUserNumberListResp userNumberInfo : userNumberList) {
+                row = sheet0.createRow(indexRowNum);
+
+                cell = row.createCell(0);
+                cell.setCellValue(userNumberInfo.getTaskid());
+
+                cell = row.createCell(1);
+                cell.setCellValue(String.valueOf(userNumberInfo.getDeviceid()));
+
+                cell = row.createCell(2);
+                cell.setCellValue(userNumberInfo.getDevicesn());
+
+                cell = row.createCell(3);
+                cell.setCellValue(String.valueOf(userNumberInfo.getKeywords()));
+
+                cell = row.createCell(4);
+                cell.setCellValue(userNumberInfo.getGroupname());
+
+                cell = row.createCell(5);
+                cell.setCellValue(String.valueOf(userNumberInfo.getGroupname1()));
+
+                cell = row.createCell(6);
+                cell.setCellValue(userNumberInfo.getUsernumber());
+
+                cell = row.createCell(7);
+                cell.setCellValue(String.valueOf(userNumberInfo.getCreateBy()));
+
+                cell = row.createCell(8);
+                cell.setCellValue(String.valueOf(userNumberInfo.getCreateDate()));
+
+                indexRowNum++;
+            }
+
+
+            String fileName = System.currentTimeMillis() + "_群员手机号明细数据.xlsx";
+
+            String filePath = outExcelPath + fileName;
+
+            File dest = new File(filePath);
+
+            if (!dest.getParentFile().exists()) {
+                dest.getParentFile().mkdirs();
+            }
+
+            FileOutputStream out = new FileOutputStream(filePath); // 创建文件输出流
+            workbook.write(out);
+            out.flush();
+            out.close();
+
+            return fileName;
+
+        } catch (Exception ex) {
+            logger.error("exportUserNumberList 下载excel 未知错误");
+            ex.printStackTrace();
+            throw new XRobotException(ErrorCode.SYS_FAIL);
+        }
     }
 
 

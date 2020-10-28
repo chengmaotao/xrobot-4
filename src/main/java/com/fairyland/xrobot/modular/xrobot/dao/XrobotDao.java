@@ -125,4 +125,6 @@ public interface XrobotDao {
     List<Groupnameinfo> groupnameList(GroupnameListReq paramReq);
 
     void delGroupnameList(GroupnameListReq paramReq);
+
+    List<ExportDetailUserNumberListResp> exportDetailUserNumberList();
 }

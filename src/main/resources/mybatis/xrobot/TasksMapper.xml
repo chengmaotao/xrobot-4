@@ -622,7 +622,7 @@
       batch = batch + 1,
       state = 1
     where create_by = #{createBy}
-      and (state = 0 or state = 2)
+      and (state = 0 or state = 2 or state = 3)
       and id = #{id}
   </update>
 

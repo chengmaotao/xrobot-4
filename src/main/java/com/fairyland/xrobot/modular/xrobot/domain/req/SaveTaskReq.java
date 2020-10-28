@@ -92,7 +92,7 @@ public class SaveTaskReq {
         }
 
         if (delay == null) {
-            delay = 20;
+            delay = 30;
         }
 
         if (deadline == null) {
@@ -104,7 +104,7 @@ public class SaveTaskReq {
         }
 
         if (maxposts == null) {
-            maxposts = 1500;
+            maxposts = 500;
         }
 
         if (StringUtils.equals("100001", taskclass) || StringUtils.equals("100002", taskclass)) {
@@ -271,8 +271,8 @@ public class SaveTaskReq {
         private Logger logger = LoggerFactory.getLogger(DeviceIdGroupName.class);
 
         public void validate() {
-            if (StringUtils.isEmpty(id) || StringUtils.isEmpty(groupname)) {
-                logger.error("DeviceIdGroupName id = {} 和  groupname = {}不能为空", id, groupname);
+            if (StringUtils.isEmpty(id) ) {
+                logger.error("DeviceIdGroupName id = {} ", id, groupname);
                 throw new XRobotException(ErrorCode.ERROR_CODE_5);
             }
         }

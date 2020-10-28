@@ -167,7 +167,11 @@ public class AutoxitDaoImpl implements AutoxitDao {
     public List<TaskDevices> getTaskDevicesIsNotComplete(String taskID) {
 
         TaskDevicesExample example = new TaskDevicesExample();
-        example.createCriteria().andTaskidEqualTo(taskID).andStateNotEqualTo(2);
+
+        List<Integer> list = new ArrayList<>();
+        list.add(0);
+        list.add(1);
+        example.createCriteria().andTaskidEqualTo(taskID).andStateIn(list);
         return taskDevicesMapper.selectByExample(example);
     }
 
@@ -213,7 +217,7 @@ public class AutoxitDaoImpl implements AutoxitDao {
 
 
         WsurlsExample example = new WsurlsExample();
-        example.createCriteria().andUrlEqualTo(dbParams.getUrl()).andCreateByEqualTo(dbParams.getUser());
+        example.createCriteria().andUrlEqualTo(dbParams.getUrl());
         List<Wsurls> list = wsurlsMapper.selectByExample(example);
 
         if (list == null || list.isEmpty()) {
@@ -227,5 +231,13 @@ public class AutoxitDaoImpl implements AutoxitDao {
             wsurlsMapper.insertSelective(record);
         }
 
+    }
+
+    @Override
+    public List<TaskDevices> getTaskDevicesHasErrorStates(String taskID) {
+        TaskDevicesExample example = new TaskDevicesExample();
+
+        example.createCriteria().andTaskidEqualTo(taskID).andStateEqualTo(3);
+        return taskDevicesMapper.selectByExample(example);
     }
 }

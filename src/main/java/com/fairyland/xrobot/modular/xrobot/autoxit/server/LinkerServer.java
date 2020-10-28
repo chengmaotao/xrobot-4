@@ -568,8 +568,7 @@ public class LinkerServer {
                     || batch == null
                     || StringUtils.isEmpty(phone)
                     || StringUtils.isEmpty(keyword)
-                    || StringUtils.isEmpty(groupname)
-                    || StringUtils.isEmpty(groupname1)
+                    || (StringUtils.isEmpty(groupname) && StringUtils.isEmpty(groupname1))
                     || StringUtils.isEmpty(poster)
                     || state == null
             ) {

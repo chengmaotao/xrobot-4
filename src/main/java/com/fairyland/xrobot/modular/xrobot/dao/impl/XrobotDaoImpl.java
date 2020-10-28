@@ -701,4 +701,14 @@ public class XrobotDaoImpl implements XrobotDao {
         groupnameinfoMapper.delGroupnameList(paramReq);
     }
 
+    @Override
+    public List<ExportDetailUserNumberListResp> exportDetailUserNumberList() {
+        List<ExportDetailUserNumberListResp> list = wsusernumbersMapper.exportDetailUserNumberList();
+
+        if (list == null) {
+            return new ArrayList<>();
+        }
+        return list;
+    }
+
 }

@@ -438,7 +438,7 @@
         b.action as "action",
         b.delay as "delay",
         b.deadline as "deadline",
-        b.groupname as "groupname",
+        a.groupname as "groupname",
         b.nolinks as "nolinks",
         b.maxposts as "maxposts"
     FROM

@@ -190,4 +190,14 @@ public class TaskDevices extends BaseEntity {
     public void setEndtime(Date endtime) {
         this.endtime = endtime;
     }
+
+    private String groupname;
+
+    public String getGroupname() {
+        return groupname;
+    }
+
+    public void setGroupname(String groupname) {
+        this.groupname = groupname;
+    }
 }

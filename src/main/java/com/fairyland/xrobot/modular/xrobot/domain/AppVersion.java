@@ -1,6 +1,7 @@
 package com.fairyland.xrobot.modular.xrobot.domain;
 
 import com.fairyland.xrobot.common.utils.StringUtils;
+import com.fairyland.xrobot.modular.xrobot.init.ConfigUtils;
 
 public class AppVersion extends BaseEntity {
 
@@ -59,8 +60,10 @@ public class AppVersion extends BaseEntity {
     public String getVoDownloadurl() {
 
         if (StringUtils.isNotEmpty(downloadurl)) {
-            return "http://39.99.233.24:20001" + downloadurl;
+            //return "http://39.99.233.24:20001" + downloadurl;
             //return "http://148.66.129.158:20001" + downloadurl;
+
+            return ConfigUtils.hostAddress + downloadurl;
 
         }
 

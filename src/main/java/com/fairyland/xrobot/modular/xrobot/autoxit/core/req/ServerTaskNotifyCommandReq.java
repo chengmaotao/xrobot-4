@@ -1,6 +1,7 @@
 package com.fairyland.xrobot.modular.xrobot.autoxit.core.req;
 
 import com.fairyland.xrobot.common.utils.StringUtils;
+import com.fairyland.xrobot.modular.xrobot.init.ConfigUtils;
 
 /**
  * @program: fairyland->ServerTaskNotifyCommandReq
@@ -115,10 +116,12 @@ public class ServerTaskNotifyCommandReq {
 
         if (StringUtils.isNotEmpty(cover)) {
 
-            return "http://39.99.233.24:20001" + cover;
+            //return "http://39.99.233.24:20001" + cover;
 
 
             //return "http://148.66.129.158:20001" + cover;
+
+            return ConfigUtils.hostAddress + cover;
         }
         return cover;
     }
