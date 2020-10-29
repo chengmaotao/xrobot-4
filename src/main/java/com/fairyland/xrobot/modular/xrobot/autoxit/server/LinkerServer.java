@@ -553,10 +553,8 @@ public class LinkerServer {
             String taskclass = businessParam.getTaskclass(); //
             Integer batch = businessParam.getBatch(); //
             String user = businessParam.getUser();
-            String keyword = businessParam.getKeyword();
 
-            String groupname = businessParam.getGroupname();
-            String groupname1 = businessParam.getGroupname1();
+
             String poster = businessParam.getPoster();
             Integer state = businessParam.getState();
 
@@ -567,8 +565,6 @@ public class LinkerServer {
                     || StringUtils.isEmpty(user)
                     || batch == null
                     || StringUtils.isEmpty(phone)
-                    || StringUtils.isEmpty(keyword)
-                    || (StringUtils.isEmpty(groupname) && StringUtils.isEmpty(groupname1))
                     || StringUtils.isEmpty(poster)
                     || state == null
             ) {

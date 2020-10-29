@@ -1,5 +1,6 @@
 package com.fairyland.xrobot.modular.xrobot.domain.resp;
 
+import com.fairyland.xrobot.common.utils.DateUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
@@ -30,12 +31,24 @@ public class ExportDetailUserNumberListResp {
 
     private String createBy;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createDate;
 
+    private String voCreateDate;
+
+
+    public String getVoCreateDate() {
+        if(createDate == null){
+            return "";
+        }
+        return DateUtils.getyyyyMMddHHmmss(createDate);
+    }
+
+    public void setVoCreateDate(String voCreateDate) {
+        this.voCreateDate = voCreateDate;
+    }
 
     public String getTaskid() {
-        return taskid;
+        return taskid == null ? "" : taskid;
     }
 
     public void setTaskid(String taskid) {
@@ -43,7 +56,7 @@ public class ExportDetailUserNumberListResp {
     }
 
     public String getDeviceid() {
-        return deviceid;
+        return deviceid == null ? "" : deviceid;
     }
 
     public void setDeviceid(String deviceid) {
@@ -51,7 +64,7 @@ public class ExportDetailUserNumberListResp {
     }
 
     public String getDevicesn() {
-        return devicesn;
+        return devicesn == null ? "" : devicesn;
     }
 
     public void setDevicesn(String devicesn) {
@@ -59,7 +72,7 @@ public class ExportDetailUserNumberListResp {
     }
 
     public String getKeywords() {
-        return keywords;
+        return keywords == null ? "" : keywords;
     }
 
     public void setKeywords(String keywords) {
@@ -67,7 +80,7 @@ public class ExportDetailUserNumberListResp {
     }
 
     public String getGroupname() {
-        return groupname;
+        return groupname == null ? "" : groupname;
     }
 
     public void setGroupname(String groupname) {
@@ -75,7 +88,7 @@ public class ExportDetailUserNumberListResp {
     }
 
     public String getGroupname1() {
-        return groupname1;
+        return groupname1 == null ? "" : groupname1;
     }
 
     public void setGroupname1(String groupname1) {
@@ -84,7 +97,7 @@ public class ExportDetailUserNumberListResp {
 
 
     public String getUsernumber() {
-        return usernumber;
+        return usernumber == null ? "" : usernumber;
     }
 
     public void setUsernumber(String usernumber) {
@@ -92,7 +105,7 @@ public class ExportDetailUserNumberListResp {
     }
 
     public String getCreateBy() {
-        return createBy;
+        return createBy == null ? "" : createBy;
     }
 
     public void setCreateBy(String createBy) {

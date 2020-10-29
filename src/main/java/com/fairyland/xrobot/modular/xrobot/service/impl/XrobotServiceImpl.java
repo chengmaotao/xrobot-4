@@ -2,6 +2,7 @@ package com.fairyland.xrobot.modular.xrobot.service.impl;
 
 import com.fairyland.xrobot.common.constant.ErrorCode;
 import com.fairyland.xrobot.common.constant.XRobotCode;
+import com.fairyland.xrobot.common.utils.DateUtils;
 import com.fairyland.xrobot.common.utils.PageUtils;
 import com.fairyland.xrobot.common.utils.StringUtils;
 import com.fairyland.xrobot.modular.system.domain.SysUser;
@@ -1364,7 +1365,7 @@ public class XrobotServiceImpl extends BaseServiceImpl implements XrobotService 
                 cell.setCellValue(String.valueOf(userNumberInfo.getCreateBy()));
 
                 cell = row.createCell(8);
-                cell.setCellValue(String.valueOf(userNumberInfo.getCreateDate()));
+                cell.setCellValue(userNumberInfo.getVoCreateDate());
 
                 indexRowNum++;
             }
